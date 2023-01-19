@@ -41,11 +41,11 @@
 <meta property="og:title" content="网站部署和各类型游戏远程联机教程">
 <meta property="og:url" content="http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/index.html">
 <meta property="og:site_name" content="AX博客教程">
-<meta property="og:description" content="前言： 建议配合视频教程一起使用，这是一篇面向新萌的教程，提供我已知的最优解，但不一定是最好；完成一个服务器需要一台满足配置要求(因目标而定)的设备，能够正常运行的对应程序的服务器端（程序自带或给常见链接自行下载），一个能够使用且支持对应协议的内网穿透工具或者联机工具(后面会列出，自选即可)和一颗能够坚持学下去的恒心（学会了还是蛮简单的） 信息交换主要包含三大方式（网站大都采用第一种，游戏通常是第">
+<meta property="og:description" content="前言 建议配合视频教程一起使用，这是一篇面向新萌的教程，提供我已知的最优解，但不一定是最好；完成一个服务器需要一台满足配置要求(因目标而定)的设备，能够正常运行的对应程序的服务器端（程序自带或给常见链接自行下载），一个能够使用且支持对应协议的内网穿透工具或者联机工具(后面会列出，自选即可)和一颗能够坚持学下去的恒心（学会了还是蛮简单的） 信息交换主要包含三大方式（网站大都采用第一种，游戏通常是第二">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-01-12T13:59:38.000Z">
-<meta property="article:modified_time" content="2023-01-18T16:54:37.756Z">
+<meta property="article:modified_time" content="2023-01-19T16:00:01.451Z">
 <meta property="article:author" content="AIKSXD">
 <meta property="article:tag" content="study">
 <meta name="twitter:card" content="summary">
@@ -1629,7 +1629,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1674060982686),
+    lastupdate: new Date(1674144326952),
     sidebar: {
       for_page: ["blogger","category","tagcloud","text"],
       for_post: ["toc"],
@@ -2525,7 +2525,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a><strong>前言：</strong></h2><ul>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><ul>
 <li>建议配合视频教程一起使用，这是一篇面向新萌的教程，提供我已知的最优解，但<strong>不一定是最好</strong>；完成一个服务器需要<strong>一台满足配置要求(因目标而定)的设备</strong>，能够<strong>正常运行的</strong>对应程序的<strong>服务器端</strong>（程序自带或给常见链接自行下载），一个能够使用且支持对应协议的内网穿透工具或者联机工具(后面会列出，自选即可)和一颗能够坚持学下去的恒心（学会了还是蛮简单的）</li>
 <li>信息交换主要包含三大方式（网站大都采用第一种，游戏通常是第二、三种局域网）：</li>
 <li><strong>！PS：本教程是部署第一种实现方法或将第二、三种实现方法转为第一种并部署以此打破空间限制！</strong><ul>
@@ -2536,69 +2536,88 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </li>
 </ul>
 <h2 id="类型一：提供IP直连的程序（通过中间服务器实现远程联机）"><a href="#类型一：提供IP直连的程序（通过中间服务器实现远程联机）" class="headerlink" title="类型一：提供IP直连的程序（通过中间服务器实现远程联机）"></a><strong>类型一</strong>：提供<strong>IP直连</strong>的程序（通过中间服务器实现远程联机）</h2><p><strong>判断方法</strong>：允许通过输入<strong>字符串类型的值</strong>来连接服务器（如同<strong>浏览器的地址栏</strong>），该类型程序一般允许用户自己创建连接服务器或者直接连接，典型的如：我的世界(Minecraft)、泰拉瑞亚(Terraria)、星露谷物语(Stardew Valley)、铁锈战争(Rusted Warfare)、生存战争(Survivalcraft)联机版等</p>
+<hr>
 <ol>
-<li><h3 id="1-部署服务器端-必需-准备"><a href="#1-部署服务器端-必需-准备" class="headerlink" title="1.部署服务器端(必需-准备)"></a><strong>1.部署服务器端(必需-准备)</strong></h3><blockquote>
-<p>启动对应的服务器程序，有的软件不自带服务器端的启动程序，或者其不能够满足服务器的需求，因此需要下载工具：</p>
-</blockquote>
+<li><h3 id="1-部署本地服务端-必需-准备"><a href="#1-部署本地服务端-必需-准备" class="headerlink" title="1.部署本地服务端(必需-准备)"></a><strong>1.部署本地服务端(必需-准备)</strong></h3></li>
+</ol>
+<blockquote>
+<p><strong>启动</strong>对应的<strong>服务端程序</strong>（可能需要填入部分配置信息）并等待部署完成即可，有的软件不自带服务端的启动程序，或者其不能够满足服务器的需求，因此需要下载对应的服务端：</p>
+<ul>
+<li><h4 id="我的世界Minecraft"><a href="#我的世界Minecraft" class="headerlink" title="我的世界Minecraft"></a>我的世界Minecraft</h4></li>
+</ul>
 <blockquote>
 <ul>
-<li>我的世界Minecraft：<blockquote>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.minecraft.net/zh-hans/download/server">necraft官方服务器端（纯原版）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.minecraft.net/zh-hans/download/server">Minecraft官方服务器端（纯原版）</a></li>
 <li><a target="_blank" rel="noopener" href="https://papermc.io/downloads">Paper服务器端（演示对象)(插件+优化）</a></li>
 <li><a target="_blank" rel="noopener" href="https://hub.spigotmc.org/jenkins/job/BuildTools/">spigot服务器端（插件）</a></li>
 <li><a target="_blank" rel="noopener" href="https://files.minecraftforge.net/net/minecraftforge/forge/">Forge安装服务器（mod）</a></li>
 <li><a target="_blank" rel="noopener" href="https://spongepowered.org/downloads/">Forge + Sponge（插件+mod - SpongeMod支持版本少）</a></li>
-<li><strong>……</strong></li>
-<li>关于开服：创建bat文件运行服务器端 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xms1024M -Xms2048M -jar 服务器端名称.jar</span><br></pre></td></tr></table></figure></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+<li>关于开服：创建<strong>bat文件</strong>运行服务器端</li>
 </ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xms1024M -Xms2048M -jar 服务器端名称.jar</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>其中Xms为最小内存，Xmx为最大内存，单位可以为M也可以为G。服务端名称是下载使用哪个服务端就填哪个服务端的名称，forge要先双击安装程序(需java运行环境)运行并安装服务器端，启动带GUI的服务端可以在后面加 nogui来取消运行时启动独立窗口，java是使用默认环境变量的java，当低版本服务器运行时可能不兼容新版，可以在计算机中安装多个版本的java并使用绝对路径来运行服务器端如下：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;C:\Program Files\Java\jre1.8.0_351\bin\java&quot;</span> -Xms1G -Xmx2G -jar paperc.jar nogui</span><br></pre></td></tr></table></figure></li>
-<li>第一次运行需要先改eula.txt文件中eula&#x3D;后面的false改为true即同意上述协议，修改完成后保存再次启动，每次启动都会下载所需文件，耐心等待，若下载出现错误可以开网络工具或者在log报错文件中找到报错的文件地址手动下载，手动下载再失败可以复制地址到网盘下载器下载。</li>
+<li>其中<strong>Xms</strong>为<strong>最小</strong>内存，<strong>Xmx</strong>为<strong>最大</strong>内存，单位可以为M也可以为G。服务端名称是下载使用哪个服务端就填哪个服务端的名称，<strong>forge</strong>要<strong>先双击安装</strong>程序(需java运行环境)运行并安装服务器端，启动带GUI的服务端可以在后面加 <strong>nogui</strong>来取消运行时启动独立窗口，java是使用默认环境变量的java，当低版本服务器运行时可能不兼容新版，可以在计算机中安装多个版本的java并使用<strong>绝对路径</strong>来运行服务器端如下：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;C:\Program Files\Java\jre1.8.0_351\bin\java&quot;</span> -Xms1G -Xmx2G -jar paperc.jar nogui</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第一次运行需要先改<strong>eula.txt</strong>文件中eula&#x3D;后面的false改为<strong>true</strong>即同意上述协议，修改完成后保存再次启动，之后会下载所需文件，耐心等待，若下载出现错误可以开<strong>网络工具</strong>或者在<strong>log报错文件</strong>中找到报错的<strong>文件地址手动下载</strong>，手动下载再失败可以<strong>复制地址到网盘的P2P下载器</strong>下载。<br><strong>Stop</strong>停止并保存服务器</li>
 </ul>
 </blockquote>
-</li>
+<ul>
+<li><h4 id="泰拉瑞亚Terraria"><a href="#泰拉瑞亚Terraria" class="headerlink" title="泰拉瑞亚Terraria"></a>泰拉瑞亚Terraria</h4></li>
 </ul>
-</blockquote>
 <blockquote>
 <ul>
-<li>泰拉瑞亚Terraria<blockquote>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/Pryaxis/TShock/releases">TShock（相比原版可以装插件）</a></li>
-<li><a target="_blank" rel="noopener" href="https://store.steampowered.com/app/1281930/tModLoader/">TML（Steam商店地址)(Mod）</a></li>
-</ul>
-</blockquote>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/Pryaxis/TShock/releases">TShock（相比原版可以装插件）</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://store.steampowered.com/app/1281930/tModLoader/">TML（Steam商店地址)(Mod）</a><br><strong>exit</strong>停止并保存服务器</p>
 </li>
 </ul>
+</blockquote>
+<ul>
+<li><h4 id="生存战争Survivalcraft联机版"><a href="#生存战争Survivalcraft联机版" class="headerlink" title="生存战争Survivalcraft联机版"></a>生存战争Survivalcraft联机版</h4></li>
+</ul>
+<blockquote>
+<p><strong>作者团队</strong>及其<strong>教程地址</strong>：<a target="_blank" rel="noopener" href="https://space.bilibili.com/292546719?spm_id_from=333.337.search-card.all.click">瓦西里沃尔特 bilibili</a></p>
+</blockquote>
+<ul>
+<li><h4 id="Vue网站基本命令"><a href="#Vue网站基本命令" class="headerlink" title="Vue网站基本命令"></a>Vue网站基本命令</h4></li>
+</ul>
+<p>需<strong>Node.js</strong></p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm install vue-cli -g 安装vue-cli</span><br><span class="line">vue init webpack my-project  初始化项目</span><br><span class="line">npm install  安装项目依赖</span><br><span class="line">npm run build 生成上线目录部署</span><br><span class="line">nmp run dev 本地测试服务器</span><br></pre></td></tr></table></figure>
+<p><strong>Ctrl+C</strong>关闭服务器</p>
+</blockquote>
+<ul>
+<li><h4 id="Hexo网站基本命令"><a href="#Hexo网站基本命令" class="headerlink" title="Hexo网站基本命令"></a>Hexo网站基本命令</h4></li>
+</ul>
+<p>需<strong>Node.js</strong>和<strong>Git</strong></p>
 </blockquote>
 <blockquote>
-<ul>
-<li>生存战争Survivalcraft联机版作者团队地址：<a target="_blank" rel="noopener" href="https://space.bilibili.com/292546719?spm_id_from=333.337.search-card.all.click">瓦西里沃尔特 bilibili</a></li>
-</ul>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g 安装hexo-cli</span><br><span class="line">hexo init 文件夹名 <span class="built_in">cd</span>进去后npm install安装npm即完成</span><br><span class="line">hexo new <span class="string">&quot;文章名&quot;</span> 新文章</span><br><span class="line">hexo new page <span class="string">&quot;页面名&quot;</span> 生成新页面</span><br><span class="line">hexo s 本地预览</span><br><span class="line">hexo g 上传暂存区</span><br><span class="line">hexo d 上传到Github</span><br><span class="line">hexo server -p 端口号 修改本地部署的端口</span><br></pre></td></tr></table></figure>
+<p><strong>Ctrl+C</strong>关闭服务器</p>
 </blockquote>
+</blockquote>
+<ol start="2">
+<li><h3 id="2-监听程序端口-可选-准备"><a href="#2-监听程序端口-可选-准备" class="headerlink" title="2.监听程序端口(可选-准备)"></a><strong>2.监听程序端口(可选-准备)</strong></h3></li>
+</ol>
 <blockquote>
 <ul>
-<li>Vue网站基本命令（需<strong>Node.js</strong>）：<blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm install vue-cli -g	安装vue-cli</span><br><span class="line">vue init webpack my-project  初始化项目</span><br><span class="line">npm install  安装项目依赖</span><br><span class="line">npm run build 生成上线目录部署</span><br><span class="line">  nmp run dev 本地测试服务器</span><br></pre></td></tr></table></figure>
-<p>Hexo网站基本命令（需<strong>Node.js</strong>和<strong>Git</strong>）： </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g 安装hexo-cli</span><br><span class="line">hexo init 文件夹名	<span class="built_in">cd</span>进去后npm install安装npm即完成</span><br><span class="line">hexo new <span class="string">&quot;文章名&quot;</span>	新文章</span><br><span class="line">hexo new page <span class="string">&quot;页面名&quot;</span>	生成新页面</span><br><span class="line">hexo s	本地预览</span><br><span class="line">hexo g	上传暂存区</span><br><span class="line">hexo d	上传到Github</span><br><span class="line">hexo server -p 端口号	修改本地部署的端口</span><br></pre></td></tr></table></figure></blockquote>
-</li>
-</ul>
-</blockquote>
-</li>
-<li><h3 id="2-监听程序端口-可选-准备"><a href="#2-监听程序端口-可选-准备" class="headerlink" title="2.监听程序端口(可选-准备)"></a><strong>2.监听程序端口(可选-准备)</strong></h3><ul>
 <li><h4 id="Windows操作系统"><a href="#Windows操作系统" class="headerlink" title="Windows操作系统"></a><strong>Windows操作系统</strong></h4></li>
 </ul>
-<blockquote>
 <p><em><strong>先启动游戏服务器或创建局域网房间后才能看到其端口和协议类型，下面列出常见软件的协议类型及其端口</strong></em></p>
 <ul>
-<li>网站默认http&#x2F;https(vue：<strong>8080</strong>；PHPstudy：<strong>80</strong>；Hexo：<strong>4000</strong>；……)</li>
-<li>泰拉瑞亚Terraria自带|TShock：TCP<strong>7777</strong></li>
-<li>我的世界Minecraft(Java：TCP<strong>25565</strong>；BE基岩版：UDP<strong>19163</strong>)</li>
-<li>铁锈战争Rusted Warfare：UDP<strong>5132</strong></li>
-<li>生存战争Survivalcraft联机版：UDP<strong>28887</strong></li>
-<li>星露谷物语(Stardew Valley)：UDP<strong>24642</strong></li>
-<li>……（有的服务器需要两条隧道，例如：未转变者Unturned、MC互通服等）</li>
+<li><strong>网站默认http&#x2F;https</strong>(vue：<strong>8080</strong>；PHPstudy：<strong>80</strong>；Hexo：<strong>4000</strong>；……)</li>
+<li><strong>泰拉瑞亚Terraria自带</strong>或<strong>TShock</strong>：TCP<strong>7777</strong></li>
+<li><strong>我的世界Minecraft</strong>(<strong>Java</strong>：TCP<strong>25565</strong>；内置服务端<strong>随机</strong>；<strong>BE基岩版</strong>：UDP<strong>19163</strong>)</li>
+<li><strong>铁锈战争Rusted Warfare</strong>：UDP<strong>5132</strong></li>
+<li><strong>生存战争Survivalcraft联机版</strong>：UDP<strong>28887</strong></li>
+<li><strong>星露谷物语Stardew Valley</strong>：UDP<strong>24642</strong></li>
+<li>……（有的游戏服务器需要<strong>两条隧道</strong>才能正常运行，例如：<strong>未转变者Unturned</strong>(<strong>quit</strong>退出并保存服务器)、MC互通服等）</li>
 </ul>
 <p><em><strong>如果出现报错显示端口被占用相关问题，可以修改配置文件改变游戏默认的端口号，但有的程序不提供配置文件修改端口号，那也可以在下面操作找到占用该端口号的程序并将它结束掉；linux系统结束程序在下面</strong></em></p>
 <p><em><strong>一般游戏端口及其协议类型可以搜到，或者界面会告诉你，如果没有再进行下面的步骤</strong></em></p>
@@ -2613,29 +2632,48 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 </blockquote>
 </li>
-<li><strong>监听程序端口</strong><br><img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/teach2.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/teach2.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="图片加载失败了，看视频吧，或者复制图片地址到浏览器地址栏里手动浏览"><blockquote>
+<li><strong>监听程序端口</strong></li>
+</ol>
+<p><img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/teach2.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/teach2.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="图片加载失败了，看视频吧，或者复制图片地址到浏览器地址栏里手动浏览"></p>
+<blockquote>
 <p>在菜单栏<strong>网络</strong>下的页面划到<strong>监听端口</strong>一栏<br>我们需要的是目标游戏的<strong>传输协议类型</strong>和它的<strong>端口号</strong><br>这里以<strong>TShock</strong>为例，它的<strong>默认端口号</strong>为<strong>7777</strong>，<strong>协议类型</strong>是<strong>TCP</strong><br>一般<strong>游戏</strong>的协议为<strong>TCP</strong>或<strong>UDP</strong>，要根据协议类型选择<strong>合适的映射（内网穿透）</strong>工具，因为有的映射工具不支持UDP，还有的不支持TCP、http。</p>
 </blockquote>
-</li>
-</ol>
 </blockquote>
-</blockquote>
-<h4 id="Linux操作系统"><a href="#Linux操作系统" class="headerlink" title="Linux操作系统"></a><strong>Linux操作系统</strong></h4><blockquote>
+<ul>
+<li><h4 id="Linux操作系统"><a href="#Linux操作系统" class="headerlink" title="Linux操作系统"></a><strong>Linux操作系统</strong></h4></li>
+</ul>
 <p>打开<strong>终端</strong>，输入<br><code>netstat -a</code><br>参数含义：-a 显示所有；-n 以ip形式显示当前建立的有效连接和端口；-u 显示UDP协议；-t 显示TCP协议；-p 显示对应PID与程序名</p>
 </blockquote>
-</li>
-</ol>
 <hr>
 <ol start="3">
-<li><h3 id="3-内网穿透方式-通用-实现"><a href="#3-内网穿透方式-通用-实现" class="headerlink" title="3.内网穿透方式(通用-实现)"></a><strong>3.内网穿透方式(通用-实现)</strong></h3><blockquote>
-<p>前言：<strong>这里</strong>主要介绍基于<strong>第三方免费平台</strong>的内网穿透，<em><strong>倘若</strong>自己部署内网穿透，需要一份有固定公网ip的服务器和一个已经备案的域名，这里不讲，想要部署的可以自己搜索相关教程，还是挺全面的。</em></p>
-<p><strong>我在这里列出常见的平台</strong>：（以下为<strong>普通用户配置:不购买套餐</strong>）</p>
+<li><h3 id="3-内网穿透方式-通用-实现"><a href="#3-内网穿透方式-通用-实现" class="headerlink" title="3.内网穿透方式(通用-实现)"></a><strong>3.内网穿透方式(通用-实现)</strong></h3></li>
+</ol>
 <blockquote>
-<p><strong>花生壳</strong>（国内站）：极低的学习成本；<strong>实名</strong>1兆&#x2F;s每月1G且<strong>无</strong>Http和UDP，固定域名<br><strong>Cpolar</strong>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低<br><strong>飞鸽</strong>（国内站）：学习成本低；0.5兆每秒，签到给流量<br><strong>莱云</strong>（国内站）：学习成本一般；<strong>1元实名刷脸</strong>；流量速度取决于所选服务器，固定域名<br><strong>natapp</strong>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1兆每秒<br><strong>网云穿</strong>（国内站）：学习成本低；<strong>实名</strong>；每月1G；前7天3M&#x2F;s会员，后面<strong>锁TCP</strong>且1兆每秒，固定域名<br>（以下是其他我没用过的内网穿透）<br><strong>樱花</strong>(国内站)：学习成本低；<strong>1毛付费刷脸实名</strong>；新5&#x2F;老10兆&#x2F;s，固定域名<br><strong>Frp</strong>：有较高的学习成本，是自己部署内网穿透的开源工具，但需要<strong>有条件</strong>，可扩展性强，不少内网穿透就是它改的(例如莱云、Locyan、凿洞)<br><em>Sunny-Ngrok</em>(国内站):1块付费刷脸实名；<em>Ngrok</em>:我用不明白；钉钉内网穿透:早已停止服务；<em>蜻蜓、网络通、OpenFrp</em>:无法注册；<em>Locyan</em>:服务器不可用；<em>凿洞</em>:我不会用，它老报错；<em>闪酷</em>：1M&#x2F;s；<strong>仅支持Http</strong>，赠3级域名；U-anywhere万由云；QuickConnect；哲西云；nat123；Tinc<br>．．．．．．（数据来源于2023.1，可能不准确如果需要在下面留言更新）</p>
-</blockquote>
-<p><strong>内网穿透操作流程</strong>：</p>
+<p><strong>前言：</strong>这里主要介绍基于<strong>第三方免费平台</strong>的内网穿透，<em><strong>倘若</strong>自己部署内网穿透，需要一份有固定公网ip的服务器和一个已经备案的域名，这里不讲，想要部署的可以自己搜索相关教程，还是挺全面的。</em></p>
+<p><img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="内网穿透流程图，可能不正确"></p>
+<p><strong>我在这里列出常见的平台</strong>：（以下为<strong>普通用户配置:不购买套餐</strong>）</p>
 <ul>
+<li><h4 id="常见平台"><a href="#常见平台" class="headerlink" title="常见平台"></a>常见平台</h4></li>
+</ul>
+<blockquote>
+<ul>
+<li><strong>花生壳</strong>（国内站）：极低的学习成本；<strong>实名</strong>1兆&#x2F;s每月1G且<strong>无</strong>Http和UDP，固定域名</li>
+<li><strong>Cpolar</strong>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低</li>
+<li><strong>飞鸽</strong>（国内站）：学习成本低；0.5兆每秒，签到给流量</li>
+<li><strong>莱云</strong>（国内站）：学习成本一般；<strong>1元实名刷脸</strong>；流量速度取决于所选服务器，固定域名</li>
+<li><strong>natapp</strong>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1兆每秒</li>
+<li><strong>网云穿</strong>（国内站）：学习成本低；<strong>实名</strong>；每月1G；前7天3M&#x2F;s会员，后面<strong>锁TCP</strong>且1兆每秒，固定域名<br><strong>（以下是其他我没用过的内网穿透）</strong></li>
+<li><strong>樱花</strong>(国内站)：学习成本低；<strong>1毛付费刷脸实名</strong>；新5&#x2F;老10兆&#x2F;s，固定域名</li>
+<li><strong>Frp</strong>：有较高的学习成本，是自己部署内网穿透的开源工具，但需要<strong>有条件</strong>，可扩展性强，不少内网穿透就是它改的(例如莱云、Locyan、凿洞)</li>
+<li><em><strong>Sunny-Ngrok*(*<em>国内站):1块付费刷脸实名；</em></strong>Ngrok</em><strong>:我用不明白；<em>钉钉内网穿透</em>:早已停止服务；</strong><em>蜻蜓、网络通、OpenFrp</em><strong>:无法注册；</strong><em>Locyan</em><strong>:服务器不可用；</strong><em>凿洞</em><strong>:我不会用，它老报错；</strong><em>闪酷</em><strong>：1M&#x2F;s；</strong>仅支持Http<strong>，赠3级域名；</strong>U-anywhere万由云<strong>；</strong>QuickConnect<strong>；</strong>哲西云<strong>；</strong>nat123<strong>；</strong>Tinc**</li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<ul>
+<li><h4 id="内网穿透操作流程"><a href="#内网穿透操作流程" class="headerlink" title="内网穿透操作流程"></a><strong>内网穿透操作流程</strong></h4></li>
 <li><p><strong>网页+平台类型</strong></p>
+</li>
+</ul>
 <blockquote>
 <ol>
 <li>注册账号填写并完善相关信息(如绑定验证账号、实名等，没有则跳过)，然后后再进入<strong>控制面板</strong></li>
@@ -2644,8 +2682,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>复制云端<strong>隧道创建后给的Token</strong>与本地映射服务端进行<strong>绑定</strong>，或者给予窗口选择自己的隧道并<strong>启动</strong>，启动后给出的<strong>地址</strong>（一般为：地址:端口号；像http类型只有地址）就是他人访问的所用到的信息了。</li>
 </ol>
 </blockquote>
-</li>
-<li><p><strong>应用平台类型</strong>（相对简单）</p>
+<ul>
+<li><strong>应用平台类型</strong>（相对简单）</li>
+</ul>
 <blockquote>
 <ol>
 <li><strong>注册</strong>账号填写并完善相关信息</li>
@@ -2653,31 +2692,140 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li><strong>启动</strong>隧道，即可获取我们所需的地址（一般为：<strong>地址:端口号</strong>；像http类型只有地址）</li>
 </ol>
 </blockquote>
-</li>
-<li><p><strong>访问者使用地址</strong></p>
+<ul>
+<li><strong>访客使用地址教程</strong></li>
+</ul>
 <blockquote>
-<p><strong>网页</strong>：访问者将给定的地址直接<strong>粘贴</strong>到浏览器的<strong>地址栏</strong>访问；<strong>主机</strong>可以用<strong>localhost</strong>或<strong>127.0.0.1</strong>访问<br><strong>游戏</strong>：访问者选择<strong>多人游戏</strong>并选择<strong>加入</strong>相关，<strong>填入给定的地址</strong>加入即可；<strong>主机</strong>可以用<strong>localhost</strong>或<strong>127.0.0.1</strong>访问。</p>
+<p><strong>网页</strong>：访客将给定的地址直接<strong>粘贴</strong>到浏览器的<strong>地址栏</strong>访问；<strong>主机</strong>可以用<strong>localhost</strong>或<strong>127.0.0.1</strong>访问<br><strong>游戏</strong>：访客选择<strong>多人游戏</strong>并选择<strong>加入</strong>相关，<strong>填入给定的地址</strong>加入即可；<strong>主机</strong>可以用<strong>localhost</strong>或<strong>127.0.0.1</strong>访问。</p>
+</blockquote>
+<blockquote>
 <ul>
-<li><p>只给一个填写IP地址的输入框，则填写 <strong>地址:端口号</strong> 的形式（如：MCJava版）</p>
-</li>
-<li><p>同时给出IP地址和端口号地址的，各填入各所需的地址和端口，<strong>英文冒号直接省去</strong>（如：Terraria、MCBE版）</p>
-</li>
+<li>只给一个填写IP地址的输入框，则填写 <strong>地址:端口号</strong> 的形式（如：MCJava版）</li>
 </ul>
 </blockquote>
-</li>
+<blockquote>
+<ul>
+<li>同时给出IP地址和端口号地址的，各填入各所需的地址和端口，<strong>英文冒号直接省去</strong>（如：Terraria、MCBE版）</li>
 </ul>
 </blockquote>
-</li>
-<li><h3 id="4-IPv6公网方式-条件-实现"><a href="#4-IPv6公网方式-条件-实现" class="headerlink" title="4.IPv6公网方式(条件-实现)"></a><strong>4.IPv6公网方式(条件-实现)</strong></h3><blockquote>
 <ul>
-<li>前言：理想状态下，IPv6延迟低，操作简单，免费且无需账号、认证等，不过前提是你的网络运营商向你提供IPv6服务，且你的电脑能够正常识别和使用，详细判断是否可用和配置教程可见相关教程<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Lb4y1o7SF">【mc开服】教你白嫖运营商公网ipv6跟好兄弟联机】</a></li>
+<li><h4 id="图文示例"><a href="#图文示例" class="headerlink" title="图文示例"></a><strong>图文示例</strong></h4></li>
+</ul>
+<blockquote>
+<p>此处以Terraria的<strong>TShock服务端</strong>和<strong>Cpolar内网穿透</strong>为例（<strong>图示</strong>+<strong>简短文字描述</strong>）：</p>
+</blockquote>
+</blockquote>
+<ol>
+<li><h3 id="4-IPv6公网方式-条件-实现"><a href="#4-IPv6公网方式-条件-实现" class="headerlink" title="4.IPv6公网方式(条件-实现)"></a><strong>4.IPv6公网方式(条件-实现)</strong></h3></li>
+</ol>
+<blockquote>
+<ul>
+<li><strong>前言：理想状态下</strong>，IPv6延迟低，操作简单，免费且无需账号、认证等，不过前提是你的<strong>网络运营商向你提供IPv6服务</strong>，且你的电脑<strong>能够正常识别和使用</strong>，详细判断是否可用和配置教程可见相关教程<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Lb4y1o7SF">【mc开服】教你白嫖运营商公网ipv6跟好兄弟联机】</a></li>
 <li>主机启动服务器后，访问端以 <strong>[对方的IPv6地址]:端口号</strong> 的格式直接连接即可</li>
 <li>注：这里没有条件不做演示，可移步到上方链接观看推荐视频学习。</li>
 </ul>
 </blockquote>
-</li>
+<h2 id="类型二：提供局域网的程序（通过异地组网实现远程联机）"><a href="#类型二：提供局域网的程序（通过异地组网实现远程联机）" class="headerlink" title="类型二：提供局域网的程序（通过异地组网实现远程联机）"></a><strong>类型二：提供局域网的程序</strong>（通过异地组网实现远程联机）</h2><p><strong>判断方法</strong>：提供IP直连的基本都支持局域网，因为你可以用路<strong>由器分配的地址</strong>和<strong>对应程序的端口</strong>实现<strong>内网中不同设备</strong>的<strong>信息交换</strong>，只是可能有些程序不提供现成的独立页面和自动搜索；也有一些程序仅支持使用局域网联机不开放IP直连，此类游戏一般<strong>有多人游戏的入口</strong>但既<strong>没有本地预设的P1234玩家位置</strong>，也没有IP直连的输入框，可能能够<strong>自动搜索</strong>网络下的房间。</p>
+<ol>
+<li><h3 id="1-部署本地服务端-必需-准备-1"><a href="#1-部署本地服务端-必需-准备-1" class="headerlink" title="1.部署本地服务端(必需-准备)"></a><strong>1.部署本地服务端(必需-准备)</strong></h3></li>
 </ol>
-<h1 id="类型二：提供局域网的程序（通过异地组网实现远程联机）"><a href="#类型二：提供局域网的程序（通过异地组网实现远程联机）" class="headerlink" title="**类型二：提供局域网的程序（通过异地组网实现远程联机）"></a>**类型二：提供局域网的程序（通过异地组网实现远程联机）</h1>
+<blockquote>
+<p><strong>启动</strong>对应的<strong>服务端程序</strong>（可能需要填入部分配置信息）并等待部署完成即可，有的软件不自带服务端的启动程序，或者其不能够满足服务器的需求，因此需要下载对应的服务端具：</p>
+<ul>
+<li><h4 id="我的世界Minecraft-1"><a href="#我的世界Minecraft-1" class="headerlink" title="我的世界Minecraft"></a>我的世界Minecraft</h4></li>
+</ul>
+<blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.minecraft.net/zh-hans/download/server">Minecraft官方服务器端（纯原版）</a></li>
+<li><a target="_blank" rel="noopener" href="https://papermc.io/downloads">Paper服务器端（演示对象)(插件+优化）</a></li>
+<li><a target="_blank" rel="noopener" href="https://hub.spigotmc.org/jenkins/job/BuildTools/">spigot服务器端（插件）</a></li>
+<li><a target="_blank" rel="noopener" href="https://files.minecraftforge.net/net/minecraftforge/forge/">Forge安装服务器（mod）</a></li>
+<li><a target="_blank" rel="noopener" href="https://spongepowered.org/downloads/">Forge + Sponge（插件+mod - SpongeMod支持版本少）</a></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+<li>关于开服：创建<strong>bat文件</strong>运行服务器端</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xms1024M -Xms2048M -jar 服务器端名称.jar</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>其中<strong>Xms</strong>为<strong>最小</strong>内存，<strong>Xmx</strong>为<strong>最大</strong>内存，单位可以为M也可以为G。服务端名称是下载使用哪个服务端就填哪个服务端的名称，<strong>forge</strong>要<strong>先双击安装</strong>程序(需java运行环境)运行并安装服务器端，启动带GUI的服务端可以在后面加 <strong>nogui</strong>来取消运行时启动独立窗口，java是使用默认环境变量的java，当低版本服务器运行时可能不兼容新版，可以在计算机中安装多个版本的java并使用<strong>绝对路径</strong>来运行服务器端如下：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;C:\Program Files\Java\jre1.8.0_351\bin\java&quot;</span> -Xms1G -Xmx2G -jar paperc.jar nogui</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第一次运行需要先改<strong>eula.txt</strong>文件中eula&#x3D;后面的false改为<strong>true</strong>即同意上述协议，修改完成后保存再次启动，之后会下载所需文件，耐心等待，若下载出现错误可以开<strong>网络工具</strong>或者在<strong>log报错文件</strong>中找到报错的<strong>文件地址手动下载</strong>，手动下载再失败可以<strong>复制地址到网盘的P2P下载器</strong>下载。<br><strong>Stop</strong>停止并保存服务器</li>
+</ul>
+</blockquote>
+<ul>
+<li><h4 id="泰拉瑞亚Terraria-1"><a href="#泰拉瑞亚Terraria-1" class="headerlink" title="泰拉瑞亚Terraria"></a>泰拉瑞亚Terraria</h4></li>
+</ul>
+<blockquote>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/Pryaxis/TShock/releases">TShock（相比原版可以装插件）</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://store.steampowered.com/app/1281930/tModLoader/">TML（Steam商店地址)(Mod）</a><br><strong>exit</strong>停止并保存服务器</p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><h4 id="生存战争Survivalcraft联机版-1"><a href="#生存战争Survivalcraft联机版-1" class="headerlink" title="生存战争Survivalcraft联机版"></a>生存战争Survivalcraft联机版</h4></li>
+</ul>
+<blockquote>
+<p><strong>作者团队</strong>及其<strong>教程地址</strong>：<a target="_blank" rel="noopener" href="https://space.bilibili.com/292546719?spm_id_from=333.337.search-card.all.click">瓦西里沃尔特 bilibili</a><br>2. ### <strong>2.异地组网方式(通用-实现)</strong><br><strong>前言：</strong> <img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/%E5%BC%82%E5%9C%B0%E7%BB%84%E7%BD%91.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/%E5%BC%82%E5%9C%B0%E7%BB%84%E7%BD%91.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="异地组网流程图，但不一定正确"><br><strong>我在这里列出常见的平台</strong>：（以下为<strong>普通用户配置:不购买套餐</strong>）</p>
+</blockquote>
+<ul>
+<li><h4 id="常见平台-1"><a href="#常见平台-1" class="headerlink" title="常见平台"></a>常见平台</h4></li>
+</ul>
+<blockquote>
+<ul>
+<li><strong>蒲公英</strong>：学习成本低；免费简单，只要<strong>登录同一个账号</strong>即可；可以付费升级套餐</li>
+<li><strong>Hiper</strong>：<strong>一个</strong>注册的<strong>账号付费后</strong>可以邀请其他人加入使用；签到送时长；学习成本低；宽带较好</li>
+<li><strong>Radmin LAN</strong>：免费简单；<strong>只能Windows间使用</strong>；加入同一个房间即可</li>
+<li><strong>UdppLAN</strong>：会<strong>选择自动安装</strong>一个<strong>虚拟网卡</strong>；简单免费；无需账号</li>
+<li><strong>Teamviewer</strong>(<strong>安装</strong>要选<strong>VPN)<strong>：学习成本低；简单易用；但</strong>需要注册账号</strong></li>
+<li><strong>Zerotier</strong>：有一定学习成本；会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；管理能力强；但<strong>对网络要求较高</strong></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<ul>
+<li><h4 id="异地组网操作流程"><a href="#异地组网操作流程" class="headerlink" title="异地组网操作流程"></a><strong>异地组网操作流程</strong></h4></li>
+</ul>
+<blockquote>
+<p>0.注册账号[可能没有这一步]<br>1.<strong>创建</strong>一个<strong>网络</strong>，将<strong>网络的ID和验证密钥</strong>或者<strong>是网络名称和密钥</strong>给访客<br>2.访客通过给定的密钥加入该网络，即可实现异地组网</p>
+</blockquote>
+<ul>
+<li><h4 id="图文示例-1"><a href="#图文示例-1" class="headerlink" title="图文示例"></a><strong>图文示例</strong></h4></li>
+</ul>
+<blockquote>
+<p>此处以<strong>蒲公英</strong>和<strong>红警（电脑与手机）</strong>为例</p>
+</blockquote>
+</blockquote>
+<h2 id="类型三：本地预留位置的游戏（通过远程控制实现远程联机）"><a href="#类型三：本地预留位置的游戏（通过远程控制实现远程联机）" class="headerlink" title="类型三：本地预留位置的游戏（通过远程控制实现远程联机）"></a><strong>类型三：本地预留位置的游戏</strong>（通过远程控制实现远程联机）</h2><blockquote>
+<p><strong>前言：</strong>远程控制操作起来相对简单，示例以<strong>向日葵</strong>为例，这里我列出常见的远程控制软件：</p>
+<blockquote>
+<ul>
+<li><strong>QQ&#x2F;Tim</strong>仅支持<strong>PC</strong>间控制，免费但画质一般，有一定延迟，并且<strong>只能一对一</strong>连接；在好友面板选择<strong>远程协助</strong>，等待对方同意即可</li>
+<li><strong>向日葵</strong>（v12绿色版无需账号登录）：免费，可以<strong>多设备连接一台设备</strong>，功能较全；只需要把<strong>ID和验证码</strong>发给好友即可让好友远程控制。（连接人数较多时可能卡顿，<strong>重启</strong>向日葵服务并让好友们重新加入即可）</li>
+<li><strong>Teamviewer</strong>：免费；只需要把<strong>ID和验证码</strong>发给好友即可让好友远程控制。</li>
+<li><strong>Parsec</strong>（<strong>win10+<strong>）：免费，易用，可以</strong>跨平台</strong>但有相应的<strong>系统版本限制</strong>，功能非常齐全，对游戏方面更加友好，但可能对网络有一定要求，不过有<strong>网页端</strong>可以用；既可以分享主机地址让他人加入(需要<strong>手动接受</strong>加入请求)，也可以创建公开房间或者加入处于公开状态的房间来远程控制联机</li>
+<li><strong>Steam远程畅玩</strong>(流式传输)：免费，最简单，但<strong>需要双方互加好友</strong>(Steam有一定条件)，而且对<strong>网络要求较高</strong>，需要有人<strong>游戏在库中</strong>；游戏内<strong>Shift+Tap</strong>唤出好友列表<strong>邀请</strong>好友远程畅玩即可</li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<h3 id="远程控制操作流程"><a href="#远程控制操作流程" class="headerlink" title="远程控制操作流程"></a><strong>远程控制操作流程</strong></h3><blockquote>
+<p>1.配置好游戏后，<strong>启动</strong>对应的远程协助软件，并<strong>通知好友启动</strong>相同的软件<br>2.将你的<strong>ID密钥</strong>给予好友，好友选择<strong>加入&#x2F;连接</strong>功能远程获取你电脑的<strong>控制权及画面</strong>(QQ、Steam无密钥)</p>
+</blockquote>
+</blockquote>
+<h2 id="其他附加问题"><a href="#其他附加问题" class="headerlink" title="其他附加问题"></a><strong>其他附加问题</strong></h2><blockquote>
+<ul>
+<li><strong>若需手柄但没有</strong>，可以尝试使用<strong>DroidJoy</strong>或<strong>MyJoy</strong>等软件将<strong>安卓</strong>手机转为手柄并连接电脑，亦或者是其他方法都。</li>
+<li><strong>若好友电脑没有麦克风</strong>可以使用<strong>WO Mic</strong>来让<strong>安卓</strong>手机变为<strong>麦克风</strong>。</li>
+<li><strong>内网穿透要求实名但不满条件</strong>的，可以尝试不断使用<strong>新兴的</strong>或者<strong>国外的</strong>内网穿透工具，一般需要提交的信息较少</li>
+</ul>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><blockquote>
+<p><strong>以上方法的最终目标都是打破空间限制实现远程联机，综合来看，原本空间受限越严重的程序在远程联机的方法上操作起来反而更简单。本次教程主要面向新萌，没什么技术力，如果有什么问题可以向我咨询，有什么错误可以指出，就是我不一定在线，回复可能较慢，见谅，感谢您的浏览O(∩_∩)O</strong></p>
+</blockquote>
+
   </div>
   
   
@@ -2701,10 +2849,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-01-19T00:54:37+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-01-20T00:00:01+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jan 19, 2023</p>
+    <p>更新于：Jan 20, 2023</p>
   </a>
 </div>
 
@@ -2845,7 +2993,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A"><span class="toc-text">前言：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E4%B8%80%EF%BC%9A%E6%8F%90%E4%BE%9BIP%E7%9B%B4%E8%BF%9E%E7%9A%84%E7%A8%8B%E5%BA%8F%EF%BC%88%E9%80%9A%E8%BF%87%E4%B8%AD%E9%97%B4%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%81%94%E6%9C%BA%EF%BC%89"><span class="toc-text">类型一：提供IP直连的程序（通过中间服务器实现远程联机）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%83%A8%E7%BD%B2%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF-%E5%BF%85%E9%9C%80-%E5%87%86%E5%A4%87"><span class="toc-text">1.部署服务器端(必需-准备)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%91%E5%90%AC%E7%A8%8B%E5%BA%8F%E7%AB%AF%E5%8F%A3-%E5%8F%AF%E9%80%89-%E5%87%86%E5%A4%87"><span class="toc-text">2.监听程序端口(可选-准备)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="toc-text">Windows操作系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="toc-text">Linux操作系统</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%96%B9%E5%BC%8F-%E9%80%9A%E7%94%A8-%E5%AE%9E%E7%8E%B0"><span class="toc-text">3.内网穿透方式(通用-实现)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-IPv6%E5%85%AC%E7%BD%91%E6%96%B9%E5%BC%8F-%E6%9D%A1%E4%BB%B6-%E5%AE%9E%E7%8E%B0"><span class="toc-text">4.IPv6公网方式(条件-实现)</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E4%B8%80%EF%BC%9A%E6%8F%90%E4%BE%9BIP%E7%9B%B4%E8%BF%9E%E7%9A%84%E7%A8%8B%E5%BA%8F%EF%BC%88%E9%80%9A%E8%BF%87%E4%B8%AD%E9%97%B4%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%81%94%E6%9C%BA%EF%BC%89"><span class="toc-text">类型一：提供IP直连的程序（通过中间服务器实现远程联机）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%83%A8%E7%BD%B2%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E5%BF%85%E9%9C%80-%E5%87%86%E5%A4%87"><span class="toc-text">1.部署本地服务端(必需-准备)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8CMinecraft"><span class="toc-text">我的世界Minecraft</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%B0%E6%8B%89%E7%91%9E%E4%BA%9ATerraria"><span class="toc-text">泰拉瑞亚Terraria</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E5%AD%98%E6%88%98%E4%BA%89Survivalcraft%E8%81%94%E6%9C%BA%E7%89%88"><span class="toc-text">生存战争Survivalcraft联机版</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vue%E7%BD%91%E7%AB%99%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="toc-text">Vue网站基本命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Hexo%E7%BD%91%E7%AB%99%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="toc-text">Hexo网站基本命令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%91%E5%90%AC%E7%A8%8B%E5%BA%8F%E7%AB%AF%E5%8F%A3-%E5%8F%AF%E9%80%89-%E5%87%86%E5%A4%87"><span class="toc-text">2.监听程序端口(可选-准备)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="toc-text">Windows操作系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="toc-text">Linux操作系统</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%96%B9%E5%BC%8F-%E9%80%9A%E7%94%A8-%E5%AE%9E%E7%8E%B0"><span class="toc-text">3.内网穿透方式(通用-实现)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%B9%B3%E5%8F%B0"><span class="toc-text">常见平台</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">内网穿透操作流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E6%96%87%E7%A4%BA%E4%BE%8B"><span class="toc-text">图文示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-IPv6%E5%85%AC%E7%BD%91%E6%96%B9%E5%BC%8F-%E6%9D%A1%E4%BB%B6-%E5%AE%9E%E7%8E%B0"><span class="toc-text">4.IPv6公网方式(条件-实现)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E4%BA%8C%EF%BC%9A%E6%8F%90%E4%BE%9B%E5%B1%80%E5%9F%9F%E7%BD%91%E7%9A%84%E7%A8%8B%E5%BA%8F%EF%BC%88%E9%80%9A%E8%BF%87%E5%BC%82%E5%9C%B0%E7%BB%84%E7%BD%91%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%81%94%E6%9C%BA%EF%BC%89"><span class="toc-text">类型二：提供局域网的程序（通过异地组网实现远程联机）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%83%A8%E7%BD%B2%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E5%BF%85%E9%9C%80-%E5%87%86%E5%A4%87-1"><span class="toc-text">1.部署本地服务端(必需-准备)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8CMinecraft-1"><span class="toc-text">我的世界Minecraft</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%B0%E6%8B%89%E7%91%9E%E4%BA%9ATerraria-1"><span class="toc-text">泰拉瑞亚Terraria</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E5%AD%98%E6%88%98%E4%BA%89Survivalcraft%E8%81%94%E6%9C%BA%E7%89%88-1"><span class="toc-text">生存战争Survivalcraft联机版</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%B9%B3%E5%8F%B0-1"><span class="toc-text">常见平台</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E5%9C%B0%E7%BB%84%E7%BD%91%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">异地组网操作流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E6%96%87%E7%A4%BA%E4%BE%8B-1"><span class="toc-text">图文示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E4%B8%89%EF%BC%9A%E6%9C%AC%E5%9C%B0%E9%A2%84%E7%95%99%E4%BD%8D%E7%BD%AE%E7%9A%84%E6%B8%B8%E6%88%8F%EF%BC%88%E9%80%9A%E8%BF%87%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%81%94%E6%9C%BA%EF%BC%89"><span class="toc-text">类型三：本地预留位置的游戏（通过远程控制实现远程联机）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">远程控制操作流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%99%84%E5%8A%A0%E9%97%AE%E9%A2%98"><span class="toc-text">其他附加问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
     </div>
   </section>
 
@@ -3522,7 +3670,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"主要关于编程语言和游戏服务器相关"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"AX博客教程"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/01/12/内网穿透开服教程/","name":"网站部署和各类型游戏远程联机教程"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"AX博客教程","url":"http://example.com/","keywords":null,"description":"主要关于编程语言和游戏服务器相关","author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"主要关于编程语言和游戏服务器相关"},"publisher":{"@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"网站部署和各类型游戏远程联机教程","description":"主要关于编程语言和游戏服务器相关","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/"},"author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"AX博客教程","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/","wordCount":0,"datePublished":"2023-01-12T13:59:38.000Z","dateModified":"2023-01-18T16:54:37.756Z","keywords":"study","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"主要关于编程语言和游戏服务器相关"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"AX博客教程"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/01/12/内网穿透开服教程/","name":"网站部署和各类型游戏远程联机教程"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"AX博客教程","url":"http://example.com/","keywords":null,"description":"主要关于编程语言和游戏服务器相关","author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"主要关于编程语言和游戏服务器相关"},"publisher":{"@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"网站部署和各类型游戏远程联机教程","description":"主要关于编程语言和游戏服务器相关","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/"},"author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"AX博客教程","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/","wordCount":0,"datePublished":"2023-01-12T13:59:38.000Z","dateModified":"2023-01-19T16:00:01.451Z","keywords":"study","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 
