@@ -35,7 +35,7 @@
   <!-- 页面元数据 -->
   <title>网站部署和各类型游戏远程联机教程 - AX博客教程</title>
   <meta name="keywords" content="study,null">
-  <meta desc name="description" content="主要关于编程语言和游戏服务器相关 - AIKSXD - AX博客教程">
+  <meta desc name="description" content="主要关于编程语言和网络相关 - AIKSXD - AX博客教程">
   
 <meta property="og:type" content="article">
 <meta property="og:title" content="网站部署和各类型游戏远程联机教程">
@@ -45,7 +45,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-01-12T13:59:38.000Z">
-<meta property="article:modified_time" content="2023-01-24T16:21:12.028Z">
+<meta property="article:modified_time" content="2023-02-01T11:55:57.151Z">
 <meta property="article:author" content="AIKSXD">
 <meta property="article:tag" content="study">
 <meta name="twitter:card" content="summary">
@@ -1629,9 +1629,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1674577282631),
+    lastupdate: new Date(1675254006220),
     sidebar: {
-      for_page: ["blogger","category","tagcloud","text"],
+      for_page: ["blogger","category","tagcloud","list"],
       for_post: ["toc"],
       webinfo: {
         lastupd: {
@@ -2144,6 +2144,23 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
             
               <li>
                 <a class="menuitem flat-box faa-parent animated-hover"
+                href="/live/" title="直播"
+                  
+                  
+                  
+                    active-action="action-live"
+                  >
+                  <i class='fa-solid fa-play fa-fw'></i>直播
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
                 href="/archives/" title="归档"
                   
                   
@@ -2300,6 +2317,23 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
             
               <li>
                 <a class="menuitem flat-box faa-parent animated-hover"
+                href="/live/" title="直播"
+                  
+                  
+                  
+                    active-action="action-live"
+                  >
+                  <i class='fa-solid fa-play fa-fw'></i>直播
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
                 href="/archives/" title="归档"
                   
                   
@@ -2401,7 +2435,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
       <div id="none" class='cover-wrapper post search' style="display: none;">
         
-  <div class='cover-bg lazyload placeholder' data-bg="https://gcore.jsdelivr.net/gh/aiksxd/material/img/bgbeta.jpg"></div>
+  <div class='cover-bg lazyload placeholder' data-bg="https://gcore.jsdelivr.net/gh/aiksxd/material/img/bgbetaF2.jpg"></div>
 
 <div class='cover-body'>
   <div class='top'>
@@ -2430,14 +2464,28 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
               
               
               active-action="action-home">
-              <p>主页</p>
+              <p></p>
+            </a>
+          
+            <a href="/"
+              
+              
+              active-action="action-home">
+              <i class='fa-solid fa-rss fa-fw'></i><p>主页</p>
             </a>
           
             <a href="/tags/"
               
               
               active-action="action-tags">
-              <p>标签</p>
+              <i class='fa-solid fa-tags fa-fw'></i><p>标签</p>
+            </a>
+          
+            <a href="/live/"
+              
+              
+              active-action="action-live">
+              <i class='fa-solid fa-play fa-fw'></i><p>直播</p>
             </a>
           
         
@@ -2463,7 +2511,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   </span>
   <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
     <meta itemprop="name" content="AX博客教程">
-    <meta itemprop="description" content="主要关于编程语言和游戏服务器相关">
+    <meta itemprop="description" content="主要关于编程语言和网络相关">
   </span>
   
 
@@ -2647,16 +2695,19 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 <blockquote>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://hsk.oray.com/"><strong>花生壳</strong></a>：极低的学习成本；<strong>实名</strong>1兆&#x2F;s每月1G且<strong>无</strong>Http和UDP，固定域名</li>
-<li><a target="_blank" rel="noopener" href="https://www.cpolar.com/"><strong>cpolar</strong></a>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低</li>
-<li><a target="_blank" rel="noopener" href="https://www.fgnwct.com/"><strong>飞鸽</strong></a>：学习成本低；0.5兆每秒，签到给流量</li>
+<li><a target="_blank" rel="noopener" href="https://hsk.oray.com/"><strong>花生壳</strong></a>：极低的学习成本；<strong>实名1兆&#x2F;s</strong>每月1G且<strong>无Http</strong>和<strong>UDP</strong>，固定域名</li>
+<li><a target="_blank" rel="noopener" href="https://www.cpolar.com/"><strong>cpolar</strong></a>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低；<strong>http</strong>协议提供<strong>免费域名</strong>，<strong>免费两条</strong>隧道</li>
+<li><a target="_blank" rel="noopener" href="https://www.fgnwct.com/"><strong>飞鸽</strong></a>：学习成本低；<strong>0.5兆</strong>每<strong>秒</strong>，签到给流量；<strong>http</strong>协议提供<strong>免费域名</strong>；<strong>免费两条</strong>隧道但<strong>http只能一条</strong></li>
 <li><a target="_blank" rel="noopener" href="https://www.mefrp.com/"><strong>MirrorEdge Frp镜缘(莱云)映射</strong></a>：学习成本一般；<strong>1元实名刷脸</strong>；速度限制取决于所选节点，隧道固定域名</li>
-<li><a target="_blank" rel="noopener" href="https://www.openfrp.net/"><strong>OpenFrp 内网穿透</strong></a>：学习成本低(带GUI启动器和樱花相似)免费，签到领流量；<strong>部分节点</strong>无需实名；速度<strong>限制</strong>12M&#x2F;s(速度取决于所选节点与访客距离)；固定域名</li>
-<li><a target="_blank" rel="noopener" href="https://natapp.cn/"><strong>NATAPP</strong></a>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1兆每秒</li>
-<li><a target="_blank" rel="noopener" href="https://xiaomy.net/"><strong>网云穿</strong></a>：学习成本低；<strong>实名</strong>；每月1G；前7天3M&#x2F;s会员，后面<strong>锁TCP</strong>且1兆每秒，固定域名<br><strong>（以下是其他我没用过的内网穿透）</strong></li>
+<li><a target="_blank" rel="noopener" href="https://www.openfrp.net/"><strong>OpenFrp 内网穿透</strong></a>：学习成本低(带GUI启动器和樱花相似)免费，签到领流量；<strong>部分节点</strong>无需实名；速度<strong>限制</strong>12M&#x2F;s(速度取决于所选节点与访客距离)；固定域名；<strong>http</strong>协议需要<strong>绑定自己的域名</strong></li>
+<li><a target="_blank" rel="noopener" href="https://natapp.cn/"><strong>NATAPP</strong></a>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1<strong>兆每秒</strong>；<strong>http</strong>协议提供<strong>免费域名</strong></li>
+<li><a target="_blank" rel="noopener" href="https://xiaomy.net/"><strong>网云穿</strong></a>：学习成本低；<strong>实名</strong>；每<strong>月1G</strong>；前7天3M&#x2F;s会员，后面<strong>锁TCP</strong>且<strong>1兆每秒</strong>，固定域名</li>
+<li><a target="_blank" rel="noopener" href="https://ngrok.com/"><strong>ngrok</strong></a>：学习成本一般；无需实名；只给<strong>一条免费隧道</strong>，离得近的节点延迟较低；http会<strong>自动换https</strong>协议（相当于<strong>不支持http</strong>）</li>
+<li><a target="_blank" rel="noopener" href="http://www.nat123.com/">Nat123</a>：学习成本一般；<strong>无需实名</strong>但<strong>支付实名</strong>；<strong>新</strong>账号只给<strong>5个N币</strong>；**&lt;1兆<strong>每</strong>秒<strong>；支持</strong>自定二级域名<strong>；仅支持</strong>http协议**</li>
+<li><a target="_blank" rel="noopener" href="http://www.ipyingshe.com/">闪库</a>：1M&#x2F;s；<strong>仅支持Http</strong>，<strong>随机固定</strong>域名；未来可能实名<br><strong>（以下是其他我没用过的内网穿透）</strong></li>
 <li><a target="_blank" rel="noopener" href="https://www.natfrp.com/"><strong>樱花</strong></a>：学习成本低；**1毛付费刷脸实名必须18+**；新5&#x2F;老10兆&#x2F;s速度限制，固定域名，进不去网上有备用路线</li>
 <li><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp"><strong>frp</strong></a>：有较高的学习成本，是自己部署内网穿透的开源工具，但需要<strong>有条件</strong>，可扩展性强，不少内网穿透就是它改的(例如莱云、Locyan、凿洞)</li>
-<li><a target="_blank" rel="noopener" href="https://www.ngrok.cc/">Sunny-Ngrok</a>:1块付费刷脸实名；<a target="_blank" rel="noopener" href="https://ngrok.com/">ngrok</a>:感觉还彳亍；<em>钉钉内网穿透</em>:早已停止服务；<a target="_blank" rel="noopener" href="https://flynat.51miaole.com/">蜻蜓</a>、<a target="_blank" rel="noopener" href="http://www.youtusoft.com/">网络通</a>无法注册；<a target="_blank" rel="noopener" href="https://www.locyanfrp.cn/">LoCyan Frp</a>:之前节点不可用，最近Q群审核使用；<a target="_blank" rel="noopener" href="https://frp.wiki/">凿洞Free Frp</a>:我不会用，它老报错；<a target="_blank" rel="noopener" href="http://www.ipyingshe.com/">闪库</a>：1M&#x2F;s；<strong>仅支持Http</strong>，赠3级域名；<em>U-anywhere万由云</em>；<em>QuickConnect</em>；<em>哲西云</em>:加入花生壳了；<em>nat123</em>；<em>Tinc</em></li>
+<li><a target="_blank" rel="noopener" href="https://www.ngrok.cc/">Sunny-Ngrok</a>:1块付费刷脸实名；<em>钉钉内网穿透</em>:早已停止服务；<a target="_blank" rel="noopener" href="https://flynat.51miaole.com/">蜻蜓</a>、<a target="_blank" rel="noopener" href="http://www.youtusoft.com/">网络通</a>无法注册；<a target="_blank" rel="noopener" href="https://www.locyanfrp.cn/">LoCyan Frp</a>:之前节点不可用，最近Q群审核使用；<a target="_blank" rel="noopener" href="https://frp.wiki/">凿洞Free Frp</a>:我不会用，它老报错；<em>U-anywhere万由云</em>；<em>QuickConnect</em>；<em>哲西云</em>:加入花生壳了；<em>nat123</em>；<em>Tinc</em></li>
 <li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
 </ul>
 </blockquote>
@@ -2816,6 +2867,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li><strong><a target="_blank" rel="noopener" href="https://parsec.app/">Parsec</a><strong>（</strong>win10+<strong>）：免费，易用，可以</strong>跨平台</strong>但有相应的<strong>系统版本限制</strong>，功能非常齐全，对游戏方面更加友好，但可能对网络有一定要求，不过有<strong>网页端</strong>可以用；既可以分享主机地址让他人加入(需要<strong>手动接受</strong>加入请求)，也可以创建公开房间或者加入处于公开状态的房间来远程控制联机</li>
 <li><a target="_blank" rel="noopener" href="https://meeting.tencent.com/"><strong>腾讯会议</strong></a>：免费简单；可能有一定延迟，视自己网络属性而定。</li>
 <li><strong><a target="_blank" rel="noopener" href="https://store.steampowered.com/about/">Steam</a>远程畅玩</strong>(流式传输)：免费，最简单，但<strong>需要双方互加好友</strong>(Steam有一定条件)，而且对<strong>网络要求较高，可能用不了</strong>，需要有人<strong>游戏在库中</strong>；游戏内<strong>Shift+Tap</strong>唤出好友列表<strong>邀请</strong>好友远程畅玩即可</li>
+<li>**<a target="_blank" rel="noopener" href="https://anydesk.com/zhs">AnyDesk</a>；<a target="_blank" rel="noopener" href="https://www.todesk.com/solo?v=4">ToDesk</a></li>
 <li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
 </ul>
 </blockquote>
@@ -2885,10 +2937,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-01-25T00:21:12+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-02-01T19:55:57+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jan 25, 2023</p>
+    <p>更新于：Feb 1, 2023</p>
   </a>
 </div>
 
@@ -2967,6 +3019,14 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   
     <div class="prev-next">
+      
+        <a class='prev' href='/2023/01/25/Java%E5%85%A5%E9%97%A8%E5%88%B0%E6%96%B0%E8%90%8C%E5%AE%9D%E5%AE%9D/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Java入门到新萌宝宝</p>
+          <p class='content'>第一章节：Java入门计算机知识
+
+存储与储存
+存储多用于虚拟物质或无法确定实体物质的存储。(在计算机中多使用存储)储存多用于实体物质的储存，对象是实在的不需要载体或其他形式就能直接发挥作用。常...</p>
+        </a>
       
       
         <a class='next' href='/2023/01/12/Hexo%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/'>
@@ -3706,7 +3766,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"主要关于编程语言和游戏服务器相关"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"AX博客教程"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/01/12/内网穿透开服教程/","name":"网站部署和各类型游戏远程联机教程"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"AX博客教程","url":"http://example.com/","keywords":null,"description":"主要关于编程语言和游戏服务器相关","author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"主要关于编程语言和游戏服务器相关"},"publisher":{"@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"网站部署和各类型游戏远程联机教程","description":"主要关于编程语言和游戏服务器相关","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/"},"author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"AX博客教程","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/","wordCount":0,"datePublished":"2023-01-12T13:59:38.000Z","dateModified":"2023-01-24T16:21:12.028Z","keywords":"study","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"主要关于编程语言和网络相关"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"AX博客教程"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/01/12/内网穿透开服教程/","name":"网站部署和各类型游戏远程联机教程"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"AX博客教程","url":"http://example.com/","keywords":null,"description":"主要关于编程语言和网络相关","author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"主要关于编程语言和网络相关"},"publisher":{"@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"网站部署和各类型游戏远程联机教程","description":"主要关于编程语言和网络相关","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/"},"author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"AX博客教程","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/01/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%BC%80%E6%9C%8D%E6%95%99%E7%A8%8B/","wordCount":0,"datePublished":"2023-01-12T13:59:38.000Z","dateModified":"2023-02-01T11:55:57.151Z","keywords":"study","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 
@@ -3786,7 +3846,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
     </div>
     <!-- import body_end begin-->
-        <script type="text/javascript" color="100,215,20" opacity='0.9' zIndex="-2" count="200" src="https://cdnjs.cloudflare.com/ajax/libs/canvas-nest.js/2.0.4/canvas-nest.js"></script>
+        <script type="text/javascript" color="100,215,20" opacity='0.9' zIndex="-2" count="50" src="https://cdnjs.cloudflare.com/ajax/libs/canvas-nest.js/2.0.4/canvas-nest.js"></script>
     <!-- import body_end end-->
     <!-- Custom Files bodyEnd begin-->
     
