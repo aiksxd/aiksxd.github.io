@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <!-- SEO相关 -->
   
-  <link rel="canonical" href="http://example.com/friends/"/>
+  <link rel="canonical" href="http://example.com/2023/02/01/内网穿透实现直播网站/"/>
   <!-- 渲染优化 -->
     <meta http-equiv='x-dns-prefetch-control' content='on' />
       <link rel='dns-prefetch' href='https://unpkg.com'>
@@ -33,20 +33,21 @@
 
   <!-- feed -->
   <!-- 页面元数据 -->
-  <title>我的朋友们 - AX博客教程</title>
-  <meta name="keywords" content="null">
-  <meta desc name="description" content="这里写友链上方的内容。 - AIKSXD - AX博客教程">
+  <title>内网穿透实现直播网站 - AX博客教程</title>
+  <meta name="keywords" content="study,null">
+  <meta desc name="description" content="主要关于编程语言和网络相关 - AIKSXD - AX博客教程">
   
-<meta property="og:type" content="website">
-<meta property="og:title" content="我的朋友们">
-<meta property="og:url" content="http://example.com/friends/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网穿透实现直播网站">
+<meta property="og:url" content="http://example.com/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/index.html">
 <meta property="og:site_name" content="AX博客教程">
-<meta property="og:description" content="这里写友链上方的内容。">
+<meta property="og:description" content="前言 建议配合视频教程一起使用，这篇提供我已知的最优解，但不一定是最好； 完成本地的直播网站需要一台满足配置要求的设备(能带动OBS+内网穿透且承载住他人的拉流；主要吃CPU和宽带，CPU方面基本上一般电脑都可以)，体量不大宽带家用蛮够，主要看映射软件给你开放的宽带（obs默认码率一个访问者流量传输约为128KB&#x2F;s），如果面向人群体量稍大如班级可以考虑研究一下p2p技术，再大这则博客就">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-<meta property="article:published_time" content="2023-01-12T14:03:18.028Z">
-<meta property="article:modified_time" content="2023-01-12T14:03:18.028Z">
+<meta property="article:published_time" content="2023-02-01T14:23:40.000Z">
+<meta property="article:modified_time" content="2023-02-03T02:48:58.779Z">
 <meta property="article:author" content="AIKSXD">
+<meta property="article:tag" content="study">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
   <style>
@@ -2432,7 +2433,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
-      <div id="none" class='cover-wrapper friends search' style="display: none;">
+      <div id="none" class='cover-wrapper post search' style="display: none;">
         
   <div class='cover-bg lazyload placeholder' data-bg="https://gcore.jsdelivr.net/gh/aiksxd/material/img/bgbeta.jpg"></div>
 
@@ -2503,8 +2504,16 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         <div class="body-wrapper">
           
 <div id="l_main" class=''>
-  <article id="friends" class="md post article article-entry l_friends white-box reveal shadow floatable blur article-type-friends" itemscope itemprop="blogPost">
-    
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/01/内网穿透实现直播网站/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="AX博客教程">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="AX博客教程">
+    <meta itemprop="description" content="主要关于编程语言和网络相关">
+  </span>
+  
 
 
   
@@ -2517,16 +2526,16 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     
     
       <h1 class="title" itemprop="name headline">
-        我的朋友们
+        内网穿透实现直播网站
       </h1>
       <div class='new-meta-box'>
         
           
             
 <div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <a itemprop="url" class='author' href="/" rel="nofollow">
-    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-    <p itemprop="name">请设置文章作者</p>
+  <a itemprop="url" class='author' target="_blank" href="https://github.com/aiksxd" rel="nofollow noopener">
+    <img itemprop="image" src="https://avatars.githubusercontent.com/u/106813472?v=4" class="lazyload" data-srcset="https://avatars.githubusercontent.com/u/106813472?v=4" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">AIKSXD</p>
   </a>
 </div>
 
@@ -2538,10 +2547,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
           
         
           
-            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2023-01-12T22:03:18+08:00">
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2023-02-01T22:23:40+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
-    <p>发布于：Jan 12, 2023</p>
+    <p>发布于：Feb 1, 2023</p>
   </a>
 </div>
 
@@ -2562,34 +2571,189 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   </div>
 
 
-    <p>这里写友链上方的内容。</p>
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li>建议配合视频教程一起使用，这篇提供我已知的最优解，但<strong>不一定是最好</strong>；</li>
+<li>完成本地的直播网站需要一台满足配置要求的设备(能<strong>带动OBS</strong>+<strong>内网穿透</strong>且<strong>承载</strong>住他人的<strong>拉流</strong>；主要吃<strong>CPU和宽带</strong>，CPU方面基本上<strong>一般电脑都可以</strong>)，体量不大宽带家用蛮够，主要看映射软件给你开放的宽带（obs默认码率一个访问者流量传输约为<strong>128KB&#x2F;s</strong>），如果面向人群体量稍大如班级可以考虑研究一下<strong>p2p</strong>技术，再大这则博客就没用了，大型的平台主要采用<strong>CDN分发</strong>和<strong>p2p</strong>；</li>
+<li>需要两条http协议的隧道，如果网页有托管可以直接对外公开的话可以只要一个隧道（Github是https打头，数据不和http互通，需要额外配置）</li>
+</ul>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>除<strong>内网穿透</strong>需求<strong>可能要多个</strong>，<strong>其他工具只要一个</strong>即可</p>
+<ul>
+<li><h3 id="网页部署工具（选一）"><a href="#网页部署工具（选一）" class="headerlink" title="网页部署工具（选一）"></a><strong>网页部署工具</strong>（选一）</h3></li>
+</ul>
+<blockquote>
+<ul>
+<li><p><strong>Windows自带</strong>的<strong>IIS组件</strong></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.xp.cn/">小皮面板phpStudy</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://cn.vuejs.org/">Vue.js渐进式 JavaScript 框架</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/index.html">Hexo</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><h3 id="推流工具（选一）"><a href="#推流工具（选一）" class="headerlink" title="推流工具（选一）"></a><strong>推流工具</strong>（选一）</h3></li>
+</ul>
+<blockquote>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://ffmpeg.org/">FFmpeg</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://obsproject.com/">OBS</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><h3 id="流媒体中转服务器（选一）"><a href="#流媒体中转服务器（选一）" class="headerlink" title="流媒体中转服务器（选一）"></a><strong>流媒体中转服务器</strong>（选一）</h3></li>
+</ul>
+<blockquote>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/gwuhaolin/livego">LiveGo：纯 Golang 编写的直播服务器，性能高，跨平台</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/arut/nginx-rtmp-module">nginx-rtmp-module：基于NGINX的媒体流服务器</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/illuspas/Node-Media-Server">Node-Media-Server：一个 Node.js 实现的RTMP&#x2F;HTTP&#x2F;WebSocket&#x2F;HLS&#x2F;DASH流媒体服务器</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><h3 id="内网穿透工具（这里只列出支持http-x2F-https协议的-视频演示方法需要凑出2条隧道）"><a href="#内网穿透工具（这里只列出支持http-x2F-https协议的-视频演示方法需要凑出2条隧道）" class="headerlink" title="内网穿透工具（这里只列出支持http&#x2F;https协议的)(视频演示方法需要凑出2条隧道）"></a><strong>内网穿透工具（这里只列出支持http&#x2F;https协议的)</strong>(视频演示方法需要凑出<strong>2条隧道</strong>）</h3><blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cpolar.com/"><strong>cpolar</strong></a>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低；<strong>http</strong>协议提供<strong>免费域名</strong>，<strong>免费两条</strong>隧道</li>
+<li><a target="_blank" rel="noopener" href="https://www.fgnwct.com/"><strong>飞鸽</strong></a>：学习成本低；<strong>0.5兆</strong>每<strong>秒</strong>，签到给流量；<strong>http</strong>协议提供<strong>免费域名</strong>；<strong>免费两条</strong>隧道但<strong>http只能一条</strong></li>
+<li><a target="_blank" rel="noopener" href="https://www.openfrp.net/"><strong>OpenFrp 内网穿透（需域名）</strong></a>：学习成本低(带GUI启动器和樱花相似)免费，签到领流量；<strong>部分节点</strong>无需实名；速度<strong>限制</strong>12M&#x2F;s(速度取决于所选节点与访客距离)；固定域名；<strong>http</strong>协议需要<strong>绑定自己的域名</strong></li>
+<li><a target="_blank" rel="noopener" href="https://natapp.cn/"><strong>NATAPP</strong></a>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1<strong>兆每秒</strong>；<strong>http</strong>协议提供<strong>免费域名</strong></li>
+<li><a target="_blank" rel="noopener" href="http://www.ipyingshe.com/">闪库</a>：1M&#x2F;s；<strong>仅支持Http</strong>，<strong>随机固定</strong>域名；未来可能实名<br><strong>（以下是其他我没用过的内网穿透）</strong></li>
+<li><a target="_blank" rel="noopener" href="https://ngrok.com/"><strong>ngrok(https)</strong></a>：学习成本一般；无需实名；只给<strong>一条免费隧道</strong>，离得近的节点延迟较低；http会<strong>自动换https</strong>协议（相当于<strong>不支持http</strong>）</li>
+<li><a target="_blank" rel="noopener" href="https://hsk.oray.com/"><strong>花生壳(https)</strong></a>：极低的学习成本；<strong>实名1兆&#x2F;s</strong>每月1G且<strong>无Http只有https</strong>，隧道固定域名</li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h2 id="工作原理及其流程（视频配置）"><a href="#工作原理及其流程（视频配置）" class="headerlink" title="工作原理及其流程（视频配置）"></a>工作原理及其流程（视频配置）</h2><ul>
+<li><h3 id="画面采集以及推流"><a href="#画面采集以及推流" class="headerlink" title="画面采集以及推流"></a>画面采集以及推流</h3></li>
+</ul>
+<blockquote>
+<ul>
+<li>OBS<strong>添加采集源</strong>（常用三个）：<blockquote>
+<ol>
+<li><strong>显示器采集</strong>（桌面画面）</li>
+<li><strong>游戏源</strong>（全屏程序）</li>
+<li><strong>音频输入采集</strong>（麦克风）</li>
+</ol>
+</blockquote>
+</li>
+<li>OBS<strong>推流配置</strong><blockquote>
+<ol>
+<li>OBS选择<strong>设置</strong> –&gt; <strong>推流</strong>页面；<strong>服务</strong>选择<strong>自定义</strong></li>
+<li>*服务器<strong>（推流地址）默认填</strong>rtmp:&#x2F;&#x2F;127.0.0.1:1935&#x2F;live&#x2F;<strong>（如果要改下面的</strong>拉流地址<strong>也要改一下）</strong></li>
+<li>启动流媒体服务器LiveGo<strong>并</strong>获取channelkey<strong>；在</strong>浏览器地址栏<strong>输入</strong><a target="_blank" rel="noopener" href="http://localhost:8090/control/get?room=movie**%E5%B9%B6%E5%9B%9E%E8%BD%A6%EF%BC%8C%E5%A4%8D%E5%88%B6%E7%BB%99%E5%87%BA%E7%9A%84**channelkey**%E5%A1%AB%E5%86%99%E5%88%B0OBS%E6%8E%A8%E6%B5%81%E9%A1%B5%E9%9D%A2%E7%9A%84**%E4%B8%B2%E6%B5%81%E5%AF%86%E9%92%A5**%EF%BC%9B">http://localhost:8090/control/get?room=movie**并回车，复制给出的**channelkey**填写到OBS推流页面的**串流密钥**；</a></li>
+</ol>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><h3 id="内网穿透映射网站和http协议7001端口（两条隧道）"><a href="#内网穿透映射网站和http协议7001端口（两条隧道）" class="headerlink" title="内网穿透映射网站和http协议7001端口（两条隧道）"></a>内网穿透映射网站和http协议7001端口（两条隧道）</h3></li>
+</ul>
+<blockquote>
+<p><strong>启动内网穿透工具</strong>，此处以<strong>Cpolar为例</strong>（支持<strong>两条http隧道</strong>在线）<br><strong>cmd命令提示符</strong>中输入命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cpolar http 80</span><br><span class="line">cpolar http 7001</span><br></pre></td></tr></table></figure>
+<p>其中，<strong>80端口</strong>为<strong>phpstudy部署网页的默认端口，</strong>根据自己网站填写不同的，如<strong>hexo使用4000</strong>，<strong>vue则为8080</strong><br><strong>7001端口</strong>为<strong>LiveGo</strong>提供的<strong>HTTP-FLV传输协议的接口</strong><br><strong>每个隧道映射成功</strong>后<strong>都会给一个</strong>没有端口的<strong>地址</strong>，这个之后会用到</p>
+</blockquote>
+<ul>
+<li><h3 id="网页播放器拉流并部署"><a href="#网页播放器拉流并部署" class="headerlink" title="网页播放器拉流并部署"></a>网页播放器拉流并部署</h3></li>
+</ul>
+<blockquote>
+<ul>
+<li><strong>网页播放器配置</strong><blockquote>
+<p><strong>记事本</strong>或其他<strong>文本编辑器方式</strong>打开<strong>压缩包解压</strong>后的LiveOnlineWeb\phpstudy_pro\WWW\index.html文件<br>将<strong>body</strong>标签中的<strong>script</strong>标签内<strong>播放器的url</strong>改为<strong>内网穿透映射7001端口后</strong>给出的<strong>地址</strong> <strong>+</strong> <strong>OBS推流地址端口后面的路径</strong> <strong>+ movie.flv</strong></p>
+<p><strong>示例：url: ‘<a target="_blank" rel="noopener" href="http://xxxxxxxxx.xx.cpolar.top/live/movie.flv">http://xxxxxxxxx.xx.cpolar.top/live/movie.flv</a>‘</strong><br><strong>本地拉流地址：url：’<a target="_blank" rel="noopener" href="http://127.0.0.1:7001/live/movie.flv'**%EF%BC%88%E6%9C%AC%E5%9C%B0%E8%A7%86%E9%A2%91%E6%B5%81%E5%9C%B0%E5%9D%80%EF%BC%8C%E5%8F%AA%E6%9C%89**%E4%B8%BB%E6%9C%BA">http://127.0.0.1:7001/live/movie.flv&#39;**（本地视频流地址，只有**主机</a></strong>能够拉流成功，其他人访问是拉自己设备该地址对应目录下的文件，故<strong>其他人无法拉流成功</strong>，<strong>仅供自己测试</strong>用，该地址<strong>不会占用宽带</strong>）</p>
+</blockquote>
+</li>
+<li><h3 id="部署网站（PHPStudy为例）"><a href="#部署网站（PHPStudy为例）" class="headerlink" title="部署网站（PHPStudy为例）"></a>部署网站（PHPStudy为例）</h3></li>
+</ul>
+<blockquote>
+<ol>
+<li>打开<strong>PHPstudy</strong>应用程序</li>
+<li>启动<strong>WNMP服务</strong></li>
+<li>在<strong>浏览器地址栏</strong>输入<strong><a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1:80</a></strong> 或 <strong><a target="_blank" rel="noopener" href="http://localhost/">http://localhost</a></strong> 即可进入<strong>本地网页</strong>（80可选填，都一样）</li>
+</ol>
+</blockquote>
+<ul>
+<li><strong>检验是否推流成功</strong><blockquote>
+<p><strong>方法一：</strong>在<strong>浏览器地址栏中</strong>直接<strong>将url地址填入并回车</strong>，检查浏览器是否能够<strong>下载到一个名为movie.flv的文件</strong></p>
+<p><strong>方法二：</strong>直接打开网站检查是否能加载出<strong>直播画面以及声音</strong></p>
+<p><strong>问题排查：</strong></p>
+<ul>
+<li><strong>方法二播放器黑屏</strong>然后使用<strong>方法一发现能够下载到流视频文件</strong>，这时候只要<strong>刷新</strong>一下网站即可，再不行<strong>OBS切断重新推流</strong>再<strong>刷新</strong></li>
+<li><strong>直播画面有声音但是黑屏</strong>，可能是<strong>程序画面采用全屏方式运行</strong>但在<strong>采集源中没有对全屏应用的画面采集</strong>，此时在<strong>OBS采集源</strong>中加入<strong>游戏源</strong>选择<strong>采集任意全屏应用程序</strong>即可；或者将<strong>全屏程序</strong>改为<strong>窗口模式</strong>或者<strong>无边框模式</strong></li>
+<li><strong>有电脑的声音但是听不到自己发的声音</strong>，可能是<strong>没有麦克风的采集源</strong>，在OBS采集源<strong>加入音频输入采集</strong>；或者使用<strong>其他手段</strong>如<strong>手机电脑加入同一个通话频道</strong>，会自动采集通话程序的声音，就是回声可能相对严重，也会有一定延迟，此时建议使用<strong>WO Mic</strong>。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3></li>
+</ul>
+<blockquote>
+<p>最后将<strong>内网穿透映射网页端口提供的地址</strong>分享给他人浏览即可，<br>其他人用<strong>浏览器打开该地址</strong>即可通过静态网页上的播放器就可以观看你的OBS推出的视频流画面。</p>
+</blockquote>
+<ul>
+<li><h3 id="流程图直观展示"><a href="#流程图直观展示" class="headerlink" title="流程图直观展示"></a>流程图直观展示</h3></li>
+</ul>
+<blockquote>
+<ul>
+<li><strong>本地拉流演示图</strong>（不一定正确）<br><img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/localstream.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/localstream.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="本地拉流，看到该消息可能是图片加载失败，和视频里的流程图是一样的，可以去看视频当中的"></li>
+<li><strong>其他人观看直播原理演示图</strong>（不一定正确）<br><img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/otherStream.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/otherStream.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="其他人观看直播原理，看到该消息可能是图片加载失败，和视频里的流程图是一样的，可以去看视频当中的"></li>
+</ul>
+</blockquote>
+<h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><ul>
+<li><h3 id="解决内网穿透提供宽带速度不够的问题"><a href="#解决内网穿透提供宽带速度不够的问题" class="headerlink" title="解决内网穿透提供宽带速度不够的问题"></a>解决内网穿透提供宽带速度不够的问题</h3></li>
+</ul>
+<blockquote>
+<p>这个问题我目前是采用<strong>多线程</strong>的方法解决的（整合包中我提供了line234页面并写好了超链接，根据需要自行填入映射好的7001本地端口地址到视频流的url），通过<strong>启用多个内网穿透工具共同映射7001端口</strong>，<strong>分别</strong>将<strong>给定的地址</strong>填入<strong>不同的页面</strong>，用户通过<strong>切换页面</strong>来<strong>减少单个</strong>内网穿透工具的<strong>宽带压力</strong>，以此实现宽带的拓展</p>
+</blockquote>
+<ul>
+<li><h3 id="解决电脑没有麦克风的问题"><a href="#解决电脑没有麦克风的问题" class="headerlink" title="解决电脑没有麦克风的问题"></a>解决电脑没有麦克风的问题</h3></li>
+</ul>
+<p>倘若有人的主机电脑<strong>没有麦克风或麦克风坏了</strong>，正好有<strong>手机在身边可以使用</strong>的话可以使用<strong>WO Mic</strong>来解决这个问题</p>
+<blockquote>
+<h4 id="WO-Mic局域网连接使用教程"><a href="#WO-Mic局域网连接使用教程" class="headerlink" title="WO Mic局域网连接使用教程"></a>WO Mic局域网连接使用教程</h4><ul>
+<li>流程图：<br><img src="https://gcore.jsdelivr.net/gh/aiksxd/material/img/Womic.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/aiksxd/material/img/Womic.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="如果看到该文段可能是图片加载失败了，去看视频吧"></li>
+</ul>
+<ol>
+<li>手机端启动<strong>WO Mic应用程序并运行</strong>（在局域网广播）</li>
+<li>将给定的<strong>局域网地址</strong>填写到<strong>电脑WO Mic Client的连接</strong> —&gt; <strong>连接…</strong> —&gt; <strong>手机IP地址</strong>输入框中 —&gt; 再点击<strong>连接</strong>即可</li>
+</ol>
+<ul>
+<li><strong>手机端</strong>控制<strong>音量大小</strong>和<strong>是否传输声音</strong>（&#x3D;开关麦）；<strong>电脑端</strong>可以选择设置<strong>本地播放</strong>方便<strong>调试声音</strong></li>
+</ul>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p><strong>通过内网穿透直播</strong>仅适合<strong>面向小众群体</strong>，例如<strong>学生</strong>等<strong>无法与直播平台签约</strong>或者<strong>不想和直播平台签约</strong>又<strong>想体验直播</strong>的人群，或者只是<strong>单纯想挂在自己博客上</strong>让访客碰运气看看有没有直播。<br>这项技术<strong>优点</strong>是<strong>搭建迅速而且免费</strong>（<strong>不花钱可以使用，人数不多体验还是很好的</strong>），<strong>有域名</strong>的话可以使用更好的映射软件，<strong>它们提供更好的免费的宽带</strong>，如<strong>OpenFrp</strong>（地址上面链接），感兴趣的可以尝试一下，我下面会发布<strong>整合包的链接</strong>（<strong>不含内网穿透工具</strong>和<strong>推流工具</strong>，<strong>需自行额外安装</strong>）</p>
+</blockquote>
+
+  </div>
+  
+  
     
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
       
-        <div class='friends-group'>
-          <br>
-          <h2 class='friend-header'>
-            
-          </h2>
-          
-          
-            <div class='simpleuser-group'>
-              
-                
-                  <a class="simpleuser" target="_blank" rel="external noopener noreferrer" href="https://github.com/aiksxd">
-                    <img src="https://avatars.githubusercontent.com/u/106813472?v=4" class="lazyload" data-srcset="https://avatars.githubusercontent.com/u/106813472?v=4" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="/>
-                    <span>AIKSXD</span>
-                  </a>
-                
-              
-                
-              
-            </div>
-          
-        </div>
+       <!-- 相关文章 -->
       
-    
-    <br><br>
-    <p>这里可以写友链页面下方的文字备注，例如自己的友链规范、示例等。</p>
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
     
 
 
@@ -2597,10 +2761,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-01-12T22:03:18+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-02-03T10:48:58+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jan 12, 2023</p>
+    <p>更新于：Feb 3, 2023</p>
   </a>
 </div>
 
@@ -2608,6 +2772,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
         
           
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/study/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>study</p></a></div>
+  <span hidden itemprop="keywords">study</span>
+
 
         
       
@@ -2619,7 +2787,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
         <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer noopener"
           
-          target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/friends/index.html&title=我的朋友们 - AX博客教程&summary=这里写友链上方的内容。"
+          target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/&title=内网穿透实现直播网站 - AX博客教程&summary="
           
           >
           
@@ -2631,7 +2799,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
         <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer noopener"
           
-          target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://example.com/friends/index.html&title=我的朋友们 - AX博客教程&summary=这里写友链上方的内容。"
+          target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://example.com/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/&title=内网穿透实现直播网站 - AX博客教程&summary="
           
           >
           
@@ -2643,7 +2811,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
         <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer noopener"
           
-          target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/friends/index.html&title=我的朋友们 - AX博客教程&summary=这里写友链上方的内容。"
+          target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/&title=内网穿透实现直播网站 - AX博客教程&summary="
           
           >
           
@@ -2670,14 +2838,35 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   </div>
 
 
-  </article>
+  
+  
+
+  
+    <div class="prev-next">
+      
+      
+        <a class='next' href='/2023/01/25/Java%E5%85%A5%E9%97%A8%E5%88%B0%E6%96%B0%E8%90%8C%E5%AE%9D%E5%AE%9D/'>
+          <p class='title'>Java入门到新萌宝宝<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>第一章节：Java入门计算机知识
+
+存储与储存
+存储多用于虚拟物质或无法确定实体物质的存储。(在计算机中多使用存储)储存多用于实体物质的储存，对象是实在的不需要载体或其他形式就能直接发挥作用。常...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
 
   
 
 
   <article class="post white-box shadow floatable blur" id="comments">
     <span hidden>
-      <meta itemprop="discussionUrl" content="/friends/index.html#comments">
+      <meta itemprop="discussionUrl" content="/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/index.html#comments">
     </span>
     <p ct><i class='fa-solid fa-comments'></i> 评论</p>
     
@@ -2685,6 +2874,8 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div id="layoutHelper-comments"></div>
 
   </article>
+
+
 
 
 
@@ -2707,9 +2898,19 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
 
 
-  <div class="">
-    <!-- pjax占位 -->
-  </div>
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-text">准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E9%A1%B5%E9%83%A8%E7%BD%B2%E5%B7%A5%E5%85%B7%EF%BC%88%E9%80%89%E4%B8%80%EF%BC%89"><span class="toc-text">网页部署工具（选一）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E6%B5%81%E5%B7%A5%E5%85%B7%EF%BC%88%E9%80%89%E4%B8%80%EF%BC%89"><span class="toc-text">推流工具（选一）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E5%AA%92%E4%BD%93%E4%B8%AD%E8%BD%AC%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88%E9%80%89%E4%B8%80%EF%BC%89"><span class="toc-text">流媒体中转服务器（选一）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%B7%A5%E5%85%B7%EF%BC%88%E8%BF%99%E9%87%8C%E5%8F%AA%E5%88%97%E5%87%BA%E6%94%AF%E6%8C%81http-x2F-https%E5%8D%8F%E8%AE%AE%E7%9A%84-%E8%A7%86%E9%A2%91%E6%BC%94%E7%A4%BA%E6%96%B9%E6%B3%95%E9%9C%80%E8%A6%81%E5%87%91%E5%87%BA2%E6%9D%A1%E9%9A%A7%E9%81%93%EF%BC%89"><span class="toc-text">内网穿透工具（这里只列出支持http&#x2F;https协议的)(视频演示方法需要凑出2条隧道）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%85%B6%E6%B5%81%E7%A8%8B%EF%BC%88%E8%A7%86%E9%A2%91%E9%85%8D%E7%BD%AE%EF%BC%89"><span class="toc-text">工作原理及其流程（视频配置）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%BB%E9%9D%A2%E9%87%87%E9%9B%86%E4%BB%A5%E5%8F%8A%E6%8E%A8%E6%B5%81"><span class="toc-text">画面采集以及推流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%98%A0%E5%B0%84%E7%BD%91%E7%AB%99%E5%92%8Chttp%E5%8D%8F%E8%AE%AE7001%E7%AB%AF%E5%8F%A3%EF%BC%88%E4%B8%A4%E6%9D%A1%E9%9A%A7%E9%81%93%EF%BC%89"><span class="toc-text">内网穿透映射网站和http协议7001端口（两条隧道）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E9%A1%B5%E6%92%AD%E6%94%BE%E5%99%A8%E6%8B%89%E6%B5%81%E5%B9%B6%E9%83%A8%E7%BD%B2"><span class="toc-text">网页播放器拉流并部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E7%BD%91%E7%AB%99%EF%BC%88PHPStudy%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="toc-text">部署网站（PHPStudy为例）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-text">结语</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE%E7%9B%B4%E8%A7%82%E5%B1%95%E7%A4%BA"><span class="toc-text">流程图直观展示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-text">拓展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%8F%90%E4%BE%9B%E5%AE%BD%E5%B8%A6%E9%80%9F%E5%BA%A6%E4%B8%8D%E5%A4%9F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">解决内网穿透提供宽带速度不够的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E7%94%B5%E8%84%91%E6%B2%A1%E6%9C%89%E9%BA%A6%E5%85%8B%E9%A3%8E%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">解决电脑没有麦克风的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#WO-Mic%E5%B1%80%E5%9F%9F%E7%BD%91%E8%BF%9E%E6%8E%A5%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="toc-text">WO Mic局域网连接使用教程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </section>
 
   
 
@@ -2760,13 +2961,14 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </aside>
 
 
+
           <!--此文件用来存放一些不方便取值的变量-->
 <!--思路大概是将值藏到重加载的区域内-->
 
 <pjax>
 <script>
   window.pdata={}
-  pdata.ispage=false;
+  pdata.ispage=true;
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   pdata.commentConfig={};
@@ -3383,7 +3585,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"主要关于编程语言和网络相关"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"AX博客教程"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"AX博客教程","url":"http://example.com/","keywords":null,"description":"主要关于编程语言和网络相关","author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"主要关于编程语言和网络相关"},"publisher":{"@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"我的朋友们","description":"这里写友链上方的内容。","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/friends/index.html"},"author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"AX博客教程","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/friends/index.html","wordCount":11,"datePublished":"2023-01-12T14:03:18.028Z","dateModified":"2023-01-12T14:03:18.028Z","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"主要关于编程语言和网络相关"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"AX博客教程"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/02/01/内网穿透实现直播网站/","name":"内网穿透实现直播网站"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"AX博客教程","url":"http://example.com/","keywords":null,"description":"主要关于编程语言和网络相关","author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"主要关于编程语言和网络相关"},"publisher":{"@type":"Organization","name":"AX博客教程","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"内网穿透实现直播网站","description":"主要关于编程语言和网络相关","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/"},"author":{"@type":"Person","name":"AIKSXD","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"AX博客教程","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/02/01/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E7%BD%91%E7%AB%99/","wordCount":0,"datePublished":"2023-02-01T14:23:40.000Z","dateModified":"2023-02-03T02:48:58.779Z","keywords":"study","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 
