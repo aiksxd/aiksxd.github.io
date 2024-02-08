@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>内网穿透实现 - AX Blogs</title>
+        <title>开服联机Mutliplay Guide - AX Blogs</title>
 
 
         <!-- Custom HTML head -->
@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPE双端开服建站联机教程.html"><strong aria-hidden="true">1.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPE开服联机part1.html"><strong aria-hidden="true">1.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part2.html" class="active"><strong aria-hidden="true">1.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part4.html"><strong aria-hidden="true">1.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="内网穿透实现直播网站.html"><strong aria-hidden="true">2.</strong> NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="内穿直播part1.html"><strong aria-hidden="true">2.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="内穿直播part2.html"><strong aria-hidden="true">2.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">3.</strong> RustBevyOnTermux</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html" class="active"><strong aria-hidden="true">1.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">1.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">1.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">1.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">1.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">1.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">2.</strong> 网穿直播NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">2.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">2.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">3.</strong> RustBevyOnTermux</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -173,7 +173,235 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="各种游戏联机方法示例"><a class="header" href="#各种游戏联机方法示例">各种游戏联机方法示例</a></h2>
+                        <ul>
+<li>Date: 2023-06-29</li>
+<li>Modified: 2024-01-23</li>
+</ul>
+<h2 id="前言"><a class="header" href="#前言"><strong>前言</strong></a></h2>
+<ul>
+<li>建议配合<strong>视频教程</strong>和<strong>左侧目录</strong>食用，<strong>电脑读者请通过目录跳过Android&amp;Termux的相关教程</strong>），这是一篇面向新萌的教程，提供我已知的最优解，但<strong>不一定是最好</strong>；完成一个服务器需要<strong>一台满足配置要求(因目标而定)的设备</strong>，能够<strong>正常运行的</strong>对应程序的<strong>服务器端</strong>（程序自带或给常见链接自行下载），一个能够使用且支持对应协议的内网穿透工具或者联机工具(后面会列出，自选即可)和一颗能够坚持学下去的恒心（学会了还是蛮简单的）</li>
+<li>注：不同应用通信需要选择合适等方法、协议、端口(下文有判断方法)</li>
+<li>应用联机主要包含三大方式（网站大都采用第一种，游戏通常是第二、三种局域网）：</li>
+<li><strong>！PS：本教程是部署第一种实现方法或将第二、三种实现方法转为第一种并部署以此打破空间限制！</strong>
+<ul>
+<li><em><strong>中间服务器实现</strong>（服务器托管或内网穿透等）：通过内网连接公网，处于公网中的服务器中转分发主机的数据实现联机。<strong>优点</strong>：可以打破空间限制，将处于世界各地的人汇合组建一个小网络，并且通常服务器有更丰富的配置文件提供，启动更快，配置更灵活方便；<strong>缺点</strong>：学习成本相对较高，较长的信息传输线路导致延迟相对较高。</em></li>
+<li><em><strong>局域网下实现</strong>：通过设备连接路由器，由路由器中转分发主机的数据实现一个内网中设备之间的信息交换。<strong>优点</strong>：速度快，简单没有学习压力；<strong>缺点</strong>：受到空间限制，必须在同一个网络下才能进行信息交换</em></li>
+<li><em><strong>通过预设本地的多人操作位置实现</strong>（多见于游戏）：通过程序预先设置好的位置，允许多个人共用一台设备进行不同位置间的信息共享。<strong>优点</strong>：几乎没有信息传输间的延迟，更加稳定，几乎为零的学习成本，且大大节约了应用的开发成本，在代码上更容易实现；<strong>缺点</strong>：严格的空间限制，所有人必须共用一台设备，而且位置受硬件规格限制，需要外接设备（如手柄）。</em></li>
+</ul>
+</li>
+</ul>
+<h2 id="手机搭建终端环境内网穿透开服pc电脑端跳过"><a class="header" href="#手机搭建终端环境内网穿透开服pc电脑端跳过"><strong>手机搭建终端环境(内网穿透开服;PC电脑端跳过)</strong></a></h2>
+<ul>
+<li>这是专门为<strong>安卓</strong>手机提供的<strong>开服</strong>方法（<strong>IOS苹果手机</strong>需要先<strong>越狱</strong>然后使用<strong>NewTerm</strong>，虽同样都是终端命令，<strong>但我暂无条件更新相关教程</strong>），主要服务于<strong>内网穿透</strong>，或是异地组网和远程控制(安卓系统本身有软件提供异地组网和远程控制，frpc有内网穿透但是直接运行服务器端不方便，如果你不是为了开服建议使用<strong>原生安卓应用</strong>，除非特殊需要)如内网穿透<a href="https://github.com/mainfunx/frpc_android">frpc on github</a>，<a href="https://gitee.com/skyuning/frpc-Android">frpc on gitee</a>，<strong>pc端请忽略该部分</strong></li>
+<li><em>注：本教程内所有安装过程的选择直接回车默认即可</em></li>
+</ul>
+<blockquote>
+<ul>
+<li>安装termux</li>
+</ul>
+<blockquote>
+<p>下载地址(github如若打不开，在地址github之前加字母k或https://ghproxy.com/，即https://kgithub...或https://ghproxy.com/https://github...)：</p>
+<ul>
+<li><a href="https://github.com/termux/termux-app/wiki/Termux-on-android-5-or-6">github安卓6及以下版本</a></li>
+<li><a href="https://www.123pan.com/s/Rx6cVv-BYhxd.html">国内云盘直链0.118</a>
+<em>注：安卓6及其以下版本建议<strong>不要换源</strong>，请安装完系统后，在系统内换源</em></li>
+<li><a href="https://github.com/termux">github安卓7及以上版本</a></li>
+<li><a href="">F-Droid的termux网页页面</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>Termux基础配置(最左下按钮为tab自动补全)</li>
+</ul>
+<blockquote>
+<ul>
+<li><em><strong>换源</strong>命令(安卓7+版本)：</em></li>
+</ul>
+<pre><code class="language-bash">termux-change-repo
+</code></pre>
+<p>直接<strong>回车(Enter)<strong>下一步后</strong>空格</strong>选择下方国内源后<strong>一路回车即可</strong>（安卓6及其以下不建议换源，如需则自行查找低版本换源命令）</p>
+<ul>
+<li>更新包管理工具</li>
+</ul>
+<pre><code class="language-bash">pkg upgrade &amp;&amp; pkg update
+apt upgrade &amp;&amp; apt update
+</code></pre>
+<ul>
+<li>获取手机内部储存</li>
+</ul>
+<pre><code class="language-bash">termux-setup-storage
+</code></pre>
+<p>注：Termux的文件都存在手机根目录，没有root无法访问，这些只能通过termux进行读写，使用此命令后，可在home目录下生成一个通往手机主目录的软链接。</p>
+</blockquote>
+<ul>
+<li>基本命令
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>cd 目录 #进入当前目录下的指定目录,其中../为上级，cd ~中~表示当前操作用户目录。
+rm -r 目录/文件 #递归删除，参数-r为递归，没有不能删目录
+ls -a #列出当前目录下文件，-a参数显示隐藏文件
+l #单l命令比ls更加便捷清晰(旧版termux没有，不过安装的系统内可使用)
+pwd #获取当前目录地址
+mkdir 文件夹名 #在当前目录下新建文件夹（目录）
+Ctrl + C #键盘快捷键强制中断当前程序/废弃当前键入命令
+#右滑可创建新会话(窗口)|唤起键盘
+####解压工具####
+apt install unzip #安装
+unzip 目标文件名.zip -d 释放目标目录（如无自动创建）</p>
+<pre><code></code></pre>
+</blockquote>
+</blockquote>
+<h3 id="安装linux系统"><a class="header" href="#安装linux系统">安装Linux系统</a></h3>
+<p>也可以不装，不过有些应用依赖无法启用(如dotnet)，可能回导致应用无法启动，这时就需要安装系统(proot/chroot)，否则可以直接使用启动命令</p>
+<h4 id="android5以上通用方法简单内存充足时推荐"><a class="header" href="#android5以上通用方法简单内存充足时推荐">Android5以上通用方法（简单，内存充足时推荐）</a></h4>
+<blockquote>
+<p>+为什么建议该方法：
+&gt;+ kali nethunter方法安装termux的linux系统，使用的包都可以支持最新版，不过这也导致了一些不兼容问题
+&gt;+ 并且该方法操作简单，无需多余步骤
+&gt;+ 缺点在于镜像只有完整版且占用内存较大（约11G），如果内存不足可用下面其他方法占用约1G+</p>
+<ul>
+<li>Kali版本</li>
+</ul>
+<blockquote>
+<ul>
+<li>官方版本（需网络环境，没有则用镜像版）</li>
+</ul>
+<pre><code class="language-bash">pkg install git wget
+wget -O install-nethunter-termux https://offs.ec/2MceZWr #–no-check-certificate
+chmod +x install-nethunter-termux
+./install-nethunter-termux
+</code></pre>
+<ul>
+<li>使用wget下载时使用-c参数可防止意外中断，对于github相关地址可以在地址前加入&quot;https://ghproxy.com/&quot;代理加速</li>
+<li>国内镜像（无需代理）</li>
+</ul>
+<pre><code class="language-bash">git clone https://gitee.com/zhang-955/clone.git &amp;&amp; cd clone &amp;&amp; cd AutoInstallKali &amp;&amp; chmod +x kalinethunter finaltouchup.sh
+./kalinethunter
+</code></pre>
+<ul>
+<li>国外github镜像(完整版同上)</li>
+</ul>
+<pre><code class="language-bash">curl -LO https://raw.githubusercontent.com/Hax4us/Nethunter-In-Termux/master/kalinethunter
+chmod +x kalinethunter
+./kalinethunter
+</code></pre>
+<p>如果下载过程中断需要手动rm（删除）损坏的包，然后重新执行安装脚本(&quot;./开头的是执行脚本命令&quot;)
+低版本在通过该系统在安装部分应用时，最新版本可能会出故障</p>
+<ul>
+<li>获取linux系统权限</li>
+</ul>
+<pre><code class="language-bash">su
+toor
+</code></pre>
+<p>获取root权限：toor是默认密码，或者kali（Linux的一个用户，Android也有root用户，但不是同一个）
+kali内置的工具不做介绍，并且有些需要root才可正常使用</p>
+</blockquote>
+</blockquote>
+<h4 id="android5-6安装系统方法"><a class="header" href="#android5-6安装系统方法">Android5-6安装系统方法</a></h4>
+<blockquote>
+<ul>
+<li>kali见上</li>
+<li>安装其他版本(如果一个失败可换其他的)：</li>
+</ul>
+<blockquote>
+<p>1.脚本一键安装(国光)</p>
+<pre><code class="language-bash">pkg install proot git python -y
+git clone https://github.com/sqlsec/termux-install-linux
+cd termux-install-linux
+python termux-linux-install.py
+</code></pre>
+<p>之后输入数字选择对应操作，安装完后使用下面命令启动</p>
+<pre><code class="language-bash">#Ubuntu换成自己安装的系统
+cd ~/Termux-Linux/Ubuntu #文件所在目录
+./start-ubuntu.sh
+</code></pre>
+</blockquote>
+<p>2.通过atlio安装linux系统</p>
+<blockquote>
+<ul>
+<li>精简版本（没内存推荐）</li>
+<li>直链需魔法，建议加代理前缀，方法见上</li>
+<li>安装<strong>运行依赖</strong></li>
+</ul>
+<pre><code class="language-bash">pkg install python curl proot
+</code></pre>
+<blockquote>
+<ul>
+<li>CN中文版</li>
+</ul>
+<pre><code class="language-bash">curl -o $PREFIX/bin/atilo https://raw.githubusercontent.com/YadominJinta/atilo/master/CN/atilo_cn &amp;&amp; chmod +x $PREFIX/bin/atilo
+</code></pre>
+<ul>
+<li>EN英文版(多几个镜像)</li>
+</ul>
+<pre><code class="language-bash">curl -o $PREFIX/bin/atilo https://raw.githubusercontent.com/YadominJinta/atilo/master/atilo &amp;&amp; chmod +x $PREFIX/bin/atilo
+</code></pre>
+<p>如果提示缺少插件则输入(先更新一次pip，否则不兼容包存在会导致更新失败)</p>
+<pre><code class="language-bash">pip install --upgrade pip -i http://pypi.douban.com/simple --trusted-host pypi.douban.com &amp;&amp; pip install 'requests' tqdm 'prettytable' bs4  -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+</code></pre>
+<p>安装&amp;启动命令：</p>
+</blockquote>
+<pre><code class="language-bash">atilo images #列出可用镜像
+atilo pull ubuntu #下载&amp;安装ubuntu镜像(自选)
+atilo run ubuntu #ubuntu换成安装自己的系统
+</code></pre>
+<ul>
+<li>如果启动过程中提示需要代理而且你又没有代理，可以尝试修改DNS或者换个时间段再试试，一般国内傍晚就连不上了</li>
+<li>Github方法（可能需要网络环境）:
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>pkg in git
+git clone https://github.com/jerrychen110/atilo
+chmod +x ~/atilo
+./atilo ubuntu #启动命令</p>
+<pre><code>ubuntu换成自己想要的系统，不带参数可以查看命令帮助；启动报错proot可以试试其他方法或者更换网络环境再删除重下系统（一般下载系统镜像不会太快，太快就可能是网络故障）
+</code></pre>
+</blockquote>
+</blockquote>
+<p>安装好系统后下面参考linux操作方法开服，不过termux要下载arm64的包，其他设备的linux系统架构自行查看并下载使用对应包</p>
+<p>如果apt seach也找不到对应的包可能是你没更新源</p>
+</blockquote>
+<h4 id="android7安装系统方法"><a class="header" href="#android7安装系统方法">Android7&amp;+安装系统方法</a></h4>
+<blockquote>
+<ul>
+<li>脚本安装（功能丰富，推荐）
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>bash -c &quot;$(curl -Lv gitee.com/mo2/linux/raw/master/debian.sh)&quot;</p>
+<pre><code>不重启termux(长按more-&gt;kill 所有会话-&gt;重新启动termux)使用debian-i进入管理面板或startvnc命令进入系统
+
+重启后输入debian即可进入系统
+</code></pre>
+</blockquote>
+<ul>
+<li>手动安装（占用少，网络环境要求较高，没魔法国内够呛）
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>pkg install proot-distro
+proot-distro install ubuntu
+proot-distro login ubuntu #进入系统命令</p>
+<pre><code>ubuntu可换成自己喜欢的系统(proot-distro list查看可用镜像)，建议先proot-distro list查看支持系统，有些系统不支持部分手机架构，请阅读其简介下载合适的
+</code></pre>
+</blockquote>
+</blockquote>
+<h4 id="termux系统常见问题"><a class="header" href="#termux系统常见问题">termux系统常见问题</a></h4>
+<blockquote>
+<ul>
+<li>旧版termux安装的系统没有内置的互通存储目录，通过创建软链接连接termux储存目录时mv 文件 ../后回到../没有文件，可以去系统的/data/data/com.termux 目录查看，建议直接mv至~(用户目录)</li>
+<li><strong>注意：本文往后以Debian系系统(Debian、Ubuntu、Kali等)为例，其他系统包管理器命令自行查找（如ArchLinux的pacman）</strong></li>
+<li>apt添加储存库：
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>apt-get install software-properties-common
+add-apt-repository ppa:openjdk-r/ppa #jdk8示例</p>
+<pre><code></code></pre>
+</blockquote>
+</blockquote>
+<h2 id="各种游戏联机方法示例"><a class="header" href="#各种游戏联机方法示例">各种游戏联机方法示例</a></h2>
 <p>只列出部分游戏，主要看自己判断；支持ip直连（内网穿透或公网主机）的也都支持异地组网</p>
 <ul>
 <li>生存创造类</li>
@@ -494,7 +722,7 @@ app_update 1281930 +tml版本号 validate
 <p>这里也给出了一些常见的应用端口，如果包含在内，或者已知，请跳过此步骤</p>
 <p><em><strong>先启动游戏服务器或创建局域网房间后才能看到其端口和协议类型，下面列出常见软件的协议类型及其端口</strong></em></p>
 <ul>
-<li><strong>网站默认http/https</strong>(vue：<strong>8080</strong>；PHPstudy：<strong>80</strong>；Hexo：<strong>4000</strong>；mdbook；<strong>3000</strong>；......)</li>
+<li><strong>网站默认http/https</strong>(vue：<strong>8080</strong>；PHPstudy：<strong>80</strong>；Hexo：<strong>4000</strong>；......)</li>
 <li><strong>泰拉瑞亚Terraria自带</strong>或<strong>TShock</strong>：TCP<strong>7777</strong></li>
 <li><strong>我的世界Minecraft：Java</strong>：TCP<strong>25565</strong>；内置服务端<strong>随机</strong>；<strong>BE基岩版</strong>：UDP<strong>19132</strong>（互通服两个都要映射）</li>
 <li><strong>铁锈战争Rusted Warfare</strong>：TCP<strong>5132</strong></li>
@@ -657,16 +885,227 @@ app_update 1281930 +tml版本号 validate
 <li>注：这里没有条件不做演示，可移步到上方链接观看推荐视频学习。</li>
 </ul>
 </blockquote>
+<h2 id="类型二提供局域网的程序通过异地组网实现远程联机"><a class="header" href="#类型二提供局域网的程序通过异地组网实现远程联机"><strong>类型二：提供局域网的程序</strong>（通过异地组网实现远程联机）</a></h2>
+<p><strong>判断方法</strong>：提供IP直连的基本都支持局域网，因为你可以用路<strong>由器分配的地址</strong>和<strong>对应程序的端口</strong>实现<strong>内网中不同设备</strong>的<strong>信息交换</strong>，只是可能有些程序不提供现成的独立页面和自动搜索；也有一些程序仅支持使用局域网联机不开放IP直连，此类游戏一般<strong>有多人游戏的入口</strong>但既<strong>没有本地预设的P1234玩家位置</strong>，也没有IP直连的输入框，可能能够<strong>自动搜索</strong>网络下的房间。</p>
+<ol>
+<li>
+<h3 id="1部署本地服务器必需-准备"><a class="header" href="#1部署本地服务器必需-准备"><strong>1.部署本地服务器(必需-准备)</strong></a></h3>
+</li>
+</ol>
+<blockquote>
+<p><strong>启动</strong>对应的<strong>服务端程序</strong>（可能需要填入部分配置信息）并等待部署完成即可，有的软件不自带服务端的启动程序，或者其不能够满足服务器的需求，因此需要下载对应的服务端</p>
+<ul>
+<li>
+<h4 id="局域网房间通式"><a class="header" href="#局域网房间通式">局域网房间通式</a></h4>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>房主：启动目标游戏---&gt;多人游戏---&gt;创建主机---&gt;启动组网程序并加入同一组网网络---&gt;等待其他玩家加入</li>
+<li>访客：启动目标游戏---&gt;多人游戏---&gt;启动组网程序并加入同一组网网络---&gt;回到游戏在局域网下搜索主机并加入对应的房间</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="泰拉瑞亚terraria示例eg"><a class="header" href="#泰拉瑞亚terraria示例eg">泰拉瑞亚Terraria（示例eg）</a></h4>
+</li>
+</ul>
+<blockquote>
+<p>房主启动游戏后选择多人游戏---&gt;创建主机即可（pe，pc同理）</p>
+</blockquote>
+<ul>
+<li>
+<h4 id="我的世界minecrafteg"><a class="header" href="#我的世界minecrafteg">我的世界Minecraft（eg）</a></h4>
+</li>
+</ul>
+<blockquote>
+<h5 id="方法一启用游戏内置局域网服务器"><a class="header" href="#方法一启用游戏内置局域网服务器">方法一：启用游戏内置局域网服务器</a></h5>
+<blockquote>
+<p>房主启动游戏后选择单人游戏---&gt;进入选定世界---&gt;按键ESC---&gt;对局域网开放---&gt;(允许作弊：启用命令)创建一个局域网世界(给定的随机端口也可nat使用，但没必要)</p>
+</blockquote>
+<h5 id="方法二部署服务端"><a class="header" href="#方法二部署服务端">方法二：部署服务端</a></h5>
+<blockquote>
+<p>请跳转至内网穿透部分查看部署服务器端方法，部署完后再回来下一步</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<ol start="2">
+<li>
+<h3 id="2异地组网方式通用-实现"><a class="header" href="#2异地组网方式通用-实现"><strong>2.异地组网方式(通用-实现)</strong></a></h3>
+</li>
+</ol>
+<blockquote>
+<p><strong>前言：<strong>异地组网相较于其他方式依赖于</strong>软件的自动搜索</strong>，只是在理论上简单，实际操作更可能遇到问题，此时最好查询<strong>官方文档</strong>，这里我提出以下<strong>两</strong>点建议：</p>
+<ol>
+<li>组网成功后可以在<strong>命令提示符</strong>中<strong>ping</strong>软件给出的<strong>虚拟网内其他用户的地址</strong>，以检查是否能够连通，若不能ping通大概率是不成功的</li>
+<li>若<strong>能ping通</strong>但软件自动搜索<strong>不能搜到</strong>，则<strong>检查防火墙</strong>的相关配置，若还是不行可以在对应的<strong>社区咨询</strong></li>
+</ol>
+<ul>
+<li>
+<p><strong>中转服务器类型异地组网</strong>
+<img src="https://s1.vika.cn/space/2023/03/23/52c37ee84e2a41149485140fe87103f1" alt="异地组网流程图，但不一定正确" /></p>
+</li>
+<li>
+<p><strong>P2P类型异地组网</strong>
+<img src="https://s1.vika.cn/space/2023/03/23/2577e99ea1bb49ce88c3e961514916d6" alt="异地组网流程图，但不一定正确" />
+<strong>我在这里列出常见的平台</strong>：（以下为<strong>普通用户配置:不购买套餐</strong>)</p>
+</li>
+<li>
+<h4 id="常见平台"><a class="header" href="#常见平台">常见平台</a></h4>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://pgy.oray.com/download/"><strong>蒲公英(已不完全免费)</strong></a>：学习成本低；付费不推荐，简单，只要<strong>登录同一个账号</strong>即可；</li>
+<li><em><strong>Hiper</strong></em>(重名太多找不到链接)：<strong>一个</strong>注册的<strong>账号付费后</strong>可以邀请其他人加入使用；签到送时长；学习成本低；宽带较好</li>
+<li><a href="https://bugxia.com/357.html"><strong>EasyN2N</strong></a>：学习成本较低；<strong>只能Windows间使用</strong>，会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；加入同一个小组即可</li>
+<li><strong><a href="https://www.radmin-lan.cn/">Radmin LAN</a></strong>：学习成本低；<strong>只能Windows间使用</strong>，会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；加入同一个房间即可</li>
+<li><strong><a href="https://www.7iot.net/">UDPPLAN(博客)</a></strong>：会<strong>选择自动安装</strong>一个<strong>虚拟网卡</strong>；简单免费；无需账号</li>
+<li><strong><a href="https://www.teamviewer.cn/cn/">TeamViewer</a></strong>(<strong>安装</strong>要选<strong>VPN)</strong>：学习成本低；简单易用；但<strong>需要注册账号</strong></li>
+<li><strong><a href="https://www.zerotier.com/">ZeroTier</a></strong>：有一定学习成本；会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；管理能力强；但<strong>对网络要求较高，不过可以自己搭建plant</strong></li>
+<li><strong><a href="https://tailscale.com/">Tailscale</a></strong></li>
+<li><strong><a href="https://pk.llren.com/">游侠(已不完全免费)</a>十分简单，需要实名认证</strong></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="异地组网操作流程"><a class="header" href="#异地组网操作流程"><strong>异地组网操作流程</strong></a></h4>
+</li>
+</ul>
+<blockquote>
+<p>0.注册账号[可能没有这一步]
+1.<strong>创建</strong>一个<strong>网络</strong>，将<strong>网络的ID和验证密钥</strong>或者<strong>是网络名称和密钥</strong>给访客
+2.访客通过给定的密钥加入该网络，即可实现异地组网</p>
+<ul>
+<li>无论是主机还是访客创建，只要在同一个网络下都一样，如果主机无法创建网络可以让访客试试</li>
+<li>房主创建本地服务器后，一般进入游戏选择多人游戏在局域网下搜索房主即可，有的游戏允许其他人通过组网平台给定的ip直连</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="图文示例-1"><a class="header" href="#图文示例-1"><strong>图文示例</strong></a></h4>
+</li>
+</ul>
+<blockquote>
+<p>此处以<strong>蒲公英</strong>和<strong>红警2</strong>、<strong>RadminLAN</strong>和<strong>Minecraft</strong>为例（<strong>图示</strong>+<strong>简短文字描述</strong>）：</p>
+<ul>
+<li><strong>蒲公英</strong>使用方法：
+<img src="https://s1.vika.cn/space/2023/03/23/0355efd17635468193a1db6729b80432" alt="蒲公英使用教程" /></li>
+<li><strong>RadminLAN</strong>使用方法（<strong>通用</strong>）：
+<img src="https://s1.vika.cn/space/2023/03/23/92c65870f8ca45e49af37f9099be6c0e" alt="RadminLAN使用教程" /></li>
+</ul>
+</blockquote>
+</blockquote>
+<h2 id="类型三本地预留位置的游戏通过远程控制实现远程联机"><a class="header" href="#类型三本地预留位置的游戏通过远程控制实现远程联机"><strong>类型三：本地预留位置的游戏</strong>（通过远程控制实现远程联机）</a></h2>
+<blockquote>
+<p><strong>前言：<strong>远程控制操作起来相对简单，<strong>一般</strong>只能</strong>主机用手柄</strong>，其他连接的<strong>访客只能用键鼠</strong>。示例以<strong>向日葵</strong>为例，这里我列出常见的远程控制软件：</p>
+<ul>
+<li>
+<h3 id="常见平台-1"><a class="header" href="#常见平台-1">常见平台</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><strong><a href="https://im.qq.com/index">QQ</a>/<a href="https://tim.qq.com/">TIM</a><strong>仅支持</strong>PC</strong>间控制，免费但画质一般，有一定延迟，并且<strong>只能一对一</strong>连接；在好友面板选择<strong>远程协助</strong>，等待对方同意即可</li>
+<li><strong><a href="https://sunlogin.oray.com/">向日葵</a></strong>（v12绿色版无需账号登录）：免费，可以<strong>多设备连接一台设备</strong>，功能较全；只需要把<strong>ID和验证码</strong>发给好友即可让好友远程控制。（连接人数较多时可能卡顿，<strong>重启</strong>向日葵服务并让好友们重新加入即可）</li>
+<li><strong><a href="https://www.teamviewer.cn/cn/">TeamViewer</a></strong>：免费；只需要把<strong>ID和验证码</strong>发给好友即可让好友远程控制。</li>
+<li><strong><a href="https://parsec.app/">Parsec</a></strong>（<strong>win10+</strong>）：免费，易用，可以<strong>跨平台</strong>但有相应的<strong>系统版本限制</strong>，功能非常齐全，对游戏方面更加友好，但可能对网络有一定要求，不过有<strong>网页端</strong>可以用；既可以分享主机地址让他人加入(需要<strong>手动接受</strong>加入请求)，也可以创建公开房间或者加入处于公开状态的房间来远程控制联机</li>
+<li><a href="https://meeting.tencent.com/"><strong>腾讯会议</strong></a>：免费简单；可能有一定延迟，视自己网络属性而定。</li>
+<li><strong><a href="https://store.steampowered.com/about/">Steam</a>远程畅玩</strong>(流式传输)：免费，最简单，但<strong>需要双方互加好友</strong>(Steam有一定条件)，而且对<strong>网络要求较高，可能用不了</strong>，需要有人<strong>游戏在库中</strong>；游戏内<strong>Shift+Tap</strong>唤出好友列表<strong>邀请</strong>好友远程畅玩即可</li>
+<li><strong><a href="https://anydesk.com/zhs">AnyDesk</a>；<a href="https://www.todesk.com/solo?v=4">ToDesk</a></strong></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="远程控制操作流程"><a class="header" href="#远程控制操作流程"><strong>远程控制操作流程</strong></a></h3>
+</li>
+</ul>
+<blockquote>
+<p>1.配置好游戏后，<strong>启动</strong>对应的远程协助软件，并<strong>通知好友启动</strong>相同的软件
+2.将你的<strong>ID密钥</strong>给予好友，好友选择<strong>加入/连接</strong>功能远程获取你电脑的<strong>控制权及画面</strong>(QQ、Steam无密钥)?</p>
+<ul>
+<li>
+<h3 id="图文示例-2"><a class="header" href="#图文示例-2"><strong>图文示例</strong></a></h3>
+此处以<strong>向日葵</strong>和<strong>DR2C</strong>为例（<strong>图示</strong>+<strong>简短文字描述</strong>）：
+<strong>向日葵</strong>使用方法：
+<img src="https://s1.vika.cn/space/2023/03/23/72d1efe7da664afe9aa21514258bcb27" alt="向日葵联机教程" />
+<em>我不说是谁，好像有人的demo拼成了dome</em></li>
+</ul>
+</blockquote>
+</blockquote>
+<h2 id="其他附加问题"><a class="header" href="#其他附加问题"><strong>其他附加问题</strong></a></h2>
+<blockquote>
+<ul>
+<li><strong>若需手柄但没有</strong>，可以尝试使用<strong>DroidJoy</strong>或<strong>MyJoy</strong>等软件将<strong>安卓</strong>手机转为手柄并连接电脑，亦或者是其他方法都。</li>
+<li><strong>若好友电脑没有麦克风</strong>可以使用<strong>WO Mic</strong>来让<strong>安卓</strong>手机变为<strong>麦克风</strong>。</li>
+<li><strong>内网穿透要求实名但不满条件</strong>的，可以尝试不断使用<strong>新兴的</strong>或者<strong>国外的</strong>内网穿透工具，一般需要提交的信息较少</li>
+<li>游戏联机时非远程协助联机的<strong>服务器端的版本</strong>必须与<strong>用户端的版本</strong>相匹配，像<strong>TR</strong>、<strong>MC</strong>可以通过安装<strong>跨版本插件</strong>（链接见下）来允许<strong>大版本内</strong>的联机兼容</li>
+<li><strong>远程协助</strong>一般只有<strong>主机的手柄</strong>输入可以被识别，<strong>其他连接者</strong>只能<strong>使用键盘</strong>，因此大部分软件远程控制只能<strong>主机使用手柄</strong>。</li>
+</ul>
+</blockquote>
+<h2 id="本文视频中的链接汇总"><a class="header" href="#本文视频中的链接汇总"><strong>本文&amp;视频中的链接汇总</strong></a></h2>
+<blockquote>
+<ul>
+<li><strong>Termux</strong>
+&gt;<a href="https://github.com/termux/termux-app/wiki/Termux-on-android-5-or-6">github安卓6及以下版本</a>
+&gt;<a href="https://github.com/termux">github安卓7及以上版本</a></li>
+<li><strong>Mindustry像素工厂</strong></li>
+</ul>
+<blockquote>
+<p><a href="https://github.com/Anuken/Mindustry/releases">Mindustry的Github发行页面</a></p>
+</blockquote>
+<ul>
+<li><strong>Terraria互通服</strong>
+&gt;<a href="https://github.com/Pryaxis/TShock/releases/download/v4.5.18/TShock4.5.18_Terraria1.4.3.6.zip">1.4.3.6及以下版本的TShock(github直链)</a></li>
+</ul>
+<blockquote>
+<p><a href="https://store.steampowered.com/app/1281930/tModLoader/">TML（Steam商店地址)(Mod）</a>
+<a href="https://github.com/mistzzt/TShock/releases">TShock服务端下载</a>
+<a href="https://github.com/Moneylover3246/Crossplay">CrossPlay跨版本插件</a>
+<a href="https://www.bbstr.net/r/79/">CrossPlay插件在TrBBS上的页面（旧）</a></p>
+</blockquote>
+<ul>
+<li><strong>Minecraft互通服</strong></li>
+</ul>
+<blockquote>
+<p><a href="https://www.minecraft.net/en-us/download/server/bedrock/">单开基岩版无插件无互通平台</a>
+<a href="https://papermc.io/downloads">MCpaper端下载</a>
+<a href="https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/master/">Geyser下载</a>
+<a href="https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/master/">Floodgate下载</a>
+<a href="https://www.spigotmc.org/resources/multiverse-core.390/updates">多世界插件Multiverse-Core</a>
+<a href="https://www.mcbbs.net/thread-909834-1-1.html">背包隔离插件</a>
+<a href="https://www.spigotmc.org/resources/iridium-skyblock-1-13-1-19.62480/">空岛插件</a>
+<a href="https://www.spigotmc.org/resources/vault.34315/">空岛需要的前置插件</a>
+<a href="https://files.minecraftforge.net/net/minecraftforge/forge/">Forge下载</a>
+<a href="https://www.spigotmc.org/resources/viaversion.19254/">跨版本插件</a></p>
+</blockquote>
+<ul>
+<li><strong>生存战争Survivalcraft联机版</strong></li>
+</ul>
+<blockquote>
+<p><a href="https://space.bilibili.com/292546719?spm_id_from=333.337.search-card.all.click">SC联机版作者团队：瓦西里沃尔特</a></p>
+</blockquote>
+<ul>
+<li><strong>红警双端联机</strong></li>
+</ul>
+<blockquote>
+<p><a href="https://www.bilibili.com/video/BV13h411676X">手机运行红警(b站视频教程)</a></p>
+</blockquote>
+</blockquote>
+<h2 id="总结"><a class="header" href="#总结"><strong>总结</strong></a></h2>
+<blockquote>
+<p><strong>以上方法的最终目标都是打破空间限制实现远程联机，综合来看，原本联机空间越严格的程序在远程联机的方法上操作起来反而更简单。本次教程主要面向新萌，没什么技术力，如果有什么问题可以向我咨询，有什么错误可以指出，就是我不一定在线，回复可能较慢，见谅，感谢您的浏览O(∩_∩)O</strong></p>
+</blockquote>
+<hr />
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="PCPE开服联机part1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
 
-                            <a rel="next prefetch" href="PCPE开服联机part3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="PCPEMutliplayP1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -676,11 +1115,8 @@ app_update 1281930 +tml版本号 validate
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="PCPE开服联机part1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
 
-                    <a rel="next prefetch" href="PCPE开服联机part3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="PCPEMutliplayP1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
