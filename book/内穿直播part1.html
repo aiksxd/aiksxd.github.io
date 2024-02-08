@@ -1,0 +1,323 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>准备工作 - AX Blogs</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPE双端开服建站联机教程.html"><strong aria-hidden="true">1.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPE开服联机part1.html"><strong aria-hidden="true">1.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part2.html"><strong aria-hidden="true">1.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part4.html"><strong aria-hidden="true">1.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="内网穿透实现直播网站.html"><strong aria-hidden="true">2.</strong> NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="内穿直播part1.html" class="active"><strong aria-hidden="true">2.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="内穿直播part2.html"><strong aria-hidden="true">2.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">3.</strong> RustBevyOnTermux</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AX Blogs</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="前言"><a class="header" href="#前言">前言</a></h2>
+<ul>
+<li>建议配合视频教程一起使用，这篇提供我已知的最优解，但<strong>不一定是最好</strong>；</li>
+<li>完成本地的直播网站需要一台满足配置要求的设备(能<strong>带动OBS</strong>+<strong>内网穿透</strong>且<strong>承载</strong>住他人的<strong>拉流</strong>；主要吃<strong>CPU和宽带</strong>，CPU方面基本上<strong>一般电脑都可以</strong>)，体量不大宽带家用蛮够，主要看映射软件给你开放的宽带（obs默认码率一个访问者流量传输约为<strong>128KB/s</strong>），如果面向人群体量稍大如班级可以考虑研究一下<strong>p2p</strong>技术，再大这则博客就没用了，大型的平台主要采用<strong>CDN分发</strong>和<strong>p2p</strong>；</li>
+<li>需要两条http协议的隧道，如果网页有托管可以直接对外公开的话可以只要一个隧道（Github是https打头，数据不和http互通，需要额外配置）</li>
+</ul>
+<h2 id="准备工作"><a class="header" href="#准备工作">准备工作</a></h2>
+<p>除<strong>内网穿透</strong>需求<strong>可能要多个</strong>，<strong>其他工具只要一个</strong>即可</p>
+<ul>
+<li>
+<h3 id="网页部署工具选一"><a class="header" href="#网页部署工具选一"><strong>网页部署工具</strong>（选一）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>Windows自带</strong>的<strong>IIS组件</strong></p>
+</li>
+<li>
+<p><a href="https://www.xp.cn/">小皮面板phpStudy</a></p>
+</li>
+<li>
+<p><a href="https://cn.vuejs.org/">Vue.js渐进式 JavaScript 框架</a></p>
+</li>
+<li>
+<p><a href="https://hexo.io/zh-cn/index.html">Hexo</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="推流工具选一"><a class="header" href="#推流工具选一"><strong>推流工具</strong>（选一）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><a href="https://ffmpeg.org/">FFmpeg</a></p>
+</li>
+<li>
+<p><a href="https://obsproject.com/">OBS</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="流媒体中转服务器选一"><a class="header" href="#流媒体中转服务器选一"><strong>流媒体中转服务器</strong>（选一）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><a href="https://github.com/gwuhaolin/livego">LiveGo：纯 Golang 编写的直播服务器，性能高，跨平台</a></p>
+</li>
+<li>
+<p><a href="https://github.com/arut/nginx-rtmp-module">nginx-rtmp-module：基于NGINX的媒体流服务器</a></p>
+</li>
+<li>
+<p><a href="https://github.com/illuspas/Node-Media-Server">Node-Media-Server：一个 Node.js 实现的RTMP/HTTP/WebSocket/HLS/DASH流媒体服务器</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="内网穿透工具这里只列出支持httphttps协议的视频演示方法需要凑出2条隧道"><a class="header" href="#内网穿透工具这里只列出支持httphttps协议的视频演示方法需要凑出2条隧道"><strong>内网穿透工具（这里只列出支持http/https协议的)</strong>(视频演示方法需要凑出<strong>2条隧道</strong>）</a></h3>
+<blockquote>
+<ul>
+<li><a href="https://www.cpolar.com/"><strong>cpolar</strong></a>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低；<strong>http</strong>协议提供<strong>免费动态域名</strong>，<strong>免费一条http</strong>隧道</li>
+<li><a href="https://www.fgnwct.com/"><strong>飞鸽</strong></a>：学习成本低；<strong>0.5M</strong>，签到给流量；<strong>http</strong>协议提供<strong>免费域名</strong>；<strong>免费两条</strong>隧道但<strong>http只能一条</strong></li>
+<li><a href="https://www.openfrp.net"><strong>OpenFrp 内网穿透（需域名）</strong></a>：学习成本低(带GUI启动器和樱花相似)免费，签到领流量；<strong>部分节点</strong>无需实名；速度<strong>限制</strong>12M/s(速度取决于所选节点与访客距离)；固定域名；<strong>http</strong>协议需要<strong>绑定自己的域名</strong></li>
+<li><a href="https://natapp.cn/"><strong>NATAPP</strong></a>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1M；<strong>http</strong>协议提供<strong>免费域名</strong></li>
+<li><a href="http://www.ipyingshe.com/">闪库</a>：1M/s；<strong>仅支持Http</strong>，<strong>随机固定</strong>域名；未来可能实名
+<strong>（以下是其他我没用过的内网穿透）</strong></li>
+<li><a href="https://ngrok.com/"><strong>ngrok(https)</strong></a>：学习成本一般；无需实名；只给<strong>一条免费隧道</strong>，离得近的节点延迟较低；http会<strong>自动换https</strong>协议（相当于<strong>不支持http</strong>）</li>
+<li><a href="https://hsk.oray.com/"><strong>花生壳(https)</strong></a>：极低的学习成本；<strong>实名1M</strong>每月1G且<strong>无Http只有https</strong>，隧道固定域名</li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="内网穿透实现直播网站.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="内穿直播part2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="内网穿透实现直播网站.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="内穿直播part2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

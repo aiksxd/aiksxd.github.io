@@ -1,0 +1,727 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>内网穿透实现 - AX Blogs</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPE双端开服建站联机教程.html"><strong aria-hidden="true">1.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPE开服联机part1.html"><strong aria-hidden="true">1.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part2.html" class="active"><strong aria-hidden="true">1.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part4.html"><strong aria-hidden="true">1.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="内网穿透实现直播网站.html"><strong aria-hidden="true">2.</strong> NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="内穿直播part1.html"><strong aria-hidden="true">2.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="内穿直播part2.html"><strong aria-hidden="true">2.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">3.</strong> RustBevyOnTermux</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AX Blogs</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="各种游戏联机方法示例"><a class="header" href="#各种游戏联机方法示例">各种游戏联机方法示例</a></h2>
+<p>只列出部分游戏，主要看自己判断；支持ip直连（内网穿透或公网主机）的也都支持异地组网</p>
+<ul>
+<li>生存创造类</li>
+</ul>
+<blockquote>
+<p>内+异：MC、TR、饥荒
+远程协助：DR2C</p>
+</blockquote>
+<ul>
+<li>经营类</li>
+</ul>
+<blockquote>
+<p>内+异：星露谷</p>
+</blockquote>
+<ul>
+<li>策略类</li>
+</ul>
+<blockquote>
+<p>内+异：铁锈
+异：红警，钢4</p>
+</blockquote>
+<ul>
+<li>竞技类</li>
+</ul>
+<blockquote>
+<p>内+异+远：武装原型
+异：使命全系列、鸭子游戏、回旋标</p>
+</blockquote>
+<h2 id="类型一提供ip直连的程序通过中间服务器实现远程联机"><a class="header" href="#类型一提供ip直连的程序通过中间服务器实现远程联机"><strong>类型一</strong>：提供<strong>IP直连</strong>的程序（通过中间服务器实现远程联机）</a></h2>
+<p><strong>判断方法</strong>：允许通过输入<strong>字符串类型的值</strong>来连接服务器（如同<strong>浏览器的地址栏</strong>），该类型程序一般允许用户自己创建连接服务器或者直接连接，典型的如：我的世界(Minecraft)、泰拉瑞亚(Terraria)、星露谷物语(Stardew Valley)、铁锈战争(Rusted Warfare)、生存战争(Survivalcraft)联机版等</p>
+<hr />
+<ol>
+<li>
+<h3 id="1部署本地服务端必需-准备"><a class="header" href="#1部署本地服务端必需-准备"><strong>1.部署本地服务端(必需-准备)</strong></a></h3>
+</li>
+</ol>
+<blockquote>
+<p><strong>启动</strong>对应的<strong>服务端程序</strong>（可能需要填入部分配置信息）并等待部署完成即可，有的软件不自带服务端的启动程序，或者其不能够满足服务器的需求，因此需要下载对应的服务端：</p>
+<ul>
+<li>
+<h4 id="我的世界minecraft"><a class="header" href="#我的世界minecraft">我的世界Minecraft</a></h4>
+</li>
+</ul>
+<h5 id="安装服务端"><a class="header" href="#安装服务端">安装服务端</a></h5>
+<p><em>无论何种平台大概流程都是[配置运行环境]--&gt;运行服务器端--&gt;公开服务器端口</em></p>
+<ul>
+<li>Java端服务器</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.minecraft.net/zh-hans/download/server">Minecraft官方服务器端（纯原版）</a></li>
+<li><a href="https://papermc.io/downloads">Paper服务器端（插件+优化）</a></li>
+<li><a href="https://hub.spigotmc.org/jenkins/job/BuildTools/">spigot服务器端（插件）</a></li>
+<li><a href="https://files.minecraftforge.net/net/minecraftforge/forge/">Forge安装服务器（mod）</a>（下载时若不能跳过广告，一可在下载按钮右键复制链接，单独粘贴链接中URL部分，或者到广告界面查看网页源代码，找到skip附近的链接地址并单独搜索即可）</li>
+<li><a href="https://spongepowered.org/downloads/">Forge + Sponge（插件+mod - SpongeMod支持版本少）</a></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<ul>
+<li>关于Java版开服：</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.oracle.com/java/technologies/downloads/">Java各大平台版本地址</a></li>
+<li>OpenJDK on Linux：
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>sudo apt install openjdk-17 #版本与服务端挂钩1.16.5&amp;-请安装使用jdk8</p>
+<pre><code></code></pre>
+</blockquote>
+<p>选择合适服务端需求版本的java后下载服务器端</p>
+<p>如果openjdk不能用去官网下对应版本的javajdk/jre，无系统archarm64/arm64，有则按照系统下载对应包</p>
+<p>Linux通过终端命令行运行；Windows创建<strong>bat文件</strong>运行服务端</p>
+<pre><code class="language-bash">   java -Xms1024M -Xms2048M -jar 服务器端名称.jar
+</code></pre>
+<ul>
+<li>或java -jar 服务端名称.jar自动分配内存。</li>
+<li>其中<strong>Xms</strong>为<strong>最小</strong>内存，<strong>Xmx</strong>为<strong>最大</strong>内存，单位可以为M也可以为G，也可以默认自适应。</li>
+<li>服务端名称是下载使用哪个服务端就填哪个服务端的名称，<strong>forge</strong>要<strong>先双击安装</strong>程序(需java运行环境)运行并安装服务器端</li>
+<li>启动带GUI的服务端可以在后面加 <strong>nogui</strong>来取消运行时启动独立窗口</li>
+<li>java是使用默认环境变量的java，当1.16.5&amp;-版本服务器运行时可能不兼容新版，可以在计算机中安装多个版本的java并使用<strong>绝对路径</strong>来运行服务器端如下（Linux用./同理）：</li>
+</ul>
+<pre><code class="language-bash">&quot;C:\Program Files\Java\jre1.8.0_351\bin\java&quot; -Xms1G -Xmx2G -jar paperc.jar nogui
+</code></pre>
+<ul>
+<li>第一次运行需要先改<strong>eula.txt</strong>文件中eula=后面的false改为<strong>true</strong>即同意上述协议，修改完成后保存再次启动(Linux进入vim默认命令模式后按i进入插入模式开始写入，按ESC切换为命令模式，输入:wq保存并退出，:q!不保存强制退出)</li>
+</ul>
+<pre><code class="language-bash">sudo apt install vim #linux安装编辑器，已安装跳过
+vi eula.txt
+</code></pre>
+<p>之后再次启动会下载所需文件，耐心等待，若下载出现错误可以开<strong>网络工具</strong>或者在<strong>log报错文件</strong>中找到报错的<strong>文件地址手动下载</strong>，手动下载再失败可以<strong>复制地址到网盘的P2P下载器</strong>下载。</p>
+<ul>
+<li><strong>Stop</strong>停止并保存服务器，注该开服方法不<strong>适用于</strong>国内版MC，且<strong>国内版</strong>MC与<strong>国际版</strong>并<strong>不能互通</strong>。</li>
+</ul>
+</blockquote>
+<h5 id="mc开服成功后相关内容"><a class="header" href="#mc开服成功后相关内容">MC开服成功后相关内容</a></h5>
+<ul>
+<li>配置文件</li>
+</ul>
+<blockquote>
+<p>位置：服务器目录下Serverpropreity</p>
+<ul>
+<li>出生点保护：spawn-protection=16 #半径</li>
+<li>启用命令方块：enable-command-block=false #默认关闭，故有些地图无法使用，启用即可正常</li>
+<li><a href="https://minecraft.fandom.com/zh/wiki/Server.properties">更多请跳转至wiki</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>基本命令</li>
+</ul>
+<blockquote>
+<p>控制台内无&quot;/&quot;，游戏内需加&quot;/&quot;</p>
+<pre><code class="language-bash">op 玩家名 #使指定玩家获取权限
+deop 玩家名 #作用与op相反
+ban 玩家名 #将指定玩家踢出服务器（封禁）
+</code></pre>
+</blockquote>
+<h5 id="java服基础上实现与be基岩互通"><a class="header" href="#java服基础上实现与be基岩互通">Java服基础上实现与BE(基岩)互通</a></h5>
+<blockquote>
+<p>进不去下载页面试试魔法或代理或修改dns</p>
+<p>以下链接为构建页面，选择一个最新构建的分支下载需对应需要的jar</p>
+<ul>
+<li><a href="https://ci.opencollab.dev//job/GeyserMC/job/Geyser/job/master/">Geyser跨平台翻译组件</a></li>
+<li><a href="https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/master/">Floodgate基岩版离线服组件</a></li>
+<li><a href="https://www.spigotmc.org/resources/viaversion.19254/">跨版本插件</a></li>
+<li><a href="https://geyser.superiormc.cn/user-guide/da-jian">关于Geyser</a>:</li>
+</ul>
+<blockquote>
+<p>Geyser-Fabric安装在mods文件夹
+&gt;服务器要求使用任何 客户端Mod 都会导致基岩版玩家无法进入服务器，
+Geyser-Spigot作为插件安装在plugins文件夹，服务器内/reload /reload confirm可以重载服务器插件
+Geyser-Velocity独立端，单独窗口运行</p>
+<ul>
+<li>quote：如果你使用的服务端核心并不支持 Java 16，请在 启动参数 添加 -DPaper.ignoreJavaVersion=true 来使得你的服务端能够正常运行。</li>
+<li>如果你的服务端核心实在无法在 Java 16 上运行，请考虑使用 独立版。</li>
+<li>手机版开互通服不建议使用独立端，需要较高性能</li>
+<li>一些旧版本的 Geyser 只和 Floodgate 1.0 适配而不支持 Floodgate 2.0，所以建议最新版</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<p><a href="https://geyser.superiormc.cn/floodgate-wiki/da-jian-he-yong-fa">关于Floodgate</a>:
+&gt;下载并放置在服务端目录下plugins文件夹内
+&gt;+ <em>quote：你可以在各个子服上安装 Floodgate (但 Geyser 真的没必要) 来增强玩家的皮肤显示功能和在子服上使用 Floodgate API。如果你要这么做，你 必须 保证你将代理服务端内 Floodgate 文件夹内的 key.pem 文件放置到了 所有子服的 Floodgate 文件夹内的相同位置，否则，基岩版客户端无法加入服务器。</em>
+&gt;+ 你只需在使用独立版上进行此步骤：复制 Floodgate 配置所在的目录下的 key.pem 文件到 Geyser独立版 的文件夹内。不要尝试将这个文件分享给其他人！这个密钥文件允许基岩版账号绕过 Java 版身份验证，如果有人拿到了它，他们可能会对您的服务器造成严重破坏
+&gt;+ 在你的 Floodgate 配置中，将 username-prefix 设置为你需要的前缀 - 你可以设置为 &quot;&quot; 以关闭基岩版前缀功能。
+&gt;&gt; <em>在一些旧版本的 Paper 服务器（或者 Paper 的一些分支），你或许需要关闭你的服务器并删除你的 服务端 jar 文件同目录下的的usercache.json 文件以避免出现你的老的 Floodgate 玩家的前缀没有更新的问题。</em></p>
+</li>
+<li>
+<p>配置完Geyser[&amp;Floodgate]后，服务端就配置完成了</p>
+</li>
+</ul>
+</blockquote>
+<h5 id="仅基岩版相关"><a class="header" href="#仅基岩版相关">仅基岩版相关</a></h5>
+<blockquote>
+<p>适合只开手机服务器的用户</p>
+<ul>
+<li><a href="https://www.minecraft.net/en-us/download/server/bedrock/">单基岩版官方服务端无插件互通官网</a>
+在termux中的启动命令</li>
+</ul>
+<pre><code class="language-bash">####下载并解压服务端文件####
+wget https://minecraft.azureedge.net/bin-linux/bedrock-server-1.18.12.01.zip #换成自己版本
+unzip bedrock-server-1.18.12.01.zip -C minecraftbeserver/ #目录换成你自己想要的好记的名
+####运行命令####
+LD_LIBRARY_PATH=. ./bedrock_server
+</code></pre>
+<ul>
+<li>修改配置文件同上，如：player-idle-timeout=0 #挂机踢出时间，0为不因挂机超时踢出玩家</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="泰拉瑞亚terraria"><a class="header" href="#泰拉瑞亚terraria">泰拉瑞亚Terraria</a></h4>
+</li>
+</ul>
+<blockquote>
+<p>1.4以下版本win用户可不安装新版dotnet，建议先启动试试不能启动再安装运行环境。另外：手机termux开tshock的服必须在proot/chroot环境中，需要安装一个linux系统</p>
+<ul>
+<li><a href="https://dotnet.microsoft.com/zh-cn/download/">通过安装dotnet启动Win&amp;Linux：dotnet官网链接</a></li>
+</ul>
+<blockquote>
+<p>Windows安装dotnet后双击服务端程序直接运行即可</p>
+<p>Windows游戏存档等目录：资源管理器---&gt;左侧：我的文档/My Games/Terraria/
++Linux安装dotnet命令(termux旧版使用mono)：</p>
+<pre><code class="language-bash">sudo apt install dotnet-sdk-6
+</code></pre>
+</blockquote>
+<ul>
+<li>Linux或使用脚本安装
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>wget https://dot.net/v1/dotnet-install.sh -Oc dotnet-install.sh
+sudo chmod +x ./dotnet-install.sh
+./dotnet-install.sh  --channel 6.0 #可修改版本，推荐6.0
+dotnet TerrariaServer.exe #运行服务器</p>
+<pre><code></code></pre>
+</blockquote>
+<ul>
+<li>Linux或其他平台通过mono启动
+&gt;注：使用mono最大支持<a href="https://github.com/Pryaxis/TShock/releases/download/v4.5.18/TShock4.5.18_Terraria1.4.3.6.zip">1.4.3.6及以下版本的TShock(github直链)</a> ，<strong>Android6&amp;-我目前没有开</strong>1.4.3.6TShock的方法，<strong>新版TShock需要dotnet</strong>
+&gt;<a href="https://www.mono-project.com/download/">mono官网</a>
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>apt install mono-complete</p>
+<pre><code>*TerariaServer.exe服务端游戏本体目录下自带，linux也是先下载游戏本体，进入游戏目录运行服务端文件*
+
+</code></pre>
+</blockquote>
+<ul>
+<li>Linux原版服务器：
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>#64位操作系统先执行以下命令
+sudo add-apt-repository multiverse
+sudo dpkg --add-architecture i386
+sudo apt update
+sudo apt install lib32gcc1
+#下面安装steamcmd，steam也可以，在游戏目录启动游戏即可
+sudo apt install steamcmd
+./usr/games/steamcmd #sudo bash ./...
+login + 用户名 #登录帐号
+app_update 105600 #安装terraria
+cd ~/Steam/steamapps/common/Terraria
+./TerrariaServer.bin.x86_64 #运行服务端</p>
+<pre><code>Linux游戏存档等路径：~/.local/share/Terraria/
+
+</code></pre>
+</blockquote>
+<ul>
+<li><a href="https://github.com/Pryaxis/TShock/releases">TShock（相比原版可以装插件）</a>
+&gt;去官网复制下载链接，然后通过wget下载tshock的zip文件，之后使用unzip工具解压
+&gt;```</li>
+</ul>
+<blockquote>
+<p>wget -c #目标地址，-c是意外中断后再次下载能接上
+sudo apt install unzip
+unzip TShock*.zip -d tshock 
+cd tshock
+tar -xf TShock*.tar #解压目标文件，-C 加已经创建好的目录地址
+mono TerrariaServer.exe #启动命令</p>
+<pre><code>*如果提示开始下载dotnet之后失败，则先自己安装dotnet，见上*
+
++ 开服后看情况保存超级管理员代码，只有第一次显示，没记下来如果需要可以删除tshock.sqlite&amp;auth.lck文件然后重启，或者其他方法见下
++ TShock安装插件：将插件名.dll放在ServerPlugins下，重启后TShock会自动生成相应的配置文件
++ 版本差异时可以使用插件解决（如不同平台最新版不同时，但只能跨一个大版本内的子版本）[CrossPlay跨版本插件](https://github.com/Moneylover3246/Crossplay)
++ 通过控制台移动用户组至admin组获得管理权限（常用），或是游戏内输入/auth [authcode]获取超管权限，也可移动用户组至superadmin(超级管理员)，但是**不建议**用超管游玩，**超级管理的角色数据不会被保存**
++ config.json配置文件在tshock目录下，如出生点保护范围之类，可以进行查阅&amp;修改，之后重启更新服务器，[TShock官方帮助文档](https://ikebukuro.tshock.co/)；[相关链接推荐csdn1](https://blog.csdn.net/shuishen49/article/details/54743316)；[相关链接推荐csdn2]([https://blog.csdn.net/junknow/article/details/128260828)
++ TShock基本命令(控制台内无&quot;/&quot;，游戏内需加&quot;/&quot;)：
+&gt;+ 游戏内：
+&gt;/register 密码
+&gt;
+&gt;/login [password]
+&gt;
+&gt;/auth [authcode]
+&gt;
+&gt;+ 控制台：
+&gt;```bash
+&gt; ban 玩家名
+&gt; help [页数]
+&gt;```
+</code></pre>
+</blockquote>
+<ul>
+<li><a href="https://store.steampowered.com/app/1281930/tModLoader/">TML（Steam商店地址)(可装Mod）</a>
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>#还是terraria的目录下
+#steam更新命令：app_update &lt;应用ID&gt; [-beta &lt;测试名称&gt;] [-betapassword &lt;密码&gt;] [validate] 版本号自行查看，validate可以不成功时再加
+app_update 1281930 +tml版本号 validate
+./start-tModLoaderServer.sh</p>
+<pre><code></code></pre>
+</blockquote>
+<ul>
+<li><strong>exit</strong>停止并保存服务器，该开服方法不<strong>适用于</strong>国内版TR，且<strong>国内版</strong>TR与<strong>国际版</strong>并<strong>不能互通</strong>。</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="生存战争survivalcraft联机版"><a class="header" href="#生存战争survivalcraft联机版">生存战争Survivalcraft联机版</a></h4>
+</li>
+</ul>
+<blockquote>
+<p><strong>作者团队</strong>及其<strong>教程地址</strong>：<a href="https://space.bilibili.com/292546719?spm_id_from=333.337.search-card.all.click">瓦西里沃尔特 bilibili</a></p>
+</blockquote>
+<ul>
+<li>
+<h4 id="vue网站基本命令"><a class="header" href="#vue网站基本命令">Vue网站基本命令</a></h4>
+</li>
+</ul>
+<p>需先安装<strong>Node.js</strong>
+&gt;
+&gt;<code>bash npm install vue-cli -g 安装vue-cli vue init webpack my-project  初始化项目 npm install  安装项目依赖 npm run build 生成上线目录部署 nmp run dev 本地测试服务器 &gt;</code></p>
+<blockquote>
+<p><strong>Ctrl+C</strong>关闭服务器</p>
+</blockquote>
+<ul>
+<li>
+<h4 id="hexo网站基本命令"><a class="header" href="#hexo网站基本命令">Hexo网站基本命令</a></h4>
+</li>
+</ul>
+<p>需先安装<strong>Node.js</strong>和<strong>Git</strong>
+&gt;<code>bash npm install hexo-cli -g 安装hexo-cli hexo init 文件夹名 cd进去后npm install安装npm即完成 hexo new &quot;文章名&quot; 新文章 hexo new page &quot;页面名&quot; 生成新页面 hexo s 本地预览 hexo g 上传暂存区 hexo d 上传到Github hexo server -p 端口号 修改本地部署的端口 &gt;</code></p>
+<blockquote>
+<p><strong>Ctrl+C</strong>关闭服务器</p>
+</blockquote>
+</blockquote>
+<ol start="2">
+<li>
+<h3 id="2监听程序端口可跳过-准备"><a class="header" href="#2监听程序端口可跳过-准备"><strong>2.监听程序端口(可跳过-准备)</strong></a></h3>
+</li>
+</ol>
+<blockquote>
+<p>这里也给出了一些常见的应用端口，如果包含在内，或者已知，请跳过此步骤</p>
+<p><em><strong>先启动游戏服务器或创建局域网房间后才能看到其端口和协议类型，下面列出常见软件的协议类型及其端口</strong></em></p>
+<ul>
+<li><strong>网站默认http/https</strong>(vue：<strong>8080</strong>；PHPstudy：<strong>80</strong>；Hexo：<strong>4000</strong>；mdbook；<strong>3000</strong>；......)</li>
+<li><strong>泰拉瑞亚Terraria自带</strong>或<strong>TShock</strong>：TCP<strong>7777</strong></li>
+<li><strong>我的世界Minecraft：Java</strong>：TCP<strong>25565</strong>；内置服务端<strong>随机</strong>；<strong>BE基岩版</strong>：UDP<strong>19132</strong>（互通服两个都要映射）</li>
+<li><strong>铁锈战争Rusted Warfare</strong>：TCP<strong>5132</strong></li>
+<li><strong>生存战争Survivalcraft联机版</strong>：UDP<strong>28887</strong></li>
+<li><strong>星露谷物语Stardew Valley</strong>：UDP<strong>24642</strong></li>
+<li><strong>像素工厂Mindustry</strong>：<strong>TCP+UDP双协议映射&amp;相同对外端口</strong></li>
+<li><strong>饥荒</strong>：UDP<strong>地上10999&amp;地下10998</strong></li>
+<li>......（有的游戏服务器需要<strong>两条隧道</strong>才能正常运行，例如：<strong>未转变者Unturned</strong>(<strong>quit</strong>退出并保存服务器)、MC互通服等）</li>
+</ul>
+<p><em><strong>如果出现报错显示端口被占用相关问题，可以修改配置文件改变游戏默认的端口号，但有的程序不提供配置文件修改端口号，那也可以在下面操作找到占用该端口号的程序并将它结束掉；linux系统结束程序在下面</strong></em></p>
+<p><em><strong>一般游戏端口及其协议类型可以搜到，或者界面会告诉你，如果没有再进行下面的步骤</strong></em></p>
+<hr />
+<p><img src="https://s1.vika.cn/space/2023/03/23/3b38183a828441e99f50e4c1ddbb0d90" alt="图片加载失败了，不过不影响" /></p>
+<ul>
+<li>
+<h4 id="windows操作系统"><a class="header" href="#windows操作系统"><strong>Windows操作系统</strong></a></h4>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li><strong>启动资源监视器</strong>
+&gt;</li>
+</ol>
+<blockquote>
+<ul>
+<li>方法一：直接运行，按下<strong>Win+R</strong>，输入以下内容
+<code>C:\Windows\System32\perfmon.exe</code></li>
+<li>方法二：<strong>右键</strong>windows菜单栏 ——&gt; 选择<strong>任务管理器</strong> ——&gt; 选择<strong>性能</strong>一栏 ——&gt; 下面单击“<strong>打开资源监视器</strong>”</li>
+</ul>
+</blockquote>
+<ol start="2">
+<li><strong>监听程序端口</strong></li>
+</ol>
+<p><img src="https://s1.vika.cn/space/2023/03/23/647c28cf8e7e4ab5b135a5c7ab627a8e" alt="图片加载失败了，看视频吧，或者复制图片地址到浏览器地址栏里手动浏览" /></p>
+<blockquote>
+<p>在菜单栏<strong>网络</strong>下的页面划到<strong>监听端口</strong>一栏
+我们需要的是目标游戏的<strong>传输协议类型</strong>和它的<strong>端口号</strong>
+这里以<strong>TShock</strong>为例，它的<strong>默认端口号</strong>为<strong>7777</strong>，<strong>协议类型</strong>是<strong>TCP</strong>
+一般<strong>游戏</strong>的协议为<strong>TCP</strong>或<strong>UDP</strong>，要根据协议类型选择**合适的映射（内网穿透）**工具，因为有的映射工具不支持UDP，还有的不支持TCP、http。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<h4 id="linux操作系统"><a class="header" href="#linux操作系统"><strong>Linux操作系统</strong></a></h4>
+</li>
+</ul>
+<blockquote>
+<p>打开<strong>终端</strong>，输入
+<code>netstat -a</code></p>
+<ul>
+<li>参数含义：-a 显示所有；-n 以ip形式显示当前建立的有效连接和端口；-u 显示UDP协议；-t 显示TCP协议；-p 显示对应PID与程序名</li>
+<li>如果该方法不可用，可尝试安装nmap扫描本地端口</li>
+</ul>
+</blockquote>
+</blockquote>
+<ol start="3">
+<li>
+<h3 id="3内网穿透方式通用-实现"><a class="header" href="#3内网穿透方式通用-实现"><strong>3.内网穿透方式(通用-实现)</strong></a></h3>
+</li>
+</ol>
+<blockquote>
+<p><strong>前言：<strong>这里主要介绍基于</strong>第三方免费平台</strong>的内网穿透，<em><strong>倘若</strong>自己部署内网穿透，需要一份有固定公网ip的服务器和一个已经备案的域名，这里不讲，想要部署的可以自己搜索相关教程，还是挺全面的。</em></p>
+<p><img src="https://s1.vika.cn/space/2023/03/23/ac6857a399f24701aae0a29b463a740f" alt="内网穿透流程图，可能不正确" /></p>
+<p><strong>我在这里列出常见的平台</strong>：（以下为<strong>普通用户配置:不购买套餐</strong>）</p>
+<ul>
+<li>
+<h4 id="常见平台1mbps128kb18mb"><a class="header" href="#常见平台1mbps128kb18mb">常见平台（1M(bps)=128KB=1/8MB）</a></h4>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://hsk.oray.com/"><strong>花生壳</strong></a>：极低的学习成本；<strong>实名1M/s</strong>每月1G且<strong>无Http</strong>和<strong>UDP</strong>，固定域名</li>
+<li><a href="https://www.cpolar.com/"><strong>cpolar</strong></a>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低；<strong>http</strong>协议提供<strong>免费动态域名</strong></li>
+<li><a href="https://www.fgnwct.com/"><strong>飞鸽</strong></a>：学习成本低；<strong>0.5M/s</strong>，签到给流量；<strong>http</strong>协议提供<strong>免费域名</strong>；<strong>免费两条</strong>隧道但<strong>http只能一条</strong></li>
+<li><a href="https://www.mefrp.com/"><strong>MirrorEdge Frp镜缘(莱云)映射</strong></a>：学习成本一般；<strong>1元实名刷脸</strong>；速度限制取决于所选节点，隧道固定域名</li>
+<li><a href="https://www.openfrp.net"><strong>OpenFrp 内网穿透</strong></a>：学习成本低(带GUI启动器和樱花相似)免费，签到领流量；<strong>部分节点</strong>无需实名；速度<strong>限制</strong>12M/s(速度取决于所选节点与访客距离)；固定域名；<strong>http</strong>协议需要<strong>绑定自己的域名</strong></li>
+<li><a href="https://natapp.cn/"><strong>NATAPP</strong></a>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1Mbps；<strong>http</strong>协议提供<strong>免费域名</strong></li>
+<li><a href="https://xiaomy.net"><strong>网云穿</strong></a>：学习成本低；<strong>实名</strong>；每<strong>月1G</strong>；前7天3M/s会员，后面<strong>锁TCP</strong>且<strong>1M/s</strong>，固定域名</li>
+<li><a href="https://ngrok.com/"><strong>ngrok</strong></a>：学习成本一般；无需实名；只给<strong>一条免费隧道</strong>，离得近的节点延迟较低；http会<strong>自动换https</strong>协议（相当于<strong>不支持http</strong>）</li>
+<li><a href="http://www.nat123.com/">Nat123</a>：学习成本一般；<strong>无需实名</strong>但<strong>支付实名</strong>；<strong>新</strong>账号只给<strong>5个N币</strong>；<strong>&lt;1M/s</strong>；支持<strong>自定二级域名</strong>；仅支持<strong>http协议</strong></li>
+<li><a href="http://www.ipyingshe.com/">闪库</a>：1M；<strong>仅支持Http</strong>，<strong>随机固定</strong>域名；未来可能实名
+<strong>（以下是其他我没用过的内网穿透）</strong></li>
+<li><a href="https://www.natfrp.com"><strong>樱花</strong></a>：学习成本低；<strong>1毛付费刷脸实名必须18+</strong>；新5/老10M/s速度限制，固定域名，进不去网上有备用路线</li>
+<li><a href="https://github.com/fatedier/frp"><strong>frp</strong></a>：有较高的学习成本，是自己部署内网穿透的开源工具，但需要<strong>有条件（公网主机）</strong>，可扩展性强，不少内网穿透就是基于它的(例如莱云、Locyan、凿洞)</li>
+<li><a href="https://www.ngrok.cc/">Sunny-Ngrok</a>:1块付费刷脸实名；<em>钉钉内网穿透</em>:早已停止服务；<a href="https://flynat.51miaole.com/">蜻蜓</a>、<a href="http://www.youtusoft.com/">网络通</a>无法注册；<a href="https://www.locyanfrp.cn/">LoCyan Frp</a>:之前节点不可用，最近Q群审核使用；<a href="https://frp.wiki/">凿洞Free Frp</a>:我不会用，它老报错；<em>U-anywhere万由云</em>；<em>QuickConnect</em>；<em>哲西云</em>:加入花生壳了；<em>nat123</em>；<em>Tinc</em></li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="内网穿透操作流程"><a class="header" href="#内网穿透操作流程"><strong>内网穿透操作流程</strong></a></h4>
+</li>
+<li>
+<p><strong>网页+平台类型</strong></p>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li>注册账号填写并完善相关信息(如绑定验证账号、实名等，没有则跳过)，然后后再进入<strong>控制面板</strong></li>
+<li>创建<strong>隧道</strong>（有的在本地创建隧道，形式不一，但需要的信息基本一样），填入相关信息：隧道名、<strong>协议类型</strong>、<strong>本地地址(127.0.0.1或局域网地址)<strong>以及</strong>本地端口</strong>（上面查的）。（有的支持自定义子域名或绑定自己的域名，也有的支持一定限度内自定义对外端口号，也有的允许你自选节点，可以根据配置需要选择）</li>
+<li>云端部署好后开始<strong>部署本地</strong>，先<strong>下载</strong>对应平台的<strong>服务端程序</strong>，<strong>有的</strong>需要将其<strong>与个人账号绑定</strong>，一般是通过个人账户的Token（或口令、密钥等）进行绑定；</li>
+<li>复制云端<strong>隧道创建后给的Token</strong>与本地映射服务端进行<strong>绑定</strong>，或者给予窗口选择自己的隧道并<strong>启动</strong>，启动后给出的<strong>地址</strong>（一般为：地址:端口号；像http类型只有地址）就是他人访问的所用到的信息了。</li>
+</ol>
+</blockquote>
+<ul>
+<li><strong>应用平台类型</strong>（相对简单）</li>
+</ul>
+<blockquote>
+<ol>
+<li><strong>注册</strong>账号填写并完善相关信息</li>
+<li>创建隧道填入：隧道名、<strong>协议类型</strong>、<strong>本地地址</strong>、<strong>本地端口</strong>、[自选节点或宽带套餐]等信息</li>
+<li><strong>启动</strong>隧道，即可获取我们所需的地址（一般为：<strong>地址:端口号</strong>；像http类型只有地址）</li>
+</ol>
+</blockquote>
+<ul>
+<li><strong>访客使用地址教程</strong></li>
+</ul>
+<blockquote>
+<p><strong>网页</strong>：访客将给定的地址直接<strong>粘贴</strong>到浏览器的<strong>地址栏</strong>访问；<strong>主机</strong>可以用<strong>localhost</strong>或<strong>127.0.0.1</strong>访问
+<strong>游戏</strong>：访客选择<strong>多人游戏</strong>并选择<strong>加入</strong>相关，<strong>填入给定的地址</strong>加入即可；<strong>主机</strong>可以用<strong>localhost</strong>或<strong>127.0.0.1</strong>访问。</p>
+<ul>
+<li>只给一个填写IP地址的输入框，则填写 <strong>地址:端口号</strong> 的形式（如：MCJava版）</li>
+<li>同时给出IP地址和端口号地址的，各填入各所需的地址和端口，<strong>英文冒号直接省去</strong>（如：Terraria、MCBE版）</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h4 id="图文示例"><a class="header" href="#图文示例"><strong>图文示例</strong></a></h4>
+</li>
+</ul>
+<blockquote>
+<p>此处以Terraria的<strong>TShock服务端</strong>和<strong>Cpolar和飞鸽内网穿透</strong>为例（<strong>图示</strong>+<strong>简短文字描述</strong>）：</p>
+<ul>
+<li><strong>Cpolar 快捷方法</strong>：
+<blockquote>
+<p>这是Cpolar较为便捷的操作方式
+<img src="https://s1.vika.cn/space/2023/03/23/42baaf7fd3b24c00a46a3f971b0afa8c" alt="Cpolar方法一" /></p>
+</blockquote>
+</li>
+<li><strong>通用方法-以Cpolar和飞鸽为例</strong>：
+<blockquote>
+<p>①②和Cpolar快捷方法的一样，创建后隧道管理界面会有相应隧道的访问地址
+<img src="https://s1.vika.cn/space/2023/03/23/4c645eeeb79f44488245e5cc6ff93ae9" alt="Cpolar方法二" />
+启动后访问地址在隧道管理界面可见
+<img src="https://s1.vika.cn/space/2023/03/23/fada6872953d452b8afe1fac10908a8d" alt="飞鸽方法" /> </p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+<ol start="4">
+<li>
+<h3 id="4ipv6公网方式条件-实现"><a class="header" href="#4ipv6公网方式条件-实现"><strong>4.IPv6公网方式(条件-实现)</strong></a></h3>
+</li>
+</ol>
+<blockquote>
+<ul>
+<li><strong>前言：理想状态下</strong>，IPv6延迟低，操作简单，免费且无需账号、认证等，不过前提是你的<strong>网络运营商向你提供IPv6服务</strong>，且你的电脑<strong>能够正常识别和使用</strong>，详细判断是否可用和配置教程可见相关教程<a href="https://www.bilibili.com/video/BV1Lb4y1o7SF">【mc开服】教你白嫖运营商公网ipv6跟好兄弟联机】</a></li>
+<li>主机启动服务器后，访问端以 <strong>[对方的IPv6地址]:端口号</strong> 的格式直接连接即可</li>
+<li>注：这里没有条件不做演示，可移步到上方链接观看推荐视频学习。</li>
+</ul>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="PCPE开服联机part1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="PCPE开服联机part3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="PCPE开服联机part1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="PCPE开服联机part3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

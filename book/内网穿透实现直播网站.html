@@ -1,0 +1,504 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>NatLive Guide - AX Blogs</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPE双端开服建站联机教程.html"><strong aria-hidden="true">1.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPE开服联机part1.html"><strong aria-hidden="true">1.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part2.html"><strong aria-hidden="true">1.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part4.html"><strong aria-hidden="true">1.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="内网穿透实现直播网站.html" class="active"><strong aria-hidden="true">2.</strong> NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="内穿直播part1.html"><strong aria-hidden="true">2.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="内穿直播part2.html"><strong aria-hidden="true">2.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">3.</strong> RustBevyOnTermux</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AX Blogs</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <ul>
+<li>Date: 2023-02-01 22:23:40</li>
+</ul>
+<h2 id="前言"><a class="header" href="#前言">前言</a></h2>
+<ul>
+<li>建议配合视频教程一起使用，这篇提供我已知的最优解，但<strong>不一定是最好</strong>；</li>
+<li>完成本地的直播网站需要一台满足配置要求的设备(能<strong>带动OBS</strong>+<strong>内网穿透</strong>且<strong>承载</strong>住他人的<strong>拉流</strong>；主要吃<strong>CPU和宽带</strong>，CPU方面基本上<strong>一般电脑都可以</strong>)，体量不大宽带家用蛮够，主要看映射软件给你开放的宽带（obs默认码率一个访问者流量传输约为<strong>128KB/s</strong>），如果面向人群体量稍大如班级可以考虑研究一下<strong>p2p</strong>技术，再大这则博客就没用了，大型的平台主要采用<strong>CDN分发</strong>和<strong>p2p</strong>；</li>
+<li>需要两条http协议的隧道，如果网页有托管可以直接对外公开的话可以只要一个隧道（Github是https打头，数据不和http互通，需要额外配置）</li>
+</ul>
+<h2 id="准备工作"><a class="header" href="#准备工作">准备工作</a></h2>
+<p>除<strong>内网穿透</strong>需求<strong>可能要多个</strong>，<strong>其他工具只要一个</strong>即可</p>
+<ul>
+<li>
+<h3 id="网页部署工具选一"><a class="header" href="#网页部署工具选一"><strong>网页部署工具</strong>（选一）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>Windows自带</strong>的<strong>IIS组件</strong></p>
+</li>
+<li>
+<p><a href="https://www.xp.cn/">小皮面板phpStudy</a></p>
+</li>
+<li>
+<p><a href="https://cn.vuejs.org/">Vue.js渐进式 JavaScript 框架</a></p>
+</li>
+<li>
+<p><a href="https://hexo.io/zh-cn/index.html">Hexo</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="推流工具选一"><a class="header" href="#推流工具选一"><strong>推流工具</strong>（选一）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><a href="https://ffmpeg.org/">FFmpeg</a></p>
+</li>
+<li>
+<p><a href="https://obsproject.com/">OBS</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="流媒体中转服务器选一"><a class="header" href="#流媒体中转服务器选一"><strong>流媒体中转服务器</strong>（选一）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><a href="https://github.com/gwuhaolin/livego">LiveGo：纯 Golang 编写的直播服务器，性能高，跨平台</a></p>
+</li>
+<li>
+<p><a href="https://github.com/arut/nginx-rtmp-module">nginx-rtmp-module：基于NGINX的媒体流服务器</a></p>
+</li>
+<li>
+<p><a href="https://github.com/illuspas/Node-Media-Server">Node-Media-Server：一个 Node.js 实现的RTMP/HTTP/WebSocket/HLS/DASH流媒体服务器</a></p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<h3 id="内网穿透工具这里只列出支持httphttps协议的视频演示方法需要凑出2条隧道"><a class="header" href="#内网穿透工具这里只列出支持httphttps协议的视频演示方法需要凑出2条隧道"><strong>内网穿透工具（这里只列出支持http/https协议的)</strong>(视频演示方法需要凑出<strong>2条隧道</strong>）</a></h3>
+<blockquote>
+<ul>
+<li><a href="https://www.cpolar.com/"><strong>cpolar</strong></a>：学习成本低；无需实名；无限流量；<strong>动态域名</strong>且<strong>无</strong>UDP；速度较低；<strong>http</strong>协议提供<strong>免费动态域名</strong>，<strong>免费一条http</strong>隧道</li>
+<li><a href="https://www.fgnwct.com/"><strong>飞鸽</strong></a>：学习成本低；<strong>0.5M</strong>，签到给流量；<strong>http</strong>协议提供<strong>免费域名</strong>；<strong>免费两条</strong>隧道但<strong>http只能一条</strong></li>
+<li><a href="https://www.openfrp.net"><strong>OpenFrp 内网穿透（需域名）</strong></a>：学习成本低(带GUI启动器和樱花相似)免费，签到领流量；<strong>部分节点</strong>无需实名；速度<strong>限制</strong>12M/s(速度取决于所选节点与访客距离)；固定域名；<strong>http</strong>协议需要<strong>绑定自己的域名</strong></li>
+<li><a href="https://natapp.cn/"><strong>NATAPP</strong></a>：学习成本一般；<strong>动态域名</strong>；<strong>实名</strong>；1M；<strong>http</strong>协议提供<strong>免费域名</strong></li>
+<li><a href="http://www.ipyingshe.com/">闪库</a>：1M/s；<strong>仅支持Http</strong>，<strong>随机固定</strong>域名；未来可能实名
+<strong>（以下是其他我没用过的内网穿透）</strong></li>
+<li><a href="https://ngrok.com/"><strong>ngrok(https)</strong></a>：学习成本一般；无需实名；只给<strong>一条免费隧道</strong>，离得近的节点延迟较低；http会<strong>自动换https</strong>协议（相当于<strong>不支持http</strong>）</li>
+<li><a href="https://hsk.oray.com/"><strong>花生壳(https)</strong></a>：极低的学习成本；<strong>实名1M</strong>每月1G且<strong>无Http只有https</strong>，隧道固定域名</li>
+<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h2 id="工作原理及其流程视频配置"><a class="header" href="#工作原理及其流程视频配置">工作原理及其流程（视频配置）</a></h2>
+<ul>
+<li>
+<h3 id="画面采集以及推流"><a class="header" href="#画面采集以及推流">画面采集以及推流</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>OBS<strong>添加采集源</strong>（常用三个）：</li>
+</ul>
+<blockquote>
+<ol>
+<li><strong>显示器采集</strong>（桌面画面）</li>
+<li><strong>游戏源</strong>（全屏程序）</li>
+<li><strong>音频输入采集</strong>（麦克风）</li>
+</ol>
+</blockquote>
+<ul>
+<li>OBS<strong>推流配置</strong></li>
+</ul>
+<blockquote>
+<ol>
+<li>
+<p>OBS选择<strong>设置</strong> —&gt;<strong>推流</strong>页面；<strong>服务</strong>选择<strong>自定义</strong></p>
+</li>
+<li>
+<p><strong>服务器</strong>（推流地址）默认填<strong>rtmp://127.0.0.1:1935/live/</strong>（如果要改下面的<strong>拉流地址</strong>也要改一下）</p>
+</li>
+<li>
+<p><strong>启动流媒体服务器LiveGo</strong>并<strong>获取channelkey</strong>；在<strong>浏览器地址栏</strong>输入http://localhost:8090/control/get?room=movie</p>
+<p><strong>并回车，复制给出的</strong>channelkey<strong>填写到OBS推流页面的</strong>串流密钥**；</p>
+</li>
+</ol>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<h3 id="内网穿透映射网站和http协议7001端口两条隧道"><a class="header" href="#内网穿透映射网站和http协议7001端口两条隧道">内网穿透映射网站和http协议7001端口（两条隧道）</a></h3>
+</li>
+</ul>
+<blockquote>
+<p><strong>启动内网穿透工具</strong>，此处以<strong>NatApp和飞鸽为例</strong>（需要<strong>两条http隧道</strong>在线）</p>
+<ul>
+<li><strong>飞鸽（映射80）</strong></li>
+</ul>
+<blockquote>
+<p>1.官网注册账号进入<strong>控制台</strong></p>
+<ol start="2">
+<li><strong>开通隧道</strong> —&gt; 选一个<strong>免费节点</strong> —&gt; <strong>备注、前置域名自定义</strong> —&gt; <strong>本地IP端口</strong>后面的<strong>端口改为80</strong> —&gt; <strong>确认开通</strong></li>
+<li>下载对应的<strong>客户端</strong>，此处以<strong>带GUI的客户端</strong>为例，将<strong>隧道的id粘贴</strong>进去<strong>再启动隧道</strong>即可</li>
+</ol>
+</blockquote>
+<ul>
+<li><strong>NatApp（映射7001）</strong></li>
+</ul>
+<blockquote>
+<ol>
+<li>官网注册账号进入<strong>仪表盘</strong></li>
+<li><strong>购买隧道</strong> —&gt; <strong>免费隧道</strong>：<strong>隧道名自定义</strong>；<strong>Web类型</strong>；<strong>本地端口7001</strong></li>
+<li>下载客户端，将authtoken复制粘贴到Natapp的配置文件中
+其中，<strong>80端口</strong>为<strong>phpstudy部署网页的默认端口，<strong>根据自己网站填写不同的，如</strong>hexo使用4000</strong>，<strong>vue则为8080</strong>
+<strong>7001端口</strong>为<strong>LiveGo</strong>提供的<strong>HTTP-FLV传输协议的接口</strong>
+<strong>每个隧道映射成功</strong>后<strong>都会给一个</strong>没有端口的<strong>地址</strong>，这个之后会用到</li>
+</ol>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<h3 id="网页播放器拉流并部署"><a class="header" href="#网页播放器拉流并部署">网页播放器拉流并部署</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><strong>网页播放器配置</strong></li>
+</ul>
+<blockquote>
+<p><strong>记事本</strong>或其他<strong>文本编辑器方式</strong>打开<strong>压缩包解压</strong>后的LiveOnlineWeb\phpstudy_pro\WWW\index.html文件
+将<strong>body</strong>标签中的<strong>script</strong>标签内<strong>播放器的url</strong>改为<strong>内网穿透映射7001端口后</strong>给出的<strong>地址</strong> <strong>+</strong> <strong>OBS推流地址端口后面的路径</strong> <strong>+ movie.flv</strong>
+<strong>示例：url: 'http://xxxxxxxxx.xx.cpolar.top/live/movie.flv'</strong>
+<strong>本地拉流地址：url：'http://127.0.0.1:7001/live/movie.flv'</strong>
+（本地视频流地址，只有<strong>主机</strong>能够拉流成功，其他人访问是拉自己设备该地址对应目录下的文件，故<strong>其他人无法拉流成功</strong>，<strong>仅供自己测试</strong>用，该地址<strong>不会占用宽带</strong>）</p>
+</blockquote>
+<ul>
+<li>
+<h3 id="部署网站phpstudy为例"><a class="header" href="#部署网站phpstudy为例">部署网站（PHPStudy为例）</a></h3>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li>打开<strong>PHPstudy</strong>应用程序</li>
+<li>启动<strong>WNMP服务</strong></li>
+<li>在<strong>浏览器地址栏</strong>输入<strong>http://127.0.0.1:80</strong> 或 <strong>http://localhost</strong> 即可进入<strong>本地网页</strong>（80可选填，都一样）</li>
+</ol>
+</blockquote>
+<ul>
+<li><strong>检验是否推流成功</strong></li>
+</ul>
+<blockquote>
+<p><strong>方法一：<strong>在</strong>浏览器地址栏中</strong>直接<strong>将url地址填入并回车</strong>，检查浏览器是否能够<strong>下载到一个名为movie.flv的文件</strong></p>
+<p><strong>方法二：<strong>直接打开网站检查是否能加载出</strong>直播画面以及声音</strong></p>
+<p><strong>问题排查：</strong></p>
+<ul>
+<li><strong>方法二播放器黑屏</strong>然后使用<strong>方法一发现能够下载到流视频文件</strong>，这时候只要<strong>刷新</strong>一下网站即可，再不行<strong>OBS切断重新推流</strong>再<strong>刷新</strong></li>
+<li><strong>直播画面有声音但是黑屏</strong>，可能是<strong>程序画面采用全屏方式运行</strong>但在<strong>采集源中没有对全屏应用的画面采集</strong>，此时在<strong>OBS采集源</strong>中加入<strong>游戏源</strong>选择<strong>采集任意全屏应用程序</strong>即可；或者将<strong>全屏程序</strong>改为<strong>窗口模式</strong>或者<strong>无边框模式</strong></li>
+<li><strong>有电脑的声音但是听不到自己发的声音</strong>，可能是<strong>没有麦克风的采集源</strong>，在OBS采集源<strong>加入音频输入采集</strong>；或者使用<strong>其他手段</strong>如<strong>手机电脑加入同一个通话频道</strong>，会自动采集通话程序的声音，就是回声可能相对严重，也会有一定延迟，此时建议使用<strong>WO Mic</strong>。</li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<h3 id="结语"><a class="header" href="#结语">结语</a></h3>
+</li>
+</ul>
+<blockquote>
+<p>最后将<strong>内网穿透映射网页端口提供的地址</strong>分享给他人浏览即可，
+其他人用<strong>浏览器打开该地址</strong>即可通过静态网页上的播放器就可以观看你的OBS推出的视频流画面。</p>
+</blockquote>
+<ul>
+<li>
+<h3 id="流程图直观展示"><a class="header" href="#流程图直观展示">流程图直观展示</a></h3>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><strong>本地拉流演示图</strong>（不一定正确）
+<img src="https://s1.vika.cn/space/2023/03/23/6614de3f60d8477f8b58590ac45e6106" alt="本地拉流，看到该消息可能是图片加载失败，和视频里的流程图是一样的，可以去看视频当中的" /></li>
+<li><strong>其他人观看直播原理演示图</strong>（不一定正确）
+<img src="https://s1.vika.cn/space/2023/03/23/faecad8bb9a54c6b876d48f71fc077fa" alt="其他人观看直播原理，看到该消息可能是图片加载失败，和视频里的流程图是一样的，可以去看视频当中的" /></li>
+</ul>
+</blockquote>
+<h2 id="拓展"><a class="header" href="#拓展">拓展</a></h2>
+<ul>
+<li>
+<h3 id="解决内网穿透提供宽带速度不够的问题"><a class="header" href="#解决内网穿透提供宽带速度不够的问题">解决内网穿透提供宽带速度不够的问题</a></h3>
+</li>
+</ul>
+<blockquote>
+<p>这个问题我目前是采用<strong>多线程</strong>的方法解决的（整合包中我提供了line234页面并写好了超链接，根据需要自行填入映射好的7001本地端口地址到视频流的url），通过<strong>启用多个内网穿透工具共同映射7001端口</strong>，<strong>分别</strong>将<strong>给定的地址</strong>填入<strong>不同的页面</strong>，用户通过<strong>切换页面</strong>来<strong>减少单个</strong>内网穿透工具的<strong>宽带压力</strong>，以此实现宽带的拓展</p>
+</blockquote>
+<ul>
+<li>
+<h3 id="解决电脑没有麦克风的问题"><a class="header" href="#解决电脑没有麦克风的问题">解决电脑没有麦克风的问题</a></h3>
+</li>
+</ul>
+<p>倘若有人的主机电脑<strong>没有麦克风或麦克风坏了</strong>，正好有<strong>手机在身边可以使用</strong>的话可以使用<strong>WO Mic</strong>来解决这个问题</p>
+<blockquote>
+<h4 id="wo-mic局域网连接使用教程"><a class="header" href="#wo-mic局域网连接使用教程">WO Mic局域网连接使用教程</a></h4>
+<ul>
+<li>流程图：
+<img src="https://s1.vika.cn/space/2023/03/23/3334ed25ec2e4eb6a39aae16df9b7a38" alt="如果看到该文段可能是图片加载失败了，去看视频吧" /></li>
+</ul>
+<ol>
+<li>手机端启动<strong>WO Mic应用程序并运行</strong>（在局域网广播）</li>
+<li>将给定的<strong>局域网地址</strong>填写到<strong>电脑WO Mic Client的连接</strong> —&gt; <strong>连接...</strong> —&gt; <strong>手机IP地址</strong>输入框中 —&gt; 再点击<strong>连接</strong>即可</li>
+</ol>
+<ul>
+<li><strong>手机端</strong>控制<strong>音量大小</strong>和<strong>是否传输声音</strong>（=开关麦）；<strong>电脑端</strong>可以选择设置<strong>本地播放</strong>方便<strong>调试声音</strong></li>
+</ul>
+</blockquote>
+<h2 id="总结"><a class="header" href="#总结">总结</a></h2>
+<blockquote>
+<p><strong>通过内网穿透直播</strong>仅适合<strong>面向小众群体</strong>，例如<strong>学生</strong>等<strong>无法与直播平台签约</strong>或者<strong>不想和直播平台签约</strong>又<strong>想体验直播</strong>的人群，或者只是<strong>单纯想挂在自己博客上</strong>让访客碰运气看看有没有直播。
+这项技术<strong>优点</strong>是<strong>搭建迅速而且免费</strong>（<strong>不花钱可以使用，人数不多体验还是很好的</strong>），<strong>有域名</strong>的话可以使用更好的映射软件，<strong>它们提供更好的免费的宽带</strong>，如<strong>OpenFrp</strong>（地址上面链接），感兴趣的可以尝试一下，我下面会发布<strong>整合包的链接</strong>（<strong>不含内网穿透工具</strong>和<strong>推流工具</strong>，<strong>需自行额外安装</strong>）</p>
+<ul>
+<li>蓝奏云
+<blockquote>
+<p>https://wwxr.lanzoum.com/i1uKo0mhm3id
+密码:civt</p>
+</blockquote>
+</li>
+<li>百度网盘
+<blockquote>
+<p>https://pan.baidu.com/s/1p33ncwXEq1UmLEuEerVSKA?pwd=1111
+提取码：1111</p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="PCPE开服联机part3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="内穿直播part1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="PCPE开服联机part3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="内穿直播part1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

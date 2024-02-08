@@ -1,0 +1,454 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>移动端开服Android &amp; IOS - AX Blogs</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPE双端开服建站联机教程.html"><strong aria-hidden="true">1.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPE开服联机part1.html" class="active"><strong aria-hidden="true">1.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part2.html"><strong aria-hidden="true">1.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part4.html"><strong aria-hidden="true">1.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPE开服联机part3.html"><strong aria-hidden="true">1.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="内网穿透实现直播网站.html"><strong aria-hidden="true">2.</strong> NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="内穿直播part1.html"><strong aria-hidden="true">2.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="内穿直播part2.html"><strong aria-hidden="true">2.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">3.</strong> RustBevyOnTermux</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AX Blogs</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="手机搭建终端环境内网穿透开服"><a class="header" href="#手机搭建终端环境内网穿透开服"><strong>手机搭建终端环境(内网穿透开服)</strong></a></h2>
+<ul>
+<li>这是专门为<strong>安卓</strong>手机提供的<strong>开服</strong>方法（<strong>IOS苹果手机</strong>需要先<strong>越狱</strong>然后使用<strong>NewTerm</strong>，虽同样都是终端命令，<strong>但我暂无条件更新相关教程</strong>），主要服务于<strong>内网穿透</strong>，或是异地组网和远程控制(安卓系统本身有软件提供异地组网和远程控制，frpc有内网穿透但是直接运行服务器端不方便，如果你不是为了开服建议使用<strong>原生安卓应用</strong>，除非特殊需要)如内网穿透<a href="https://github.com/mainfunx/frpc_android">frpc on github</a>，<a href="https://gitee.com/skyuning/frpc-Android">frpc on gitee</a>，<strong>pc端请忽略该部分</strong></li>
+<li><em>注：本教程内所有安装过程的选择直接回车默认即可</em></li>
+</ul>
+<blockquote>
+<ul>
+<li>安装termux</li>
+</ul>
+<blockquote>
+<p>下载地址(github如若打不开，在地址github之前加字母k或https://ghproxy.com/，即https://kgithub...或https://ghproxy.com/https://github...)：</p>
+<ul>
+<li><a href="https://github.com/termux/termux-app/wiki/Termux-on-android-5-or-6">github安卓6及以下版本</a></li>
+<li><a href="https://www.123pan.com/s/Rx6cVv-BYhxd.html">国内云盘直链0.118</a>
+<em>注：安卓6及其以下版本建议<strong>不要换源</strong>，请安装完系统后，在系统内换源</em></li>
+<li><a href="https://github.com/termux">github安卓7及以上版本</a></li>
+<li><a href="">F-Droid的termux网页页面</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>Termux基础配置(最左下按钮为tab自动补全)</li>
+</ul>
+<blockquote>
+<ul>
+<li><em><strong>换源</strong>命令(安卓7+版本)：</em></li>
+</ul>
+<pre><code class="language-bash">termux-change-repo
+</code></pre>
+<p>直接<strong>回车(Enter)<strong>下一步后</strong>空格</strong>选择下方国内源后<strong>一路回车即可</strong>（安卓6及其以下不建议换源，如需则自行查找低版本换源命令）</p>
+<ul>
+<li>更新包管理工具</li>
+</ul>
+<pre><code class="language-bash">pkg upgrade &amp;&amp; pkg update
+apt upgrade &amp;&amp; apt update
+</code></pre>
+<ul>
+<li>获取手机内部储存</li>
+</ul>
+<pre><code class="language-bash">termux-setup-storage
+</code></pre>
+<p>注：Termux的文件都存在手机根目录，没有root无法访问，这些只能通过termux进行读写，使用此命令后，可在home目录下生成一个通往手机主目录的软链接。</p>
+</blockquote>
+<ul>
+<li>基本命令
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>cd 目录 #进入当前目录下的指定目录,其中../为上级，cd ~中~表示当前操作用户目录。
+rm -r 目录/文件 #递归删除，参数-r为递归，没有不能删目录
+ls -a #列出当前目录下文件，-a参数显示隐藏文件
+l #单l命令比ls更加便捷清晰(旧版termux没有，不过安装的系统内可使用)
+pwd #获取当前目录地址
+mkdir 文件夹名 #在当前目录下新建文件夹（目录）
+Ctrl + C #键盘快捷键强制中断当前程序/废弃当前键入命令
+#右滑可创建新会话(窗口)|唤起键盘
+####解压工具####
+apt install unzip #安装
+unzip 目标文件名.zip -d 释放目标目录（如无自动创建）</p>
+<pre><code></code></pre>
+</blockquote>
+</blockquote>
+<h3 id="安装linux系统"><a class="header" href="#安装linux系统">安装Linux系统</a></h3>
+<p>也可以不装，不过有些应用依赖无法启用(如dotnet)，可能回导致应用无法启动，这时就需要安装系统(proot/chroot)，否则可以直接使用启动命令</p>
+<h4 id="android5以上通用方法简单内存充足时推荐"><a class="header" href="#android5以上通用方法简单内存充足时推荐">Android5以上通用方法（简单，内存充足时推荐）</a></h4>
+<blockquote>
+<p>+为什么建议该方法：
+&gt;+ kali nethunter方法安装termux的linux系统，使用的包都可以支持最新版，不过这也导致了一些不兼容问题
+&gt;+ 并且该方法操作简单，无需多余步骤
+&gt;+ 缺点在于镜像只有完整版且占用内存较大（约11G），如果内存不足可用下面其他方法占用约1G+</p>
+<ul>
+<li>Kali版本</li>
+</ul>
+<blockquote>
+<ul>
+<li>官方版本（需网络环境，没有则用镜像版）</li>
+</ul>
+<pre><code class="language-bash">pkg install git wget
+wget -O install-nethunter-termux https://offs.ec/2MceZWr #–no-check-certificate
+chmod +x install-nethunter-termux
+./install-nethunter-termux
+</code></pre>
+<ul>
+<li>使用wget下载时使用-c参数可防止意外中断，对于github相关地址可以在地址前加入&quot;https://ghproxy.com/&quot;代理加速</li>
+<li>国内镜像（无需代理）</li>
+</ul>
+<pre><code class="language-bash">git clone https://gitee.com/zhang-955/clone.git &amp;&amp; cd clone &amp;&amp; cd AutoInstallKali &amp;&amp; chmod +x kalinethunter finaltouchup.sh
+./kalinethunter
+</code></pre>
+<ul>
+<li>国外github镜像(完整版同上)</li>
+</ul>
+<pre><code class="language-bash">curl -LO https://raw.githubusercontent.com/Hax4us/Nethunter-In-Termux/master/kalinethunter
+chmod +x kalinethunter
+./kalinethunter
+</code></pre>
+<p>如果下载过程中断需要手动rm（删除）损坏的包，然后重新执行安装脚本(&quot;./开头的是执行脚本命令&quot;)
+低版本在通过该系统在安装部分应用时，最新版本可能会出故障</p>
+<ul>
+<li>获取linux系统权限</li>
+</ul>
+<pre><code class="language-bash">su
+toor
+</code></pre>
+<p>获取root权限：toor是默认密码，或者kali（Linux的一个用户，Android也有root用户，但不是同一个）
+kali内置的工具不做介绍，并且有些需要root才可正常使用</p>
+</blockquote>
+</blockquote>
+<h4 id="android5-6安装系统方法"><a class="header" href="#android5-6安装系统方法">Android5-6安装系统方法</a></h4>
+<blockquote>
+<ul>
+<li>kali见上</li>
+<li>安装其他版本(如果一个失败可换其他的)：</li>
+</ul>
+<blockquote>
+<p>1.脚本一键安装(国光)</p>
+<pre><code class="language-bash">pkg install proot git python -y
+git clone https://github.com/sqlsec/termux-install-linux
+cd termux-install-linux
+python termux-linux-install.py
+</code></pre>
+<p>之后输入数字选择对应操作，安装完后使用下面命令启动</p>
+<pre><code class="language-bash">#Ubuntu换成自己安装的系统
+cd ~/Termux-Linux/Ubuntu #文件所在目录
+./start-ubuntu.sh
+</code></pre>
+</blockquote>
+<p>2.通过atlio安装linux系统</p>
+<blockquote>
+<ul>
+<li>精简版本（没内存推荐）</li>
+<li>直链需魔法，建议加代理前缀，方法见上</li>
+<li>安装<strong>运行依赖</strong></li>
+</ul>
+<pre><code class="language-bash">pkg install python curl proot
+</code></pre>
+<blockquote>
+<ul>
+<li>CN中文版</li>
+</ul>
+<pre><code class="language-bash">curl -o $PREFIX/bin/atilo https://raw.githubusercontent.com/YadominJinta/atilo/master/CN/atilo_cn &amp;&amp; chmod +x $PREFIX/bin/atilo
+</code></pre>
+<ul>
+<li>EN英文版(多几个镜像)</li>
+</ul>
+<pre><code class="language-bash">curl -o $PREFIX/bin/atilo https://raw.githubusercontent.com/YadominJinta/atilo/master/atilo &amp;&amp; chmod +x $PREFIX/bin/atilo
+</code></pre>
+<p>如果提示缺少插件则输入(先更新一次pip，否则不兼容包存在会导致更新失败)</p>
+<pre><code class="language-bash">pip install --upgrade pip -i http://pypi.douban.com/simple --trusted-host pypi.douban.com &amp;&amp; pip install 'requests' tqdm 'prettytable' bs4  -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+</code></pre>
+<p>安装&amp;启动命令：</p>
+</blockquote>
+<pre><code class="language-bash">atilo images #列出可用镜像
+atilo pull ubuntu #下载&amp;安装ubuntu镜像(自选)
+atilo run ubuntu #ubuntu换成安装自己的系统
+</code></pre>
+<ul>
+<li>如果启动过程中提示需要代理而且你又没有代理，可以尝试修改DNS或者换个时间段再试试，一般国内傍晚就连不上了</li>
+<li>Github方法（可能需要网络环境）:
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>pkg in git
+git clone https://github.com/jerrychen110/atilo
+chmod +x ~/atilo
+./atilo ubuntu #启动命令</p>
+<pre><code>ubuntu换成自己想要的系统，不带参数可以查看命令帮助；启动报错proot可以试试其他方法或者更换网络环境再删除重下系统（一般下载系统镜像不会太快，太快就可能是网络故障）
+</code></pre>
+</blockquote>
+</blockquote>
+<p>安装好系统后下面参考linux操作方法开服，不过termux要下载arm64的包，其他设备的linux系统架构自行查看并下载使用对应包</p>
+<p>如果apt seach也找不到对应的包可能是你没更新源</p>
+</blockquote>
+<h4 id="android7安装系统方法"><a class="header" href="#android7安装系统方法">Android7&amp;+安装系统方法</a></h4>
+<blockquote>
+<ul>
+<li>脚本安装（功能丰富，推荐）
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>bash -c &quot;$(curl -Lv gitee.com/mo2/linux/raw/master/debian.sh)&quot;</p>
+<pre><code>不重启termux(长按more-&gt;kill 所有会话-&gt;重新启动termux)使用debian-i进入管理面板或startvnc命令进入系统
+
+重启后输入debian即可进入系统
+</code></pre>
+</blockquote>
+<ul>
+<li>手动安装（占用少，网络环境要求较高，没魔法国内够呛）
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>pkg install proot-distro
+proot-distro install ubuntu
+proot-distro login ubuntu #进入系统命令</p>
+<pre><code>ubuntu可换成自己喜欢的系统(proot-distro list查看可用镜像)，建议先proot-distro list查看支持系统，有些系统不支持部分手机架构，请阅读其简介下载合适的
+</code></pre>
+</blockquote>
+</blockquote>
+<h4 id="termux系统常见问题"><a class="header" href="#termux系统常见问题">termux系统常见问题</a></h4>
+<blockquote>
+<ul>
+<li>旧版termux安装的系统没有内置的互通存储目录，通过创建软链接连接termux储存目录时mv 文件 ../后回到../没有文件，可以去系统的/data/data/com.termux 目录查看，建议直接mv至~(用户目录)</li>
+<li><strong>注意：本文往后以Debian系系统(Debian、Ubuntu、Kali等)为例，其他系统包管理器命令自行查找（如ArchLinux的pacman）</strong></li>
+<li>apt添加储存库：
+&gt;```bash</li>
+</ul>
+<blockquote>
+<p>apt-get install software-properties-common
+add-apt-repository ppa:openjdk-r/ppa #jdk8示例</p>
+<pre><code></code></pre>
+</blockquote>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="PCPE双端开服建站联机教程.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="PCPE开服联机part2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="PCPE双端开服建站联机教程.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="PCPE开服联机part2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
