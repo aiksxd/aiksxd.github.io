@@ -69,7 +69,7 @@
             <!-- Receiver -->
             <div style="font-weight: bold;">接收者(主机) 
             <button type="button" id="shareLocalStreamButton">启用本地流</button></div>
-            <div id="myid" style="font-weight: bold;">您的ID:</div>
+            <div id="myid" style="font-weight: bold;">您的 ID:</div>
             <a href="https://peerjs.com/" target="_blank">跳转到PeerJS官网</a>
         </div>
         <div class="box">
@@ -80,7 +80,7 @@
             <button id="connectButton">连接 </button><br/><br/>
         </div>
         <div class="custome">
-            <div>自定义名称<input type="text" id="name" placeholder="输入你的名字..." /></div>
+            <div>自定义名称<input type="text" id="name" placeholder="输入你的名字..." /></div><br/>
             <a href="https://github.com/aiksxd/P2P-Live-Web" target="_blank">在GitHub上了解更多关于P2P-Live-Web</a>
         </div>
     </div>
@@ -146,7 +146,7 @@
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
             console.log(id);
-            document.getElementById("myid").innerHTML = "Your ID:<br/>" + peer.id;
+            document.getElementById("myid").innerHTML = "您的 ID:<br/>" + peer.id;
         });
 
         // When a new connection request is received, this code creates a data channel and sends the local or remote stream (if available) and text messages.
