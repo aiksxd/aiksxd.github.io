@@ -66,37 +66,32 @@
     <!-- ID interaction -->
     <div class="container">
         <div class="box">
-            <!-- Receiver -->
-            <div style="font-weight: bold;">Receiver(host)
-                <button type="button" id="shareLocalStreamButton">Start Local Stream</button>
-            </div>
-            <div id="myid" style="font-weight: bold;">Your ID:</div>
-            <a href="https://peerjs.com/" target="_blank">View PeerJS official web</a>
+            <!-- Sender -->
+            <div style="font-weight: bold;">发送者(访客)</div>
+            <!-- Connect box -->
+            <button id="refreshButton">刷新</button>
+            <div id="myid" style="font-weight: bold;">您的 ID:</div>
         </div>
         <div class="box">
-            <!-- Sender -->
-            <div style="font-weight: bold;">Sender(guest)</div>
-            <!-- Connect box -->
-            <input type="text" id="peerID" placeholder="Input counterpart's ID" autofocus="true">
-            <button id="connectButton">Connect</button><br/><br/>
+            <a href="https://peerjs.com/" target="_blank">跳转到PeerJS官网</a><br/>
+            <a href="https://github.com/aiksxd/P2P-Live-Web" target="_blank">在GitHub上了解更多关于P2P-Live-Web</a>
         </div>
         <div class="custome">
-            <div>Custome Name<input type="text" id="name" placeholder="Input your name here..." /></div><br/>
-            <a href="https://github.com/aiksxd/P2P-Live-Web" target="_blank">View P2P-Live-Web on GitHub</a>
+            <div>自定义名称<input type="text" id="name" placeholder="输入你的名字..." /></div>
         </div>
     </div>
     
     <!-- Live interaction-->
     <div class="videoBox">
-    <!--PS: if no video(maybe leaded by autoplay), try to click it to play(or F12 check the stream)-->
+    <!--PS: 卡了点一下视频（自动播放可能被禁用）或F12看看流媒体是否正常-->
     <video id="remoteVideo" width="100%" height="100%" controls autoplay></video></div>
     <!-- Message box -->
     <div class="chatContainer">
         <div class="chatBox" id="message" onmouseover = "autoScrollStop()" onmouseout="autoScroll()"></div>
         <div class="sendInput">
             <!-- Send box -->
-            <input type="text" id="sendMessageBox" placeholder="Input message here..." autofocus="true" />
-            <button type="button" id="sendButton">Send</button>
+            <input type="text" id="sendMessageBox" placeholder="填入想发的信息..." autofocus="true" />
+            <button type="button" id="sendButton">发送</button>
         </div>
     </div>
 
@@ -132,6 +127,8 @@
         let nodesMap = new Array();
         let thereMap = new Array();
         const remoteVideo = document.getElementById('remoteVideo');
+        let params = new URLSearchParams(document.location.search.substring(1));
+        let id = params.get("id");
 
         // the function of getting local stream(It can't work on most of mobile phone)
         // Please note! In order for the getDisplayMedia() method to work properly, you need to use the HTTPS protocol or run it on localhost in a local development environment.
@@ -144,7 +141,8 @@
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
             console.log(id);
-            document.getElementById("myid").innerHTML = "Your ID:<br/>" + peer.id;
+            document.getElementById("myid").innerHTML = "您的 ID:<br/>" + peer.id;
+            init();
         });
 
         // When a new connection request is received, this code creates a data channel and sends the local or remote stream (if available) and text messages.
@@ -212,15 +210,12 @@
             mediaGuest.answer(null);
         });
 
-        // Click event for the send message button && guest uploads, host receives the reply from the receiving party.
-        // *Explanation: In the given code snippet, there is an event listener attached to the "connectButton" element, which triggers a function when the button is clicked.
-        // *Inside the function, the "guest" variable is assigned the value of the connection made with the peer using the peer ID obtained from the input field with the ID "peerID".
-        document.getElementById('connectButton').addEventListener('click', () => {
+        function init(){
             // Close old connection
             if (guest) {
                 guest.close();
             }
-            guest = peer.connect(document.getElementById("peerID").value);
+            guest = peer.connect(id);
 
             guest.on('open', () => {
                 guest.send([peer.id, hostsPeers, null, 0]);    // ("0" means unfinished) collect information about the connection map and send to parent node
@@ -238,6 +233,13 @@
                     appearMsg(data);
                 }else{recorder(data)}
             });
+        }
+
+        // Click event for the send message button && guest uploads, host receives the reply from the receiving party.
+        // *Explanation: In the given code snippet, there is an event listener attached to the "connectButton" element, which triggers a function when the button is clicked.
+        // *Inside the function, the "guest" variable is assigned the value of the connection made with the peer using the peer ID obtained from the input field with the ID "peerID".
+        document.getElementById('refreshButton').addEventListener('click', () => {
+            init();
         });
         // Send Massage and avoid delivering repeatedly
         function liveSend (msg){
@@ -291,21 +293,21 @@
             }
         }
 
-        // Start local stream button click event 
-        // *Explanation: The provided code snippet shows an event listener for a button click event. When the button with the ID 'shareLocalStreamButton' is clicked, the function getLocalStream() is called.
-        // *This function is expected to retrieve the local stream, which could be a stream from the camera or microphone.
-        document.getElementById('shareLocalStreamButton').addEventListener('click', () => {
-            getLocalStream()
-                .then((stream) => {
-                    // After successfully obtaining the local stream, display it on the page.
-                    // displayLocalStream(stream);  //for debug
-                    localStream = stream;
-                    console.log("Local stream shared");
-                })
-                .catch((error) => {
-                    console.error('Error getting local stream:', error);
-                });
-        });
+        // // Start local stream button click event 
+        // // *Explanation: The provided code snippet shows an event listener for a button click event. When the button with the ID 'shareLocalStreamButton' is clicked, the function getLocalStream() is called.
+        // // *This function is expected to retrieve the local stream, which could be a stream from the camera or microphone.
+        // document.getElementById('shareLocalStreamButton').addEventListener('click', () => {
+        //     getLocalStream()
+        //         .then((stream) => {
+        //             // After successfully obtaining the local stream, display it on the page.
+        //             // displayLocalStream(stream);  //for debug
+        //             localStream = stream;
+        //             console.log("Local stream shared");
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error getting local stream:', error);
+        //         });
+        // });
 
         // display the local stream for debug
         // function displayLocalStream(stream) {
@@ -378,6 +380,7 @@
                 }
             }
         }
+
 
     </script>
 </body>

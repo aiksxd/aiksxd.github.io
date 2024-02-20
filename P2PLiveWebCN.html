@@ -68,7 +68,7 @@
         <div class="box">
             <!-- Receiver -->
             <div style="font-weight: bold;">接收者(主机) 
-            <button type="button" id="shareLocalStreamButton">启用本地流</button></div>
+            <button type="button" id="shareLocalStreamButton">共享本地流</button></div>
             <div id="myid" style="font-weight: bold;">您的 ID:</div>
             <a href="https://peerjs.com/" target="_blank">跳转到PeerJS官网</a>
         </div>
@@ -87,11 +87,11 @@
     
     <!-- Live interaction-->
     <div class="videoBox">
-    <!--PS: 卡了点一下视频（自动播放可能被禁用）或F12看看流媒体是否正常-->
+    <!--PS: if no video(maybe leaded by autoplay), try to click it to play(or F12 check the stream)-->
     <video id="remoteVideo" width="100%" height="100%" controls autoplay></video></div>
     <!-- Message box -->
     <div class="chatContainer">
-        <div class="chatBox" id="message"></div>
+        <div class="chatBox" id="message" onmouseover = "autoScrollStop()" onmouseout="autoScroll()"></div>
         <div class="sendInput">
             <!-- Send box -->
             <input type="text" id="sendMessageBox" placeholder="填入想发的信息..." autofocus="true" />
@@ -105,15 +105,14 @@
     <!--if you want to check the availability of localStream, there are <2.3localvideo>, desplayLocalStream(), -->
     
     <script>
-        /* PS(ignore it if you don't run peerjs server locally如果不想本地运行自行忽略):
-            Need to install nodejs and use its npm to install peerjs(npm install peerjs -g)(-g is selective if you only want to use in a folder) at first 
+        /* PS(ignore it if you don't run peerjs server locally):
+            Need to install nodejs and use its npm to install peerjs(npm install peer -g)(-g is selective if you only want to use in a folder) at first 
             local peerjs run command(value of path need to be united):
-            先装npm，国内cnpm也可以，然后用下面命令可以启用本地peer服务器
             "
                 peerjs --port 9000 --key peerjs --path /myapp Started PeerServer on ::, port: 9000, path: /myapp
             "
-		*/
-        // 快乐二选一
+        */
+        // choose one of both
         // const peer = new Peer({ host: 'localhost', port: 9000, path: '/myapp', debug: 2})     //if you use local peer server
         const peer = new Peer({ debug: 2})      //use PeerJS official server
 
@@ -121,14 +120,12 @@
         var host = null;
         var myid = null;
         var mediaGuest = null;
-        var mediaHost = null;
         
         let guest = null;
         let ifAutoScroll = true;
         let localStream = null;
         let predecessorGuest = null;
         let predecessorHost = null;
-        let closeHost = null;
         let hosts = new Array();
         let hostsPeers = new Array();
         let nodesMap = new Array();
@@ -146,23 +143,18 @@
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
             console.log(id);
-            document.getElementById("myid").innerHTML = "您的 ID:<br/>" + peer.id;
+            document.getElementById("myid").innerHTML = "Your ID:<br/>" + peer.id;
         });
 
         // When a new connection request is received, this code creates a data channel and sends the local or remote stream (if available) and text messages.
         peer.on('connection', (hostPort) => {
-            closeHost = hostsPeers.indexOf(hostPort.peer);
-            if((closeHost !== -1) && (closeHost !== null)){
-                hostsPeers[closeHost] = null;
-                hosts[closeHost] = null;
-                closeHost = null;
-            }
             hostsPeers.push(hostPort.peer);
             hosts.push(hostPort);
             host = hostPort;
+
             host.on('open', () => {
                 console.log("Msg Connected to: " + host.peer);
-                if(mediaHost){
+                if(mediaGuest){
                     peer.call(host.peer, document.getElementById('remoteVideo').srcObject);
                     console.log("Media delivered successfully: ");
                 }else if(localStream){
@@ -175,6 +167,29 @@
                     // It can only receive the previous one, so you need to deliver a new stream. 
                 }
             });
+
+            host.on('close', () => {
+                for (var i = 0; i< hosts.length; i++){
+                    if(hosts[i]){
+                        if (hosts[i].open){
+                            continue;
+                        }else{
+                            var disconnectedHost = hostsPeers.indexOf(hosts[i].peer);
+                            if (disconnectedHost !== -1){
+                                console.log("Disconnected and deleted: " + hosts[i].peer);     //DEBUG
+                                hosts.splice(disconnectedHost, 1);
+                                hostsPeers.splice(disconnectedHost, 1);
+                            }
+                        }
+                    }else{break;}
+                }
+                if (guest){
+                    if (guest.open){
+                        guest.send([peer.id, hostsPeers, null, 0]);
+                    }
+                }
+            })
+            
             // Receive the text: Host <-- Guest
             host.on('data', (data) => {
                 if(data[2]){
@@ -189,11 +204,11 @@
             });
         });
 
-        peer.on('call', (mediaHostPort) => {
-            mediaHost = mediaHostPort;
+        peer.on('call', (mediaGuestPort) => {
+            mediaGuest = mediaGuestPort;
             // Receive the stream
-            mediaHost.on('stream', (stream) = displayRemoteStream);
-            mediaHost.answer(null);
+            mediaGuest.on('stream', (stream) = displayRemoteStream);
+            mediaGuest.answer(null);
         });
 
         // Click event for the send message button && guest uploads, host receives the reply from the receiving party.
@@ -238,7 +253,6 @@
             }
             if (hosts){
                 for(var i=0; i<hosts.length; i++){
-                    if(hosts[i] == null){continue;}
                     if( ! [msg[2], predecessorGuest, predecessorHost, temp].includes(hosts[i].peer)){
                         if(hosts[i].open){
                             hosts[i].send(msg);
@@ -319,19 +333,30 @@
         }
 
         function recorder(data){
-            var sameID = hostsPeers.indexOf(data[0]);
-            if(data[3] === 0){
+            var sameID = hostsPeers.indexOf(data[0]);   // locate old data
+            if(data[3] === 0){  // 0 means unfinished
                 console.log('New node joined:', data);
-                var idTemp = Object.assign({}, hostsPeers);
-                idTemp[sameID] = data;
-                thereMap = [peer.id, idTemp, null, 0];
+                var idTemp = Object.assign({}, hostsPeers);     // make hostsPeers value stable
+                idTemp[sameID] = data;      // replace old data
+                thereMap = [peer.id, idTemp, null, 0];  //record this node's info
                 if(guest){
                     if(guest.open){       // collect information about the connection map and send to parent node
-                        guest.send(thereMap);
+                        if (hostsPeers.includes(guest.peer)){    // fix connect mutually
+                            for(var i=0; i<hosts.length; i++){  // send nodesMap to all of child nodes
+                                if(hosts[i] == null || hosts[i].peer == guest.peer){
+                                    continue;
+                                }
+                                if(hosts[i].open){
+                                    hosts[i].send([peer.id, idTemp, null, 1]);    // set 0 keep mutable
+                                }
+                            }
+                        }else{
+                            guest.send(thereMap);   // if not root node
+                        }
                     }
-                } else {
+                } else {    // if there is root node
                     nodesMap = thereMap;
-                    for(var i=0; i<hosts.length; i++){
+                    for(var i=0; i<hosts.length; i++){  // send nodesMap to all of child nodes
                         if(hosts[i] == null){
                             continue;
                         }
@@ -340,9 +365,9 @@
                         }
                     }
                 }
-            } else {
-                 nodesMap = data;
-                 for(var i=0; i<hosts.length; i++){
+            } else {    // once collection is completed
+                    nodesMap = data;
+                    for(var i=0; i<hosts.length; i++){     // send nodesMap to everyone
                     if(hosts[i] == null){
                         continue;
                     }
