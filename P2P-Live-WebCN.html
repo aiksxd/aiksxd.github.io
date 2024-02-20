@@ -174,26 +174,40 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="p2p-live-web"><a class="header" href="#p2p-live-web">P2P-Live-Web</a></h1>
-<h2 id="用法"><a class="header" href="#用法">用法:</a></h2>
+<p>注：由于项目无人问津，所有消息2~3周回复一次</p>
+<h2 id="单直播间型"><a class="header" href="#单直播间型"><a href="https://aiksxd.github.io/P2PLiveWebCN.html">单直播间型</a></a></h2>
+<h3 id="用法"><a class="header" href="#用法">用法:</a></h3>
 <ol>
 <li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>以下网址等</li>
-</ol>
-<ul>
-<li><a href="https://aiksxd.github.io/P2PLiveWeb.html">P2P Live Web</a></li>
-<li><a href="https://aiksxd.github.io/P2PLiveWebCN.html">P2P直播网站中文界面</a></li>
-</ul>
-<ol start="2">
-<li>直播方按下<strong>Start Local Stream</strong>按钮，并且分享自己的ID给观众</li>
+<li>直播方点击<strong>共享本地流</strong>按钮，并且分享自己的ID给观众</li>
 <li>观众与主播的id任意相连，不过需要保持中间不断开，如果中间断开则需更换连接对象</li>
+</ol>
+<h2 id="etc多房间型url-root"><a class="header" href="#etc多房间型url-root"><a href="https://aiksxd.github.io/etcP2PRootMonitorCN.html">etc多房间型(URL-&gt;ROOT)</a></a></h2>
+<p>改版示例：</p>
+<ul>
+<li>etcP2PLiveindex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
+<li>etcP2PRootMonitor.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
+<li>etcP2PLiveHost &amp; Guest.html 为附属页面，置于同目录下即可</li>
+</ul>
+<h3 id="用法-1"><a class="header" href="#用法-1">用法：</a></h3>
+<ol>
+<li>访问主页(根节点页面有超链接)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>直播方点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
+<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)</li>
+</ol>
+<h3 id="拓展"><a class="header" href="#拓展">拓展：</a></h3>
+<ol>
+<li>如增加房间列表的样式，可以增加直播间页面(etcP2PLiveHost)中<code>guest.on('data', (data) =&gt; {</code>中<code>guest.send([peer.id, null, null, 0, 1]);</code>中的参数，<strong>注意：第索引为4的第五个参数勿动！</strong></li>
+<li>优化连接方法，自行解析<strong>nodesMap数组</strong>(包含所有节点信息)(注：<strong>etc版本未测试</strong>，<strong>主播节点</strong>的nodesMap包含<strong>所有嵌套节点信息</strong>，而<strong>根节点nodeMaps</strong>=hostsPeers(<strong>不含子子节点</strong>)，如果不喜欢现有的nodesMap数组收集节点信息建议<strong>重构recorder()方法</strong>)，根据主播设备配置推荐采用<strong>围绕主播多个二叉树式</strong>连接法</li>
 </ol>
 <h2 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h2>
 <ol>
 <li><strong>根节点</strong>具有<strong>推流最高优先级</strong>，它会覆盖所有子节点及其子子节点等的直播</li>
-<li><strong>直播媒体流只会推送到子节点</strong>，而不像信息通道无论在哪个节点都可以收到信息，故所连接的根节点最好是直播节点（即<strong>流媒体单向传递，文本双向传递</strong>）</li>
+<li><strong>直播媒体流只会推送到子节点</strong>，而不像信息通道无论在哪个节点都可以收到信息，故所连接的根节点最好是直播节点或监听器的子节点（即<strong>流媒体单向传递，文本双向传递</strong>）</li>
 <li>如果建立连接发生在主机开始共享流媒体之前，再次点击Connect按钮会<strong>刷新接收的流媒体</strong></li>
 <li>该文件是发与<strong>接收结合为一体</strong>的，且仅依靠前端，这意味着任何人的权限是对等的，如果投入开发或不安全环境，需要对内容进行封装并设置权限分类</li>
 <li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
-<li>子节点在递交给子子节点时视频质量开始可能模糊，尝试等待</li>
+<li>子节点在递交给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
 </ol>
 <h3 id="ps但是桌面流默认由mediadevicesgetdisplaymedia获取"><a class="header" href="#ps但是桌面流默认由mediadevicesgetdisplaymedia获取">PS：但是桌面流默认由**MediaDevices.getDisplayMedia()**获取</a></h3>
 <p>这意味着<strong>大多移动端</strong>都无法发起直播而<strong>只能接收媒体流和文本信息</strong>，且需要在本地开发环境或https下才能正常工作，如有需要可<strong>自行修改getLocalStream()函数</strong></p>
@@ -211,14 +225,12 @@
 <li>由于P2P本身的局限性，有些网络之间难以建立P2P连接，不过可以通过桥接都可以连接网络来解决</li>
 <li>关于获取所有节点连接状况：尽管节点网络数据发送已经做完了，但是由于本人能力有限，还没有写好解析数组的函数
 但你仍然可以在任意节点的<strong>浏览器内置的控制台</strong>抓取<strong>nodesMap</strong>数组，其中包含从根节点到子节点的所有连接id与关系，其结构为：
-<code>[parentID, [childsIDs], null, 1]</code></li>
-<li><strong>parentID</strong>为<strong>根节点</strong></li>
-<li><strong>childsIDs</strong>为根节点的<strong>子节点（若子节点无子节点则为id值，若有则为格式相同的嵌套数组）</strong></li>
+<code>[thisID, [childsIDs], null, 1]</code></li>
+<li><strong>thisID</strong>首个为<strong>根节点</strong></li>
+<li><strong>childsIDs</strong>首个为根节点的<strong>子节点（若子节点无子节点则为id值，若有则为格式相同的嵌套数组）</strong></li>
 <li>null用于区分信息通道</li>
 <li>1表示该网络信息来源为根节点(每当新节点加入都会沿线路传输到根节点，根节点汇总后发布再传递至各个节点，汇总过程中该值为0)</li>
 </ul>
-<h3 id="清理断开连接"><a class="header" href="#清理断开连接">清理断开连接</a></h3>
-<p>没做完</p>
 <h2 id="其他"><a class="header" href="#其他">其他</a></h2>
 <ul>
 <li><strong>关于P2P</strong>：

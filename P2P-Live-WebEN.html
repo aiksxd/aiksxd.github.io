@@ -174,26 +174,42 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="p2p-live-web"><a class="header" href="#p2p-live-web">P2P-Live-Web</a></h1>
-<h2 id="usage"><a class="header" href="#usage">Usage:</a></h2>
+<p>PS: Due to the lack of attention to the project, all messages will be replied to once every 2 to 3 weeks.</p>
+<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
+<h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
 <ol>
 <li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links, etc.</li>
-</ol>
-<ul>
-<li><a href="https://aiksxd.github.io/P2PLiveWeb.html">P2P Live Web</a></li>
-</ul>
-<ol start="2">
 <li>The broadcaster clicks the <strong>Start Local Stream</strong> button and shares their ID with the audience.</li>
 <li>The audience can connect to any broadcaster's ID, but the connection must remain uninterrupted. If the connection is broken in the middle, a new connection object is required.</li>
+</ol>
+<h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/etcP2PRootMonitor.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
+<p>Version Update Example:</p>
+<ul>
+<li>etcP2PLiveindex.html serves as the website homepage (displaying rooms ready for live streaming and providing entry points)</li>
+<li>etcP2PRootMonitor.html acts as the website's root node (responsible for monitoring and providing all IDs of live stream initiators to the homepage)</li>
+<li>etcP2PLiveHost &amp; Guest.html are auxiliary pages placed in the same directory</li>
+</ul>
+<h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
+<ol>
+<li>Visit the homepage (the root node page contains hyperlinks), enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button</li>
+<li>The broadcaster clicks <strong>Go To Live</strong> and then <strong>Share Local Stream</strong></li>
+<li>After completing step one, audience members can view all active live streaming rooms under the root node (based on the connectivity status of the live streaming pages)</li>
+</ol>
+<h3 id="extensions"><a class="header" href="#extensions">Extensions:</a></h3>
+<ol>
+<li>To customize the room list style, modify the parameters in the <code>guest.on('data', (data) =&gt; {</code> section of the live streaming page (etcP2PLiveHost). <strong>Note: Do not modify the fifth parameter at index 4!</strong></li>
+<li>Optimize the connection method by parsing the <strong>nodesMap array</strong> (containing all node information) yourself (Note: <strong>etc version not tested</strong>). The nodesMap of the broadcaster node contains all nested node information, while the <strong>root node nodeMaps</strong> = hostsPeers (excluding sub-child nodes). If you are not satisfied with the current nodesMap array collecting node information, consider <strong>restructuring the recorder() method</strong>. Depending on the broadcaster's device configuration, it is recommended to use a <strong>multi-binary tree-style</strong> connection method.</li>
 </ol>
 <h2 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h2>
 <ol>
 <li>The <strong>root node</strong> has the <strong>highest priority for streaming</strong>, overriding all child nodes and their subsequent children's live streams.</li>
-<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
+<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node or monitor (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
 <li>If the connection is established before the host starts sharing the media stream, clicking the Connect button again will <strong>refresh the received media stream</strong>.</li>
 <li>This file combines <strong>sender and receiver into one</strong>, relying solely on the frontend. This means that everyone's permissions are equal. If deployed in a development or insecure environment, content should be encapsulated and permission levels set.</li>
-<li>In the event of the host losing connection, the information from the host's child nodes will not be transmitted to other host's child nodes.
-Note: Desktop stream is obtained by <strong>MediaDevices.getDisplayMedia()</strong> by default, which means <strong>most mobile devices</strong> cannot initiate live streaming and can <strong>only receive media streams and text messages</strong>. It also requires a local development environment or HTTPS to work properly. If needed, you can <strong>modify the getLocalStream() function yourself</strong>.</li>
+<li>In the event of the host losing connection, the information from the host's child nodes will not be transmitted to other host's child nodes.</li>
+<li>Video quality may initially be blurry when passed from child nodes to sub-child nodes; waiting for synchronization may resolve this (quality synchronization observed after 26 seconds in a test).</li>
 </ol>
+<p>Note: Desktop stream is obtained by <strong>MediaDevices.getDisplayMedia()</strong> by default, which means <strong>most mobile devices</strong> cannot initiate live streaming and can <strong>only receive media streams and text messages</strong>. It also requires a local development environment or HTTPS to work properly. If needed, you can <strong>modify the getLocalStream() function yourself</strong>.</p>
 <h3 id="for-p2p-live-web"><a class="header" href="#for-p2p-live-web">For <strong>P2P-Live-web</strong></a></h3>
 <p>it employs a <strong>node-based delivery</strong> that allows data to be passed directly from one node to another, enabling the same text interaction message to be received by anyone connected without relying on a central server, thus significantly reducing network latency.</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
@@ -205,15 +221,13 @@ Note: Desktop stream is obtained by <strong>MediaDevices.getDisplayMedia()</stro
 <h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
 <h3 id="connect-without-feedbackfailed"><a class="header" href="#connect-without-feedbackfailed">Connect without feedback(failed):</a></h3>
 <p>Due to the inherent limitations of P2P,establishing connections between some networks can be challenging, but this can be resolved by bridging networks.</p>
-<h3 id="clean-disconnected-nodes"><a class="header" href="#clean-disconnected-nodes">Clean disconnected nodes</a></h3>
-<p>haven't done.</p>
 <h3 id="regarding-obtaining-the-connection-status-of-all-nodes"><a class="header" href="#regarding-obtaining-the-connection-status-of-all-nodes">Regarding obtaining the connection status of all nodes:</a></h3>
 <p>Although the data transmission between nodes has been completed, due to my limited abilities, the function to parse the array has not been implemented yet.
 However, you can still capture the <strong>nodesMap</strong> array in the <strong>built-in console of any node's browser</strong>, which contains all connection IDs and relationships from the root node to child nodes. Its structure is as follows:
-<code>[parentID, [childsIDs], null, 1]</code></p>
+<code>[thisID, [childsIDs], null, 1]</code></p>
 <ul>
-<li><strong>parentID</strong> is the <strong>root node</strong>.</li>
-<li><strong>childsIDs</strong> are the <strong>child nodes of the root node (if a child node has no children, it is the ID value; if it has children, it is a nested array with the same format)</strong>.</li>
+<li><strong>thisID</strong> which first of it is the <strong>root node</strong>.</li>
+<li><strong>childsIDs</strong> which first of them are the <strong>child nodes of the root node (if a child node has no children, it is the ID value; if it has children, it is a nested array with the same format)</strong>.</li>
 <li>null is used to distinguish the information channel.</li>
 <li>1 indicates that the network information originates from the root node (each time a new node joins, it is transmitted along the line to the root node, which then consolidates and distributes it to various nodes; during the consolidation process, this value is 0).</li>
 </ul>
