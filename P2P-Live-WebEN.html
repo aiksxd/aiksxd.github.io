@@ -178,16 +178,16 @@
 <h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
 <h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
 <ol>
-<li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links, etc.</li>
+<li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links, e.g..</li>
 <li>The broadcaster clicks the <strong>Start Local Stream</strong> button and shares their ID with the audience.</li>
 <li>The audience can connect to any broadcaster's ID, but the connection must remain uninterrupted. If the connection is broken in the middle, a new connection object is required.</li>
 </ol>
-<h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/etcP2PRootMonitor.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
+<h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/e.g.P2PRootMonitor.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
 <p>Version Update Example:</p>
 <ul>
-<li>etcP2PLiveindex.html serves as the website homepage (displaying rooms ready for live streaming and providing entry points)</li>
-<li>etcP2PRootMonitor.html acts as the website's root node (responsible for monitoring and providing all IDs of live stream initiators to the homepage)</li>
-<li>etcP2PLiveHost &amp; Guest.html are auxiliary pages placed in the same directory</li>
+<li>e.g.P2PLiveindex.html serves as the website homepage (displaying rooms ready for live streaming and providing entry points)</li>
+<li>e.g.P2PRootMonitor.html acts as the website's root node (responsible for monitoring and providing all IDs of live stream initiators to the homepage)</li>
+<li>e.g.P2PLiveHost &amp; Guest.html are auxiliary pages placed in the same directory</li>
 </ul>
 <h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
 <ol>
@@ -197,8 +197,8 @@
 </ol>
 <h3 id="extensions"><a class="header" href="#extensions">Extensions:</a></h3>
 <ol>
-<li>To customize the room list style, modify the parameters in the <code>guest.on('data', (data) =&gt; {</code> section of the live streaming page (etcP2PLiveHost). <strong>Note: Do not modify the fifth parameter at index 4!</strong></li>
-<li>Optimize the connection method by parsing the <strong>nodesMap array</strong> (containing all node information) yourself (Note: <strong>etc version not tested</strong>). The nodesMap of the broadcaster node contains all nested node information, while the <strong>root node nodeMaps</strong> = hostsPeers (excluding sub-child nodes). If you are not satisfied with the current nodesMap array collecting node information, consider <strong>restructuring the recorder() method</strong>. Depending on the broadcaster's device configuration, it is recommended to use a <strong>multi-binary tree-style</strong> connection method.</li>
+<li>To customize the room list style, modify the parameters in the <code>guest.on('data', (data) =&gt; {</code> section of the live streaming page (e.g.P2PLiveHost). <strong>Note: Do not modify the fifth parameter at index 4!</strong></li>
+<li>Optimize the connection method by parsing the <strong>nodesMap array</strong> (containing all node information) yourself (Note: <strong>e.g. version not tested</strong>). The nodesMap of the broadcaster node contains all nested node information, while the <strong>root node nodeMaps</strong> = hostsPeers (excluding sub-child nodes). If you are not satisfied with the current nodesMap array collecting node information, consider <strong>restructuring the recorder() method</strong>. Depending on the broadcaster's device configuration, it is recommended to use a <strong>multi-binary tree-style</strong> connection method.</li>
 </ol>
 <h2 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h2>
 <ol>
@@ -216,7 +216,7 @@
 <h3 id="regarding-exchange"><a class="header" href="#regarding-exchange">Regarding <strong>exchange</strong></a></h3>
 <p>it is <strong>only used for bilateral</strong> exchange of media streams rather than transmission. Both the connecting and receiving parties need to submit media streams. If a third party is added, one person's media stream will be <strong>overwritten</strong>.</p>
 <ul>
-<li><a href="https://aiksxd.github.io/exchange.html">Exchange</a></li>
+<li><a href="https://aiksxd.github.io/e.g.exchange.html">e.g.Exchange</a></li>
 </ul>
 <h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
 <h3 id="connect-without-feedbackfailed"><a class="header" href="#connect-without-feedbackfailed">Connect without feedback(failed):</a></h3>
@@ -294,22 +294,6 @@ It abstracts the complex WebRTC details, making the development process more con
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

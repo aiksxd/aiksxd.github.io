@@ -94,14 +94,14 @@
             console.log("Rooms list upate: " + data);
             document.getElementById("rooms").innerHTML = "";
             for (var i = 0; i < data.length; i++){
-                document.getElementById("rooms").innerHTML = document.getElementById("rooms").innerHTML + "<a href=\"./etcP2PLiveGuestCN.html?id="+ data[i] +"\"><div class=\"rooms list\">Room number is "+ i +"</div></a>";
+                document.getElementById("rooms").innerHTML = document.getElementById("rooms").innerHTML + "<a href=\"./e.g.P2PLiveGuestCN.html?id="+ data[i] +"\"><div class=\"rooms list\">Room number is "+ i +"</div></a>";
             }
         }
         
         document.getElementById('live').addEventListener('click', () => {
             if(guest){
                 if(guest.open){
-                    document.location.href = "./etcP2PLiveHostCN.html?id=" + guest.peer;
+                    document.location.href = "./e.g.P2PLiveHostCN.html?id=" + guest.peer;
                 }
             }
         });
