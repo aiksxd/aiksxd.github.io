@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; P2P-Live-Web(used PeerJS)</li><li class="spacer"></li><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.</strong> P2P简单直播</a></li><li class="chapter-item expanded "><a href="P2P-Live-WebEN.html"><strong aria-hidden="true">2.</strong> P2P-Live-Web-EN</a></li><li class="chapter-item expanded affix "><li class="part-title">&gt;&gt; PCPE双端开服建站联机教程</li><li class="spacer"></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">3.</strong> 开服联机Mutliplay Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">3.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">3.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html" class="active"><strong aria-hidden="true">3.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">3.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html" class="active"><strong aria-hidden="true">3.5.</strong> 链接汇总 & 总结</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; 内网穿透实现直播网站</li><li class="spacer"></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">4.</strong> 网穿直播NatLive Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">4.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">4.2.</strong> 过程与拓展</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">&gt;&gt; Rust安装bevy于Termux</li><li class="spacer"></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">5.</strong> RustBevyOnTermux</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-WebEN.html"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html" class="active"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html" class="active"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -315,6 +315,22 @@
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
