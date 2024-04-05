@@ -69,12 +69,12 @@
                 <button type="button" id="roomSetting" onclick="showLive()">房间设置</button><br />
                 <div id="myid" style="font-weight: bold;">正在连接到PeerJS服务器...</div>
             </div>
-            <div class="box">
-                <a href="https://peerjs.com/" target="_blank">跳转到PeerJS官网</a><br/>
-                <a href="https://github.com/aiksxd/P2P-Live-Web" target="_blank">在GitHub上了解更多关于P2P-Live-Web</a><br/>
-                <input type="checkbox" id="ifAutoReconnect" checked="checked">自动连接
-                <div id="status" style="font-weight: bold;">状态: 等待连接到Peer服务器...</div>
-            </div>
+        </div>
+        <div class="box">
+            <a href="https://peerjs.com/" target="_blank">跳转到PeerJS官网</a><br/>
+            <a href="https://github.com/aiksxd/P2P-Live-Web" target="_blank">在GitHub上了解更多关于P2P-Live-Web</a><br/>
+            <input type="checkbox" id="ifAutoReconnect" checked="checked">自动连接
+            <div id="status" style="font-weight: bold;">状态: 等待连接到Peer服务器...</div>
         </div>
         <div class="custome">
             <div>自定义名称<input type="text" id="name" placeholder="输入你的名字..." /></div>
@@ -140,7 +140,7 @@
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
             if (LiveTitle.value){
-                nodesMap = [ 1, 1, 0, [], LiveTitle.value, LiveSummary.innerHTML, LiveCoverURL.value, id, getMyName(), childNodes, urlInfo[0]];
+                nodesMap = [ 1, 1, 0, [], LiveTitle.value, LiveSummary.value, LiveCoverURL.value, id, getMyName(), childNodes, urlInfo[0]];
             } else {
                 childNodes = [ 1, 1, 0, [], id, getMyName(), []];
                 nodesMap = [ 1, 1, 0, [], urlInfo[1], urlInfo[2], urlInfo[3], id, getMyName(), childNodes, urlInfo[0]];
@@ -434,7 +434,7 @@
                 openLiveTimes++;
                 document.getElementById('liveSetting').style.height = "25%";
                 LiveTitle.value = nodesMap[4];
-                LiveSummary.innerHTML = nodesMap[5];
+                LiveSummary.value = nodesMap[5];
                 LiveCoverURL.value = nodesMap[6];
             }else{
                 openLiveTimes=0;
@@ -444,7 +444,7 @@
 
         function modify(){
             nodesMap[4] = LiveTitle.value;   // nodesMap update
-            nodesMap[5] = LiveSummary.innerHTML;
+            nodesMap[5] = LiveSummary.value;
             nodesMap[6] = LiveCoverURL.value;
             liveSend(nodesMap);
         }
