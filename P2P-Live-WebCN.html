@@ -173,43 +173,77 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="p2p-live-web"><a class="header" href="#p2p-live-web">P2P-Live-Web</a></h1>
-<p>注：所有消息2~3周回复一次</p>
-<h2 id="单直播间型"><a class="header" href="#单直播间型"><a href="https://aiksxd.github.io/P2PLiveWebCN.html">单直播间型</a></a></h2>
+                        <h3 id="关于p2p--peerjs"><a class="header" href="#关于p2p--peerjs"><strong>关于P2P &amp; PeerJS</strong>：</a></h3>
+<p>P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
+与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</p>
+<p>PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</p>
+<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
+<h3 id="45更新仅多房间版本"><a class="header" href="#45更新仅多房间版本">4.5更新(仅多房间版本):</a></h3>
+<ul>
+<li>自动加入 和 自动重连房间</li>
+<li>自定义房间信息：标题，简介，封面</li>
+<li>展示节点网络(左右轮换显示 &amp; 双击加入)</li>
+<li>通常，主页会默认尝试连接id&quot;P2P-Live-Web-Default-Id&quot; (可以使得连接到持有此id的页面更加便捷，但是如果被占用，自己的root页面就无法再持有，所以可以修改成自己的)</li>
+</ul>
+<h3 id="下个版本的计划"><a class="header" href="#下个版本的计划">下个版本的计划:</a></h3>
+<ul>
+<li>刷新功能重做!</li>
+<li>自动清除信息</li>
+<li>单文件版本更新</li>
+<li>流媒体源扩展</li>
+<li>css, rename...</li>
+</ul>
+<h2 id="单文件版本"><a class="header" href="#单文件版本"><a href="https://aiksxd.github.io/P2PLiveWebCN.html">单文件版本</a></a></h2>
 <h3 id="用法"><a class="header" href="#用法">用法:</a></h3>
 <ol>
-<li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>以下网址等</li>
+<li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>现成网址等</li>
 <li>直播方点击<strong>共享本地流</strong>按钮，并且分享自己的ID给观众</li>
 <li>观众与主播的id任意相连，不过需要保持中间不断开，如果中间断开则需更换连接对象</li>
 </ol>
-<h2 id="eg多房间型url-root"><a class="header" href="#eg多房间型url-root"><a href="https://aiksxd.github.io/e.g.P2PRootMonitorCN.html">e.g.多房间型(URL-&gt;ROOT)</a></a></h2>
+<h2 id="多房间型url-root"><a class="header" href="#多房间型url-root"><a href="https://aiksxd.github.io/P2PLiveRootCN.html">多房间型(URL-&gt;ROOT)</a></a></h2>
+<p><em>如果在互联网上已经有人访问了root网页并持有了上述的默认id，可以直接访问<a href="https://aiksxd.github.io/P2PLiveIndex.html">URL -&gt; Index</a></em></p>
 <ul>
-<li>改版示例：</li>
-<li>e.g.P2PLiveindex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
-<li>e.g.P2PRootMonitor.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
-<li>e.g.P2PLiveHost &amp; Guest.html 为附属页面，置于同目录下即可</li>
+<li>文件说明：</li>
+<li>P2PLiveIndex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
+<li>P2PLiveRoot.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
+<li>P2PLiveHost.html &amp; P2PLiveAudience.html 为附属页面，置于同目录下即可</li>
 </ul>
 <h3 id="用法-1"><a class="header" href="#用法-1">用法：</a></h3>
+<ul>
+<li>[ 对于站长 ]</li>
+</ul>
 <ol>
-<li>访问主页(根节点页面有超链接)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
-<li>直播方点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
+<li>打开根节点页面(P2PLiveRoot.html)（在文件中修改deafult_Id，否则可能已被占用）</li>
+<li>分享给用户</li>
+</ol>
+<ul>
+<li>[ 对于观众 ]</li>
+</ul>
+<ol>
+<li>访问主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
 <li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)</li>
+</ol>
+<ul>
+<li>[ 对于主播 ]</li>
+</ul>
+<ol>
+<li>访问主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
 </ol>
 <h3 id="拓展"><a class="header" href="#拓展">拓展：</a></h3>
 <ol>
 <li>如<strong>多房间型</strong>在<strong>自己设备开个根节点</strong>，web网站部署<strong>剩余页面</strong>，并且<strong>指定根节点连接</strong>，就实现了一个简单的直播网站</li>
 <li>如<strong>单直播间型</strong>同样<strong>自己开个页面</strong>，<strong>得到ID后推流</strong>，web网页部署另一个页面，<strong>指定ID连接</strong>，就实现指定直播间</li>
-<li>如增加房间列表的样式，可以增加直播间页面(e.g.P2PLiveHost)中<code>guest.on('data', (data) =&gt; {</code>中<code>guest.send([peer.id, null, null, 0, 1]);</code>中的参数，并在首页节点页面对接，<strong>注意：第索引为4的第五个值默认用于区分访客与主播的信息来源</strong></li>
-<li>优化连接方法，自行解析<strong>nodesMap数组</strong>(包含所有节点信息)(注：<strong>e.g.版本未测试</strong>，<strong>主播节点</strong>的nodesMap包含<strong>所有嵌套节点信息</strong>，而<strong>根节点nodeMaps</strong>=hostsPeers(<strong>不含子子节点</strong>)，如果不喜欢现有的nodesMap数组收集节点信息建议<strong>重构recorder()方法</strong>)，根据主播设备配置推荐采用<strong>围绕主播多个二叉树式</strong>连接法</li>
 </ol>
 <h2 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h2>
 <ol>
 <li><strong>根节点</strong>具有<strong>推流最高优先级</strong>，它会覆盖所有子节点及其子子节点等的直播</li>
 <li><strong>直播媒体流只会推送到子节点</strong>，而不像信息通道无论在哪个节点都可以收到信息，故所连接的根节点最好是直播节点或监听器的子节点（即<strong>流媒体单向传递，文本双向传递</strong>）</li>
-<li>如果建立连接发生在主机开始共享流媒体之前，再次点击Connect按钮会<strong>刷新接收的流媒体</strong></li>
+<li>如果建立连接发生在主机开始共享流媒体之前，再次点击按钮会<strong>刷新接收的流媒体</strong></li>
 <li>该文件是发与<strong>接收结合为一体</strong>的，且仅依靠前端，这意味着任何人的权限是对等的，如果投入开发或不安全环境，需要对内容进行封装并设置权限分类</li>
 <li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
 <li>子节点在递交给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
+<li>通常，主页会默认尝试连接id&quot;P2P-Live-Web-Default-Id&quot; (可以使得连接到持有此id的页面更加便捷，但是如果被占用，自己的root页面就无法再持有，所以可以修改成自己的)</li>
 </ol>
 <h3 id="适配与流源拓宽"><a class="header" href="#适配与流源拓宽">适配与流源拓宽</a></h3>
 <p>桌面流默认由MediaDevices.getDisplayMedia()获取，即仅共享桌面，且意味着<strong>大多移动端</strong>都无法发起直播而<strong>只能接收媒体流和文本信息</strong>，且需要在本地开发环境或https下才能正常工作。
@@ -217,6 +251,19 @@
 <h2 id="对于p2p-live-web"><a class="header" href="#对于p2p-live-web">对于<strong>P2P-Live-web</strong></a></h2>
 <p>它采用<strong>节点式传递</strong>，允许数据直接从一个节点传递到另一个节点，这意味着无论连接谁，都可以收到相同的文字互动信息，而且<strong>无需依赖中央服务器</strong>，大大减少网络延迟。</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
+<h3 id="常用数组"><a class="header" href="#常用数组">常用数组</a></h3>
+<ul>
+<li>
+<p>nodesMap[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>: <strong>待做</strong>, <strong>直播标题</strong>, <strong>直播简介</strong>, <strong>直播地址</strong>, <strong>主办方id</strong>, <strong>主办方子节点</strong>, <strong>根节点id</strong>]</p>
+</li>
+<li>
+<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>: <strong>待做</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>临时记录用</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
+</li>
+</ul>
+<h3 id="标识"><a class="header" href="#标识">标识</a></h3>
+<ul>
+<li>消息类型: 0 -&gt; 互动信息, 1 -&gt; 节点信息收集用, 2 -&gt; 流媒体请求, 3 -&gt; 提醒更换父节点</li>
+</ul>
 <h2 id="对于exchange"><a class="header" href="#对于exchange">对于<strong>exchange</strong></a></h2>
 <p><strong>仅用于两端</strong>相互交换流媒体而非传递，要求连接方和接收方都提交流媒体，如果增加第三者，其中一个人的流媒体会被<strong>覆盖</strong></p>
 <ul>
@@ -226,30 +273,9 @@
 <h3 id="连接无反馈"><a class="header" href="#连接无反馈">连接无反馈</a></h3>
 <ul>
 <li>由于P2P本身的局限性，有些网络之间难以建立P2P连接，不过可以通过桥接都可以连接网络来解决</li>
-<li>关于获取所有节点连接状况：尽管节点网络数据发送已经做完了，但是由于本人能力有限，还没有写好解析数组的函数
-但你仍然可以在任意节点的<strong>浏览器内置的控制台</strong>抓取<strong>nodesMap</strong>数组，其中包含从根节点到子节点的所有连接id与关系，其结构为：
-<code>[thisID, [childsIDs], null, 1]</code></li>
-<li><strong>thisID</strong>首个为<strong>根节点</strong></li>
-<li><strong>childsIDs</strong>首个为根节点的<strong>子节点（若子节点无子节点则为id值，若有则为格式相同的嵌套数组）</strong></li>
-<li>null用于区分信息通道</li>
-<li>1表示该网络信息来源为根节点(每当新节点加入都会沿线路传输到根节点，根节点汇总后发布再传递至各个节点，汇总过程中该值为0)</li>
 </ul>
-<h2 id="其他"><a class="header" href="#其他">其他</a></h2>
-<ul>
-<li><strong>关于P2P</strong>：
-P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
-与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</li>
-</ul>
-<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<ul>
-<li><strong>关于PeerJS</strong>：
-PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</li>
-</ul>
-<p>简化的 API：PeerJS 提供了简单易用的 API，使开发者能够快速实现 P2P 连接和数据传输。
-它抽象了复杂的 WebRTC 细节，使开发过程更加简便。
-&gt;</p>
 <h2 id="关于本地peer服务器"><a class="header" href="#关于本地peer服务器"><strong>关于本地Peer服务器</strong>：</a></h2>
-<p><strong>PS(ignore it if you don't run peerjs server locally如果不想本地运行自行忽略):</strong></p>
+<p><strong>PS(如果不想本地运行自行忽略):</strong></p>
 <h3 id="peerserver"><a class="header" href="#peerserver">PeerServer</a></h3>
 <p>先装npm，国内cnpm也可以，然后安装peer：</p>
 <pre><code>npm install peer -g
