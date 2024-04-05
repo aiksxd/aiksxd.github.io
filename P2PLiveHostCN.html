@@ -11,11 +11,11 @@
     <div id="liveSetting">
         <img id="liveCover">
         <div style="height: 100%; width: 30%; margin-top: 2%;">
-            <input type="text" id="LiveTitle" class="liveInput" placeholder="填入房间标题"><br />
-            <textarea id="LiveSummary" rows="5" cols="33" placeholder="填入房间简介..."></textarea><br />
+            <input type="text" id="liveTitle" class="liveInput" placeholder="填入房间标题"><br />
+            <textarea id="liveSummary" rows="5" cols="33" placeholder="填入房间简介..."></textarea><br />
         </div>
         <div style="height: 100%; width: 30%; margin-top: 2%;">
-            <input type="text" id="LiveCoverURL" class="liveInput" placeholder="填入房间封面图片地址"><br />
+            <input type="text" id="liveCoverURL" class="liveInput" placeholder="填入房间封面图片地址"><br />
             <input type="checkbox" id="ifPravite">不公开(无需根节点)
         </div>
         <!--input type="file" name="files" style="margin-top: 2%; width: 14%;"-->
@@ -131,9 +131,9 @@
         const localVideo = document.getElementById('localVideo');
         let params = new URLSearchParams(document.location.search.substring(1));
         let urlInfo = [params.get("rootId"), params.get("title"), params.get("summary"), params.get("coverURL")]
-        const LiveTitle = document.getElementById("LiveTitle");
-        const LiveSummary = document.getElementById("LiveSummary");
-        const LiveCoverURL= document.getElementById("LiveCoverURL");
+        const LiveTitle = document.getElementById("liveTitle");
+        const LiveSummary = document.getElementById("liveSummary");
+        const LiveCoverURL= document.getElementById("liveCoverURL");
         const MyName = document.getElementById("name");
 
         // Listen for the event when a Peer connection is successfully opened
