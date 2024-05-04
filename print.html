@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-WebEN.html"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-WebEN.html"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -174,50 +174,94 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="p2p-live-web"><a class="header" href="#p2p-live-web">P2P-Live-Web</a></h1>
-<p>注：所有消息2~3周回复一次</p>
-<h2 id="单直播间型"><a class="header" href="#单直播间型"><a href="https://aiksxd.github.io/P2PLiveWebCN.html">单直播间型</a></a></h2>
-<h3 id="用法"><a class="header" href="#用法">用法:</a></h3>
+                        <h3 id="关于p2p--peerjs"><a class="header" href="#关于p2p--peerjs"><strong>关于P2P &amp; PeerJS</strong>：</a></h3>
+<p>P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
+与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</p>
+<p>PeerJS：一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</p>
+<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
+<h3 id="更新"><a class="header" href="#更新">更新:</a></h3>
+<ul>
+<li>刷新功能重做</li>
+<li>显式房间人数(roomIds数组)</li>
+<li>自动清除信息</li>
+<li>流媒体源扩展(更多设备支持)</li>
+<li>图片上传封面与图片消息</li>
+<li>修复关闭标签页但连接仍然保留的BUG</li>
+<li>直播网页全屏</li>
+<li>单文件版本更新</li>
+<li>自动连接优化(参数可自调autoJoin(每个节点推荐人数))</li>
+<li>视频标签样式优化</li>
+</ul>
+<h3 id="下个版本的计划"><a class="header" href="#下个版本的计划">下个版本的计划:</a></h3>
+<ul>
+<li>如有bug则修，一般不会再有大更新了</li>
+<li>汉化工作</li>
+</ul>
+<h2 id="多房间型url-root"><a class="header" href="#多房间型url-root"><a href="https://aiksxd.github.io/P2PLiveRoot.html">多房间型(URL-&gt;ROOT)</a></a></h2>
+<p><em>如果在互联网上已经有人访问了root网页并持有了上述的默认id，可以直接访问<a href="https://aiksxd.github.io/P2PLiveIndex.html">URL -&gt; Index</a></em></p>
+<ul>
+<li>文件说明：</li>
+<li>P2PLiveIndex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
+<li>P2PLiveRoot.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
+<li>P2PLiveHost.html &amp; P2PLiveAudience.html 为附属页面，置于同目录下即可</li>
+</ul>
+<h3 id="用法"><a class="header" href="#用法">用法：</a></h3>
+<ul>
+<li>[ 对于站长 ]</li>
+</ul>
 <ol>
-<li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>以下网址等</li>
+<li>联网并使用浏览器读取根节点页面(P2PLiveRoot.html)</li>
+<li>分享根节点页面的id给用户</li>
+</ol>
+<ul>
+<li>[ 对于观众 ]</li>
+</ul>
+<ol>
+<li>联网并使用浏览器读取主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)</li>
+</ol>
+<ul>
+<li>[ 对于主播 ]</li>
+</ul>
+<ol>
+<li>联网并使用浏览器读取主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
+</ol>
+<h3 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h3>
+<ol>
+<li>如果建立连接发生在主机开始共享流媒体之前，再次点击刷新按钮会<strong>刷新接收的流媒体</strong>（如不可用则刷新整个页面）</li>
+<li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
+<li>子节点在传递给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
+<li>通常，主页会默认尝试连接id&quot;P2P-Live-Web-Default-Id&quot; (可以使得连接到持有此id的页面更加便捷，但是如果被占用，自己的root页面就无法再持有，所以可以修改成自己的再转发给别人)</li>
+</ol>
+<h2 id="单文件版本"><a class="header" href="#单文件版本"><a href="https://aiksxd.github.io/P2PLiveWeb.html">单文件版本</a></a></h2>
+<h3 id="用法-1"><a class="header" href="#用法-1">用法:</a></h3>
+<ol>
+<li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>现成网址等</li>
 <li>直播方点击<strong>共享本地流</strong>按钮，并且分享自己的ID给观众</li>
 <li>观众与主播的id任意相连，不过需要保持中间不断开，如果中间断开则需更换连接对象</li>
 </ol>
-<h2 id="eg多房间型url-root"><a class="header" href="#eg多房间型url-root"><a href="https://aiksxd.github.io/e.g.P2PRootMonitorCN.html">e.g.多房间型(URL-&gt;ROOT)</a></a></h2>
-<ul>
-<li>改版示例：</li>
-<li>e.g.P2PLiveindex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
-<li>e.g.P2PRootMonitor.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
-<li>e.g.P2PLiveHost &amp; Guest.html 为附属页面，置于同目录下即可</li>
-</ul>
-<h3 id="用法-1"><a class="header" href="#用法-1">用法：</a></h3>
-<ol>
-<li>访问主页(根节点页面有超链接)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
-<li>直播方点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
-<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)</li>
-</ol>
-<h3 id="拓展"><a class="header" href="#拓展">拓展：</a></h3>
-<ol>
-<li>如<strong>多房间型</strong>在<strong>自己设备开个根节点</strong>，web网站部署<strong>剩余页面</strong>，并且<strong>指定根节点连接</strong>，就实现了一个简单的直播网站</li>
-<li>如<strong>单直播间型</strong>同样<strong>自己开个页面</strong>，<strong>得到ID后推流</strong>，web网页部署另一个页面，<strong>指定ID连接</strong>，就实现指定直播间</li>
-<li>如增加房间列表的样式，可以增加直播间页面(e.g.P2PLiveHost)中<code>guest.on('data', (data) =&gt; {</code>中<code>guest.send([peer.id, null, null, 0, 1]);</code>中的参数，并在首页节点页面对接，<strong>注意：第索引为4的第五个值默认用于区分访客与主播的信息来源</strong></li>
-<li>优化连接方法，自行解析<strong>nodesMap数组</strong>(包含所有节点信息)(注：<strong>e.g.版本未测试</strong>，<strong>主播节点</strong>的nodesMap包含<strong>所有嵌套节点信息</strong>，而<strong>根节点nodeMaps</strong>=hostsPeers(<strong>不含子子节点</strong>)，如果不喜欢现有的nodesMap数组收集节点信息建议<strong>重构recorder()方法</strong>)，根据主播设备配置推荐采用<strong>围绕主播多个二叉树式</strong>连接法</li>
-</ol>
-<h2 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h2>
+<h3 id="注意事项-1"><a class="header" href="#注意事项-1"><strong>注意事项</strong>：</a></h3>
 <ol>
 <li><strong>根节点</strong>具有<strong>推流最高优先级</strong>，它会覆盖所有子节点及其子子节点等的直播</li>
 <li><strong>直播媒体流只会推送到子节点</strong>，而不像信息通道无论在哪个节点都可以收到信息，故所连接的根节点最好是直播节点或监听器的子节点（即<strong>流媒体单向传递，文本双向传递</strong>）</li>
-<li>如果建立连接发生在主机开始共享流媒体之前，再次点击Connect按钮会<strong>刷新接收的流媒体</strong></li>
-<li>该文件是发与<strong>接收结合为一体</strong>的，且仅依靠前端，这意味着任何人的权限是对等的，如果投入开发或不安全环境，需要对内容进行封装并设置权限分类</li>
-<li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
-<li>子节点在递交给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
 </ol>
-<h3 id="适配与流源拓宽"><a class="header" href="#适配与流源拓宽">适配与流源拓宽</a></h3>
-<p>桌面流默认由MediaDevices.getDisplayMedia()获取，即仅共享桌面，且意味着<strong>大多移动端</strong>都无法发起直播而<strong>只能接收媒体流和文本信息</strong>，且需要在本地开发环境或https下才能正常工作。
-如果需要手机端屏幕推流、获取摄像头、相机拍照等等，可参考getUserMedia()API，并修改页面的getLocalStream()</p>
 <h2 id="对于p2p-live-web"><a class="header" href="#对于p2p-live-web">对于<strong>P2P-Live-web</strong></a></h2>
 <p>它采用<strong>节点式传递</strong>，允许数据直接从一个节点传递到另一个节点，这意味着无论连接谁，都可以收到相同的文字互动信息，而且<strong>无需依赖中央服务器</strong>，大大减少网络延迟。</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
+<h3 id="常用数组"><a class="header" href="#常用数组">常用数组</a></h3>
+<ul>
+<li>
+<p>nodesMap[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>, <strong>直播标题</strong>, <strong>直播简介</strong>, <strong>直播封面</strong>, <strong>主办方id</strong>, <strong>主办方子节点</strong>, <strong>根节点id</strong>]</p>
+</li>
+<li>
+<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id(限单文件版)</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>未启用的扩展接口</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
+</li>
+</ul>
+<h3 id="标识"><a class="header" href="#标识">标识</a></h3>
+<ul>
+<li>消息类型: 0 -&gt; 互动信息, 1 -&gt; 节点信息收集用, 2 -&gt; 流媒体请求, 3 -&gt; 提醒更换父节点， 4 -&gt; 流媒体呼叫刷新请求</li>
+</ul>
 <h2 id="对于exchange"><a class="header" href="#对于exchange">对于<strong>exchange</strong></a></h2>
 <p><strong>仅用于两端</strong>相互交换流媒体而非传递，要求连接方和接收方都提交流媒体，如果增加第三者，其中一个人的流媒体会被<strong>覆盖</strong></p>
 <ul>
@@ -227,30 +271,13 @@
 <h3 id="连接无反馈"><a class="header" href="#连接无反馈">连接无反馈</a></h3>
 <ul>
 <li>由于P2P本身的局限性，有些网络之间难以建立P2P连接，不过可以通过桥接都可以连接网络来解决</li>
-<li>关于获取所有节点连接状况：尽管节点网络数据发送已经做完了，但是由于本人能力有限，还没有写好解析数组的函数
-但你仍然可以在任意节点的<strong>浏览器内置的控制台</strong>抓取<strong>nodesMap</strong>数组，其中包含从根节点到子节点的所有连接id与关系，其结构为：
-<code>[thisID, [childsIDs], null, 1]</code></li>
-<li><strong>thisID</strong>首个为<strong>根节点</strong></li>
-<li><strong>childsIDs</strong>首个为根节点的<strong>子节点（若子节点无子节点则为id值，若有则为格式相同的嵌套数组）</strong></li>
-<li>null用于区分信息通道</li>
-<li>1表示该网络信息来源为根节点(每当新节点加入都会沿线路传输到根节点，根节点汇总后发布再传递至各个节点，汇总过程中该值为0)</li>
 </ul>
-<h2 id="其他"><a class="header" href="#其他">其他</a></h2>
+<h3 id="点首页的刷新导致页面蒸发"><a class="header" href="#点首页的刷新导致页面蒸发">点首页的刷新导致页面蒸发</a></h3>
 <ul>
-<li><strong>关于P2P</strong>：
-P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
-与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</li>
+<li>莫名奇妙的Bug罢了</li>
 </ul>
-<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<ul>
-<li><strong>关于PeerJS</strong>：
-PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</li>
-</ul>
-<p>简化的 API：PeerJS 提供了简单易用的 API，使开发者能够快速实现 P2P 连接和数据传输。
-它抽象了复杂的 WebRTC 细节，使开发过程更加简便。
-&gt;</p>
 <h2 id="关于本地peer服务器"><a class="header" href="#关于本地peer服务器"><strong>关于本地Peer服务器</strong>：</a></h2>
-<p><strong>PS(ignore it if you don't run peerjs server locally如果不想本地运行自行忽略):</strong></p>
+<p><strong>PS(如果不想本地运行自行忽略):</strong></p>
 <h3 id="peerserver"><a class="header" href="#peerserver">PeerServer</a></h3>
 <p>先装npm，国内cnpm也可以，然后安装peer：</p>
 <pre><code>npm install peer -g
@@ -265,50 +292,94 @@ PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通
 
 &lt;!--script src=&quot;https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js&quot;&gt;&lt;/script--&gt;
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="p2p-live-web-1"><a class="header" href="#p2p-live-web-1">P2P-Live-Web</a></h1>
-<p>注：所有消息2~3周回复一次</p>
-<h2 id="单直播间型-1"><a class="header" href="#单直播间型-1"><a href="https://aiksxd.github.io/P2PLiveWebCN.html">单直播间型</a></a></h2>
-<h3 id="用法-2"><a class="header" href="#用法-2">用法:</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="关于p2p--peerjs-1"><a class="header" href="#关于p2p--peerjs-1"><strong>关于P2P &amp; PeerJS</strong>：</a></h3>
+<p>P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
+与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</p>
+<p>PeerJS：一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</p>
+<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
+<h3 id="更新-1"><a class="header" href="#更新-1">更新:</a></h3>
+<ul>
+<li>刷新功能重做</li>
+<li>显式房间人数(roomIds数组)</li>
+<li>自动清除信息</li>
+<li>流媒体源扩展(更多设备支持)</li>
+<li>图片上传封面与图片消息</li>
+<li>修复关闭标签页但连接仍然保留的BUG</li>
+<li>直播网页全屏</li>
+<li>单文件版本更新</li>
+<li>自动连接优化(参数可自调autoJoin(每个节点推荐人数))</li>
+<li>视频标签样式优化</li>
+</ul>
+<h3 id="下个版本的计划-1"><a class="header" href="#下个版本的计划-1">下个版本的计划:</a></h3>
+<ul>
+<li>如有bug则修，一般不会再有大更新了</li>
+<li>汉化工作</li>
+</ul>
+<h2 id="多房间型url-root-1"><a class="header" href="#多房间型url-root-1"><a href="https://aiksxd.github.io/P2PLiveRoot.html">多房间型(URL-&gt;ROOT)</a></a></h2>
+<p><em>如果在互联网上已经有人访问了root网页并持有了上述的默认id，可以直接访问<a href="https://aiksxd.github.io/P2PLiveIndex.html">URL -&gt; Index</a></em></p>
+<ul>
+<li>文件说明：</li>
+<li>P2PLiveIndex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
+<li>P2PLiveRoot.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
+<li>P2PLiveHost.html &amp; P2PLiveAudience.html 为附属页面，置于同目录下即可</li>
+</ul>
+<h3 id="用法-2"><a class="header" href="#用法-2">用法：</a></h3>
+<ul>
+<li>[ 对于站长 ]</li>
+</ul>
 <ol>
-<li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>以下网址等</li>
+<li>联网并使用浏览器读取根节点页面(P2PLiveRoot.html)</li>
+<li>分享根节点页面的id给用户</li>
+</ol>
+<ul>
+<li>[ 对于观众 ]</li>
+</ul>
+<ol>
+<li>联网并使用浏览器读取主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)</li>
+</ol>
+<ul>
+<li>[ 对于主播 ]</li>
+</ul>
+<ol>
+<li>联网并使用浏览器读取主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
+</ol>
+<h3 id="注意事项-2"><a class="header" href="#注意事项-2"><strong>注意事项</strong>：</a></h3>
+<ol>
+<li>如果建立连接发生在主机开始共享流媒体之前，再次点击刷新按钮会<strong>刷新接收的流媒体</strong>（如不可用则刷新整个页面）</li>
+<li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
+<li>子节点在传递给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
+<li>通常，主页会默认尝试连接id&quot;P2P-Live-Web-Default-Id&quot; (可以使得连接到持有此id的页面更加便捷，但是如果被占用，自己的root页面就无法再持有，所以可以修改成自己的再转发给别人)</li>
+</ol>
+<h2 id="单文件版本-1"><a class="header" href="#单文件版本-1"><a href="https://aiksxd.github.io/P2PLiveWeb.html">单文件版本</a></a></h2>
+<h3 id="用法-3"><a class="header" href="#用法-3">用法:</a></h3>
+<ol>
+<li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>现成网址等</li>
 <li>直播方点击<strong>共享本地流</strong>按钮，并且分享自己的ID给观众</li>
 <li>观众与主播的id任意相连，不过需要保持中间不断开，如果中间断开则需更换连接对象</li>
 </ol>
-<h2 id="eg多房间型url-root-1"><a class="header" href="#eg多房间型url-root-1"><a href="https://aiksxd.github.io/e.g.P2PRootMonitorCN.html">e.g.多房间型(URL-&gt;ROOT)</a></a></h2>
-<ul>
-<li>改版示例：</li>
-<li>e.g.P2PLiveindex.html 为网站主页（用于展示准备发起直播的房间，并为之提供入口）</li>
-<li>e.g.P2PRootMonitor.html 为网站根节点（根节点为监听器，负责获取发起直播的所有ID，并递交给主页）</li>
-<li>e.g.P2PLiveHost &amp; Guest.html 为附属页面，置于同目录下即可</li>
-</ul>
-<h3 id="用法-3"><a class="header" href="#用法-3">用法：</a></h3>
-<ol>
-<li>访问主页(根节点页面有超链接)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
-<li>直播方点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
-<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)</li>
-</ol>
-<h3 id="拓展-1"><a class="header" href="#拓展-1">拓展：</a></h3>
-<ol>
-<li>如<strong>多房间型</strong>在<strong>自己设备开个根节点</strong>，web网站部署<strong>剩余页面</strong>，并且<strong>指定根节点连接</strong>，就实现了一个简单的直播网站</li>
-<li>如<strong>单直播间型</strong>同样<strong>自己开个页面</strong>，<strong>得到ID后推流</strong>，web网页部署另一个页面，<strong>指定ID连接</strong>，就实现指定直播间</li>
-<li>如增加房间列表的样式，可以增加直播间页面(e.g.P2PLiveHost)中<code>guest.on('data', (data) =&gt; {</code>中<code>guest.send([peer.id, null, null, 0, 1]);</code>中的参数，并在首页节点页面对接，<strong>注意：第索引为4的第五个值默认用于区分访客与主播的信息来源</strong></li>
-<li>优化连接方法，自行解析<strong>nodesMap数组</strong>(包含所有节点信息)(注：<strong>e.g.版本未测试</strong>，<strong>主播节点</strong>的nodesMap包含<strong>所有嵌套节点信息</strong>，而<strong>根节点nodeMaps</strong>=hostsPeers(<strong>不含子子节点</strong>)，如果不喜欢现有的nodesMap数组收集节点信息建议<strong>重构recorder()方法</strong>)，根据主播设备配置推荐采用<strong>围绕主播多个二叉树式</strong>连接法</li>
-</ol>
-<h2 id="注意事项-1"><a class="header" href="#注意事项-1"><strong>注意事项</strong>：</a></h2>
+<h3 id="注意事项-3"><a class="header" href="#注意事项-3"><strong>注意事项</strong>：</a></h3>
 <ol>
 <li><strong>根节点</strong>具有<strong>推流最高优先级</strong>，它会覆盖所有子节点及其子子节点等的直播</li>
 <li><strong>直播媒体流只会推送到子节点</strong>，而不像信息通道无论在哪个节点都可以收到信息，故所连接的根节点最好是直播节点或监听器的子节点（即<strong>流媒体单向传递，文本双向传递</strong>）</li>
-<li>如果建立连接发生在主机开始共享流媒体之前，再次点击Connect按钮会<strong>刷新接收的流媒体</strong></li>
-<li>该文件是发与<strong>接收结合为一体</strong>的，且仅依靠前端，这意味着任何人的权限是对等的，如果投入开发或不安全环境，需要对内容进行封装并设置权限分类</li>
-<li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
-<li>子节点在递交给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
 </ol>
-<h3 id="适配与流源拓宽-1"><a class="header" href="#适配与流源拓宽-1">适配与流源拓宽</a></h3>
-<p>桌面流默认由MediaDevices.getDisplayMedia()获取，即仅共享桌面，且意味着<strong>大多移动端</strong>都无法发起直播而<strong>只能接收媒体流和文本信息</strong>，且需要在本地开发环境或https下才能正常工作。
-如果需要手机端屏幕推流、获取摄像头、相机拍照等等，可参考getUserMedia()API，并修改页面的getLocalStream()</p>
 <h2 id="对于p2p-live-web-1"><a class="header" href="#对于p2p-live-web-1">对于<strong>P2P-Live-web</strong></a></h2>
 <p>它采用<strong>节点式传递</strong>，允许数据直接从一个节点传递到另一个节点，这意味着无论连接谁，都可以收到相同的文字互动信息，而且<strong>无需依赖中央服务器</strong>，大大减少网络延迟。</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
+<h3 id="常用数组-1"><a class="header" href="#常用数组-1">常用数组</a></h3>
+<ul>
+<li>
+<p>nodesMap[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>, <strong>直播标题</strong>, <strong>直播简介</strong>, <strong>直播封面</strong>, <strong>主办方id</strong>, <strong>主办方子节点</strong>, <strong>根节点id</strong>]</p>
+</li>
+<li>
+<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id(限单文件版)</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>未启用的扩展接口</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
+</li>
+</ul>
+<h3 id="标识-1"><a class="header" href="#标识-1">标识</a></h3>
+<ul>
+<li>消息类型: 0 -&gt; 互动信息, 1 -&gt; 节点信息收集用, 2 -&gt; 流媒体请求, 3 -&gt; 提醒更换父节点， 4 -&gt; 流媒体呼叫刷新请求</li>
+</ul>
 <h2 id="对于exchange-1"><a class="header" href="#对于exchange-1">对于<strong>exchange</strong></a></h2>
 <p><strong>仅用于两端</strong>相互交换流媒体而非传递，要求连接方和接收方都提交流媒体，如果增加第三者，其中一个人的流媒体会被<strong>覆盖</strong></p>
 <ul>
@@ -318,30 +389,13 @@ PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通
 <h3 id="连接无反馈-1"><a class="header" href="#连接无反馈-1">连接无反馈</a></h3>
 <ul>
 <li>由于P2P本身的局限性，有些网络之间难以建立P2P连接，不过可以通过桥接都可以连接网络来解决</li>
-<li>关于获取所有节点连接状况：尽管节点网络数据发送已经做完了，但是由于本人能力有限，还没有写好解析数组的函数
-但你仍然可以在任意节点的<strong>浏览器内置的控制台</strong>抓取<strong>nodesMap</strong>数组，其中包含从根节点到子节点的所有连接id与关系，其结构为：
-<code>[thisID, [childsIDs], null, 1]</code></li>
-<li><strong>thisID</strong>首个为<strong>根节点</strong></li>
-<li><strong>childsIDs</strong>首个为根节点的<strong>子节点（若子节点无子节点则为id值，若有则为格式相同的嵌套数组）</strong></li>
-<li>null用于区分信息通道</li>
-<li>1表示该网络信息来源为根节点(每当新节点加入都会沿线路传输到根节点，根节点汇总后发布再传递至各个节点，汇总过程中该值为0)</li>
 </ul>
-<h2 id="其他-1"><a class="header" href="#其他-1">其他</a></h2>
+<h3 id="点首页的刷新导致页面蒸发-1"><a class="header" href="#点首页的刷新导致页面蒸发-1">点首页的刷新导致页面蒸发</a></h3>
 <ul>
-<li><strong>关于P2P</strong>：
-P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
-与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</li>
+<li>莫名奇妙的Bug罢了</li>
 </ul>
-<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<ul>
-<li><strong>关于PeerJS</strong>：
-PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</li>
-</ul>
-<p>简化的 API：PeerJS 提供了简单易用的 API，使开发者能够快速实现 P2P 连接和数据传输。
-它抽象了复杂的 WebRTC 细节，使开发过程更加简便。
-&gt;</p>
 <h2 id="关于本地peer服务器-1"><a class="header" href="#关于本地peer服务器-1"><strong>关于本地Peer服务器</strong>：</a></h2>
-<p><strong>PS(ignore it if you don't run peerjs server locally如果不想本地运行自行忽略):</strong></p>
+<p><strong>PS(如果不想本地运行自行忽略):</strong></p>
 <h3 id="peerserver-1"><a class="header" href="#peerserver-1">PeerServer</a></h3>
 <p>先装npm，国内cnpm也可以，然后安装peer：</p>
 <pre><code>npm install peer -g
@@ -356,69 +410,99 @@ PeerJS：PeerJS 是一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通
 
 &lt;!--script src=&quot;https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js&quot;&gt;&lt;/script--&gt;
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="p2p-live-web-2"><a class="header" href="#p2p-live-web-2">P2P-Live-Web</a></h1>
-<p>PS: All messages will be replied to once every 2 to 3 weeks.</p>
-<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
-<h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
-<ol>
-<li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links, e.g..</li>
-<li>The broadcaster clicks the <strong>Start Local Stream</strong> button and shares their ID with the audience.</li>
-<li>The audience can connect to any broadcaster's ID, but the connection must remain uninterrupted. If the connection is broken in the middle, a new connection object is required.</li>
-</ol>
-<h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/e.g.P2PRootMonitor.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="about-p2p--peerjs"><a class="header" href="#about-p2p--peerjs"><strong>About P2P &amp; PeerJS</strong>:</a></h3>
+<p>P2P is a distributed network architecture where each participant (also known as a node) acts as both a client and a server
+Unlike the traditional client-server model, P2P allows direct communication between nodes without the need for relay through a central server</p>
+<p>PeerJS: A JavaScript library based on WebRTC for simplifying P2P communication implementation</p>
+<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
+<h3 id="update"><a class="header" href="#update">Update:</a></h3>
 <ul>
-<li>Version Modified Example:</li>
-<li>e.g.P2PLiveindex.html serves as the website homepage (displaying rooms ready for live streaming and providing entry points)</li>
-<li>e.g.P2PRootMonitor.html acts as the website's root node (responsible for monitoring and providing all IDs of live stream initiators to the homepage)</li>
-<li>e.g.P2PLiveHost &amp; Guest.html are auxiliary pages placed in the same directory</li>
+<li>Better Auto-join(number for setting)</li>
+<li>upload image as cover &amp; message</li>
+<li>function of refresh redo</li>
+<li>new media source(support more devices)</li>
+<li>display the number of persons in the room</li>
+<li>repair the bug of tab closed but connection active</li>
+<li>video full screen &amp; better style</li>
+<li>auto-clean message</li>
+<li>single version update</li>
 </ul>
-<h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
+<h3 id="next-version-plan"><a class="header" href="#next-version-plan">Next Version Plan:</a></h3>
+<ul>
+<li>clean bug</li>
+</ul>
+<h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/P2PLiveRoot.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
+<p><em>if someone has already opened root page on the Internet, you can directly use <a href="https://aiksxd.github.io/P2PLiveIndex.html">URL -&gt; Index</a></em></p>
+<ul>
+<li>Instructions of files:</li>
+<li>P2PLiveIndex.html serves as the website homepage (displaying rooms ready for live streaming and providing entry points)</li>
+<li>P2PLiveRoot.html acts as the website's root node (responsible for monitoring and providing all IDs of live stream initiators to the homepage)</li>
+<li>P2PLiveHost.html &amp; P2PLiveAudience.html are auxiliary pages placed in the same directory</li>
+</ul>
+<h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
+<ul>
+<li>[For Server]</li>
+</ul>
 <ol>
-<li>Visit the homepage (the root node page contains hyperlinks), enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button</li>
-<li>The broadcaster clicks <strong>Go To Live</strong> and then <strong>Share Local Stream</strong></li>
+<li>use browser to load the root node page(P2PLiveRoot.html) with available Internet</li>
+<li>share id to users</li>
+</ol>
+<ul>
+<li>[For Audiences]</li>
+</ul>
+<ol>
+<li>Use browser to load the homepage(P2PLiveIndex.html) with available Internet, [enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button(deafault connect id can be modified in file)]</li>
 <li>After completing step one, audience members can view all active live streaming rooms under the root node (based on the connectivity status of the live streaming pages)</li>
 </ol>
-<h3 id="extensions"><a class="header" href="#extensions">Extensions:</a></h3>
-<ol>
-<li>For the multi-room type, by creating a root node on your own device, deploying the remaining pages on the web site, and specifying the root node connection, you can implement a simple live streaming website.</li>
-<li>For the single live room type, similarly, create a page on your own, start streaming after obtaining the ID, deploy another page on the web, and specify the ID connection to achieve a specific live room.</li>
-<li>To customize the room list style, modify the parameters in the <code>guest.on('data', (data) =&gt; {</code> section of the live streaming page (e.g.P2PLiveHost). <strong>Note: Do not modify the fifth parameter at index 4!</strong></li>
-<li>Optimize the connection method by parsing the <strong>nodesMap array</strong> (containing all node information) yourself (Note: <strong>e.g. version not tested</strong>). The nodesMap of the broadcaster node contains all nested node information, while the <strong>root node nodeMaps</strong> = hostsPeers (excluding sub-child nodes). If you are not satisfied with the current nodesMap array collecting node information, consider <strong>restructuring the recorder() method</strong>. Depending on the broadcaster's device configuration, it is recommended to use a <strong>multi-binary tree-style</strong> connection method.</li>
-</ol>
-<h2 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h2>
-<ol>
-<li>The <strong>root node</strong> has the <strong>highest priority for streaming</strong>, overriding all child nodes and their subsequent children's live streams.</li>
-<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node or monitor (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
-<li>If the connection is established before the host starts sharing the media stream, clicking the Connect button again will <strong>refresh the received media stream</strong>.</li>
-<li>This file combines <strong>sender and receiver into one</strong>, relying solely on the frontend. This means that everyone's permissions are equal. If deployed in a development or insecure environment, content should be encapsulated and permission levels set.</li>
-<li>In the event of the host losing connection, the information from the host's child nodes will not be transmitted to other host's child nodes.</li>
-<li>Video quality may initially be blurry when passed from child nodes to sub-child nodes; waiting for synchronization may resolve this (quality synchronization observed after 26 seconds in a test).</li>
-</ol>
-<h3 id="adapting-and-expanding-streaming-sources"><a class="header" href="#adapting-and-expanding-streaming-sources">Adapting and Expanding Streaming Sources</a></h3>
 <ul>
-<li>The desktop stream is obtained by default using MediaDevices.getDisplayMedia(), which means that it only shares the desktop. This also implies that <strong>most mobile devices</strong> are unable to initiate live streams and can <strong>only receive media streams and text information</strong>. Additionally, this functionality requires operation in a local development environment or under HTTPS to function properly.</li>
-<li>If there is a need for mobile screen streaming, accessing the camera, taking photos, etc., you can refer to the getUserMedia() API and modify the page's getLocalStream() function.</li>
+<li>[For Streamers]</li>
 </ul>
+<ol>
+<li>Visit the homepage(P2PLiveIndex.html), [enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button(deafault connect id can be modified in file)]</li>
+<li>Clicks <strong>Go To Live</strong> and then clicks <strong>Stream Source</strong> button</li>
+</ol>
+<h3 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h3>
+<ol>
+<li>If the connection is established before the host starts sharing the media stream, clicking the button again will <strong>refresh the received media stream</strong>(or refresh web)</li>
+<li>In the event of the host losing connection, the information from the host's child nodes will not be transmitted to other host's child nodes</li>
+<li>Video quality may initially be blurry when passed from child nodes to sub-child nodes; waiting for synchronization may resolve this (quality synchronization observed after 26 seconds in a test)</li>
+<li>By default, index request the id of &quot;P2P-Live-Web-Default-Id&quot; (It made better index connection. if your root id has already been occupied, you need to modify it)</li>
+</ol>
+<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
+<h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
+<ol>
+<li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links</li>
+<li>The broadcaster clicks the <strong>Start Local Stream</strong> button and shares their ID with the audience</li>
+<li>The audience can connect to any broadcaster's ID, but the connection must remain uninterrupted If the connection is broken in the middle, a new connection object is required</li>
+</ol>
+<h3 id="considerations-1"><a class="header" href="#considerations-1"><strong>Considerations</strong>:</a></h3>
+<ol>
+<li>The <strong>root node</strong> has the <strong>highest priority for streaming</strong>, overriding all child nodes and their subsequent children's live streams</li>
+<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node or monitor (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
+</ol>
 <h3 id="for-p2p-live-web"><a class="header" href="#for-p2p-live-web">For <strong>P2P-Live-web</strong></a></h3>
-<p>it employs a <strong>node-based delivery</strong> that allows data to be passed directly from one node to another, enabling the same text interaction message to be received by anyone connected without relying on a central server, thus significantly reducing network latency.</p>
+<p>it employs a <strong>node-based delivery</strong> that allows data to be passed directly from one node to another, enabling the same text interaction message to be received by anyone connected without relying on a central server, thus significantly reducing network latency</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
-<h3 id="regarding-exchange"><a class="header" href="#regarding-exchange">Regarding <strong>exchange</strong></a></h3>
-<p>it is <strong>only used for bilateral</strong> exchange of media streams rather than transmission. Both the connecting and receiving parties need to submit media streams. If a third party is added, one person's media stream will be <strong>overwritten</strong>.</p>
+<h3 id="commonly-used-arrays"><a class="header" href="#commonly-used-arrays">Commonly used arrays</a></h3>
 <ul>
-<li><a href="https://aiksxd.github.io/e.g.exchange.html">e.g.Exchange</a></li>
+<li>
+<p>nodesMap[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>, <strong>Live_Title</strong>, <strong>Live_Summary</strong>, <strong>Live_CoverURL</strong>, <strong>host_Id</strong>, <strong>host_Name</strong>, <strong>child_Nodes</strong>, <strong>root_Id</strong>]</p>
+</li>
+<li>
+<p>child_Nodes[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>, <strong>own_Id</strong>, <strong>own_Name</strong>, <strong>useless array for extension</strong>, <strong>child_A_Id</strong>, <strong>child_A_name</strong>, <strong>child_Nodes_Of_Child_A</strong>, <strong>child_B_Id</strong>...]</p>
+</li>
+</ul>
+<h3 id="mark"><a class="header" href="#mark">mark</a></h3>
+<ul>
+<li>msgClass: 0 -&gt; msg, 1 -&gt; nodes Collecter, 2 -&gt; streaming request, 3 -&gt; remingder of replacing the parent node, 4 -&gt; application of refresh media stream</li>
 </ul>
 <h2 id="issue-2"><a class="header" href="#issue-2">Issue:</a></h2>
 <h3 id="connect-without-feedbackfailed"><a class="header" href="#connect-without-feedbackfailed">Connect without feedback(failed):</a></h3>
-<p>Due to the inherent limitations of P2P,establishing connections between some networks can be challenging, but this can be resolved by bridging networks.</p>
-<h3 id="regarding-obtaining-the-connection-status-of-all-nodes"><a class="header" href="#regarding-obtaining-the-connection-status-of-all-nodes">Regarding obtaining the connection status of all nodes:</a></h3>
-<p>Although the data transmission between nodes has been completed, due to my limited abilities, the function to parse the array has not been implemented yet.
-However, you can still capture the <strong>nodesMap</strong> array in the <strong>built-in console of any node's browser</strong>, which contains all connection IDs and relationships from the root node to child nodes. Its structure is as follows:
-<code>[thisID, [childsIDs], null, 1]</code></p>
+<p>Due to the inherent limitations of P2P,establishing connections between some networks can be challenging, but this can be resolved by bridging networks</p>
+<h3 id="regarding-exchange"><a class="header" href="#regarding-exchange">Regarding <strong>exchange</strong></a></h3>
+<p>it is <strong>only used for bilateral</strong> exchange of media streams rather than transmission. Both the connecting and receiving parties need to submit media streams. If a third party is added, one person's media stream will be <strong>overwritten</strong></p>
 <ul>
-<li><strong>thisID</strong> which first of it is the <strong>root node</strong>.</li>
-<li><strong>childsIDs</strong> which first of them are the <strong>child nodes of the root node (if a child node has no children, it is the ID value; if it has children, it is a nested array with the same format)</strong>.</li>
-<li>null is used to distinguish the information channel.</li>
-<li>1 indicates that the network information originates from the root node (each time a new node joins, it is transmitted along the line to the root node, which then consolidates and distributes it to various nodes; during the consolidation process, this value is 0).</li>
+<li><a href="https://aiksxd.github.io/e.g.exchange.html">e.g.Exchange</a></li>
 </ul>
 <h2 id="about-local-peer-server"><a class="header" href="#about-local-peer-server"><strong>About Local Peer Server</strong>:</a></h2>
 <p>(<strong>ignore it if you don't run peerjs server locally</strong>):</p>
@@ -436,23 +520,6 @@ local peer server run command(value of path need to be united on web &amp; termi
 
 &lt;!--script src=&quot;https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js&quot;&gt;&lt;/script--&gt;
 </code></pre>
-<h2 id="others"><a class="header" href="#others">Others</a></h2>
-<ul>
-<li><strong>About P2P</strong>:</li>
-</ul>
-<blockquote>
-<p>P2P is a distributed network architecture where each participant (also known as a node) acts as both a client and a server.
-Unlike the traditional client-server model, P2P allows direct communication between nodes without the need for relay through a central server.</p>
-</blockquote>
-<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<ul>
-<li><strong>About PeerJS</strong>:</li>
-</ul>
-<blockquote>
-<p>PeerJS: PeerJS is a JavaScript library based on WebRTC for simplifying P2P communication implementation.</p>
-<p>Simplified API: PeerJS provides a simple and easy-to-use API that allows developers to quickly establish P2P connections and transfer data.
-It abstracts the complex WebRTC details, making the development process more convenient.</p>
-</blockquote>
 <div style="break-before: page; page-break-before: always;"></div><ul>
 <li>Date: 2023-06-29</li>
 <li>Modified: 2024-01-23</li>
@@ -470,245 +537,21 @@ It abstracts the complex WebRTC details, making the development process more con
 </ul>
 </li>
 </ul>
-<h2 id="手机搭建终端环境内网穿透开服pc电脑端跳过"><a class="header" href="#手机搭建终端环境内网穿透开服pc电脑端跳过"><strong>手机搭建终端环境(内网穿透开服;PC电脑端跳过)</strong></a></h2>
-<ul>
-<li>这是专门为<strong>安卓</strong>手机提供的<strong>开服</strong>方法（<strong>IOS苹果手机</strong>需要先<strong>越狱</strong>然后使用<strong>NewTerm</strong>，虽同样都是终端命令，<strong>但我暂无条件更新相关教程</strong>），主要服务于<strong>内网穿透</strong>，或是异地组网和远程控制(安卓系统本身有软件提供异地组网和远程控制，frpc有内网穿透但是直接运行服务器端不方便，如果你不是为了开服建议使用<strong>原生安卓应用</strong>，除非特殊需要)如内网穿透<a href="https://github.com/mainfunx/frpc_android">frpc on github</a>，<a href="https://gitee.com/skyuning/frpc-Android">frpc on gitee</a>，<strong>pc端请忽略该部分</strong></li>
-<li><em>注：本教程内所有安装过程的选择直接回车默认即可</em></li>
-</ul>
-<blockquote>
-<ul>
-<li>安装termux</li>
-</ul>
-<blockquote>
-<p>下载地址(github如若打不开，在地址github之前加字母k或https://ghproxy.com/，即https://kgithub...或https://ghproxy.com/https://github...)：</p>
-<ul>
-<li><a href="https://github.com/termux/termux-app/wiki/Termux-on-android-5-or-6">github安卓6及以下版本</a></li>
-<li><a href="https://www.123pan.com/s/Rx6cVv-BYhxd.html">国内云盘直链0.118</a>
-<em>注：安卓6及其以下版本建议<strong>不要换源</strong>，请安装完系统后，在系统内换源</em></li>
-<li><a href="https://github.com/termux">github安卓7及以上版本</a></li>
-<li><a href="">F-Droid的termux网页页面</a></li>
-</ul>
-</blockquote>
-<ul>
-<li>Termux基础配置(最左下按钮为tab自动补全)</li>
-</ul>
-<blockquote>
-<ul>
-<li><em><strong>换源</strong>命令(安卓7+版本)：</em></li>
-</ul>
-<pre><code class="language-bash">termux-change-repo
-</code></pre>
-<p>直接<strong>回车(Enter)<strong>下一步后</strong>空格</strong>选择下方国内源后<strong>一路回车即可</strong>（安卓6及其以下不建议换源，如需则自行查找低版本换源命令）</p>
-<ul>
-<li>更新包管理工具</li>
-</ul>
-<pre><code class="language-bash">pkg upgrade &amp;&amp; pkg update
-apt upgrade &amp;&amp; apt update
-</code></pre>
-<ul>
-<li>获取手机内部储存</li>
-</ul>
-<pre><code class="language-bash">termux-setup-storage
-</code></pre>
-<p>注：Termux的文件都存在手机根目录，没有root无法访问，这些只能通过termux进行读写，使用此命令后，可在home目录下生成一个通往手机主目录的软链接。</p>
-</blockquote>
-<ul>
-<li>基本命令
-&gt;```bash</li>
-</ul>
-<blockquote>
-<p>cd 目录 #进入当前目录下的指定目录,其中../为上级，cd ~中~表示当前操作用户目录。
-rm -r 目录/文件 #递归删除，参数-r为递归，没有不能删目录
-ls -a #列出当前目录下文件，-a参数显示隐藏文件
-l #单l命令比ls更加便捷清晰(旧版termux没有，不过安装的系统内可使用)
-pwd #获取当前目录地址
-mkdir 文件夹名 #在当前目录下新建文件夹（目录）
-Ctrl + C #键盘快捷键强制中断当前程序/废弃当前键入命令
-#右滑可创建新会话(窗口)|唤起键盘
-####解压工具####
-apt install unzip #安装
-unzip 目标文件名.zip -d 释放目标目录（如无自动创建）</p>
-<pre><code></code></pre>
-</blockquote>
-</blockquote>
-<h3 id="安装linux系统"><a class="header" href="#安装linux系统">安装Linux系统</a></h3>
-<p>也可以不装，不过有些应用依赖无法启用(如dotnet)，可能回导致应用无法启动，这时就需要安装系统(proot/chroot)，否则可以直接使用启动命令</p>
-<h4 id="android5以上通用方法简单内存充足时推荐"><a class="header" href="#android5以上通用方法简单内存充足时推荐">Android5以上通用方法（简单，内存充足时推荐）</a></h4>
-<blockquote>
-<p>+为什么建议该方法：
-&gt;+ kali nethunter方法安装termux的linux系统，使用的包都可以支持最新版，不过这也导致了一些不兼容问题
-&gt;+ 并且该方法操作简单，无需多余步骤
-&gt;+ 缺点在于镜像只有完整版且占用内存较大（约11G），如果内存不足可用下面其他方法占用约1G+</p>
-<ul>
-<li>Kali版本</li>
-</ul>
-<blockquote>
-<ul>
-<li>官方版本（需网络环境，没有则用镜像版）</li>
-</ul>
-<pre><code class="language-bash">pkg install git wget
-wget -O install-nethunter-termux https://offs.ec/2MceZWr #–no-check-certificate
-chmod +x install-nethunter-termux
-./install-nethunter-termux
-</code></pre>
-<ul>
-<li>使用wget下载时使用-c参数可防止意外中断，对于github相关地址可以在地址前加入&quot;https://ghproxy.com/&quot;代理加速</li>
-<li>国内镜像（无需代理）</li>
-</ul>
-<pre><code class="language-bash">git clone https://gitee.com/zhang-955/clone.git &amp;&amp; cd clone &amp;&amp; cd AutoInstallKali &amp;&amp; chmod +x kalinethunter finaltouchup.sh
-./kalinethunter
-</code></pre>
-<ul>
-<li>国外github镜像(完整版同上)</li>
-</ul>
-<pre><code class="language-bash">curl -LO https://raw.githubusercontent.com/Hax4us/Nethunter-In-Termux/master/kalinethunter
-chmod +x kalinethunter
-./kalinethunter
-</code></pre>
-<p>如果下载过程中断需要手动rm（删除）损坏的包，然后重新执行安装脚本(&quot;./开头的是执行脚本命令&quot;)
-低版本在通过该系统在安装部分应用时，最新版本可能会出故障</p>
-<ul>
-<li>获取linux系统权限</li>
-</ul>
-<pre><code class="language-bash">su
-toor
-</code></pre>
-<p>获取root权限：toor是默认密码，或者kali（Linux的一个用户，Android也有root用户，但不是同一个）
-kali内置的工具不做介绍，并且有些需要root才可正常使用</p>
-</blockquote>
-</blockquote>
-<h4 id="android5-6安装系统方法"><a class="header" href="#android5-6安装系统方法">Android5-6安装系统方法</a></h4>
-<blockquote>
-<ul>
-<li>kali见上</li>
-<li>安装其他版本(如果一个失败可换其他的)：</li>
-</ul>
-<blockquote>
-<p>1.脚本一键安装(国光)</p>
-<pre><code class="language-bash">pkg install proot git python -y
-git clone https://github.com/sqlsec/termux-install-linux
-cd termux-install-linux
-python termux-linux-install.py
-</code></pre>
-<p>之后输入数字选择对应操作，安装完后使用下面命令启动</p>
-<pre><code class="language-bash">#Ubuntu换成自己安装的系统
-cd ~/Termux-Linux/Ubuntu #文件所在目录
-./start-ubuntu.sh
-</code></pre>
-</blockquote>
-<p>2.通过atlio安装linux系统</p>
-<blockquote>
-<ul>
-<li>精简版本（没内存推荐）</li>
-<li>直链需魔法，建议加代理前缀，方法见上</li>
-<li>安装<strong>运行依赖</strong></li>
-</ul>
-<pre><code class="language-bash">pkg install python curl proot
-</code></pre>
-<blockquote>
-<ul>
-<li>CN中文版</li>
-</ul>
-<pre><code class="language-bash">curl -o $PREFIX/bin/atilo https://raw.githubusercontent.com/YadominJinta/atilo/master/CN/atilo_cn &amp;&amp; chmod +x $PREFIX/bin/atilo
-</code></pre>
-<ul>
-<li>EN英文版(多几个镜像)</li>
-</ul>
-<pre><code class="language-bash">curl -o $PREFIX/bin/atilo https://raw.githubusercontent.com/YadominJinta/atilo/master/atilo &amp;&amp; chmod +x $PREFIX/bin/atilo
-</code></pre>
-<p>如果提示缺少插件则输入(先更新一次pip，否则不兼容包存在会导致更新失败)</p>
-<pre><code class="language-bash">pip install --upgrade pip -i http://pypi.douban.com/simple --trusted-host pypi.douban.com &amp;&amp; pip install 'requests' tqdm 'prettytable' bs4  -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
-</code></pre>
-<p>安装&amp;启动命令：</p>
-</blockquote>
-<pre><code class="language-bash">atilo images #列出可用镜像
-atilo pull ubuntu #下载&amp;安装ubuntu镜像(自选)
-atilo run ubuntu #ubuntu换成安装自己的系统
-</code></pre>
-<ul>
-<li>如果启动过程中提示需要代理而且你又没有代理，可以尝试修改DNS或者换个时间段再试试，一般国内傍晚就连不上了</li>
-<li>Github方法（可能需要网络环境）:
-&gt;```bash</li>
-</ul>
-<blockquote>
-<p>pkg in git
-git clone https://github.com/jerrychen110/atilo
-chmod +x ~/atilo
-./atilo ubuntu #启动命令</p>
-<pre><code>ubuntu换成自己想要的系统，不带参数可以查看命令帮助；启动报错proot可以试试其他方法或者更换网络环境再删除重下系统（一般下载系统镜像不会太快，太快就可能是网络故障）
-</code></pre>
-</blockquote>
-</blockquote>
-<p>安装好系统后下面参考linux操作方法开服，不过termux要下载arm64的包，其他设备的linux系统架构自行查看并下载使用对应包</p>
-<p>如果apt seach也找不到对应的包可能是你没更新源</p>
-</blockquote>
-<h4 id="android7安装系统方法"><a class="header" href="#android7安装系统方法">Android7&amp;+安装系统方法</a></h4>
-<blockquote>
-<ul>
-<li>脚本安装（功能丰富，推荐）
-&gt;```bash</li>
-</ul>
-<blockquote>
-<p>bash -c &quot;$(curl -Lv gitee.com/mo2/linux/raw/master/debian.sh)&quot;</p>
-<pre><code>不重启termux(长按more-&gt;kill 所有会话-&gt;重新启动termux)使用debian-i进入管理面板或startvnc命令进入系统
-
-重启后输入debian即可进入系统
-</code></pre>
-</blockquote>
-<ul>
-<li>手动安装（占用少，网络环境要求较高，没魔法国内够呛）
-&gt;```bash</li>
-</ul>
-<blockquote>
-<p>pkg install proot-distro
-proot-distro install ubuntu
-proot-distro login ubuntu #进入系统命令</p>
-<pre><code>ubuntu可换成自己喜欢的系统(proot-distro list查看可用镜像)，建议先proot-distro list查看支持系统，有些系统不支持部分手机架构，请阅读其简介下载合适的
-</code></pre>
-</blockquote>
-</blockquote>
-<h4 id="termux系统常见问题"><a class="header" href="#termux系统常见问题">termux系统常见问题</a></h4>
-<blockquote>
-<ul>
-<li>旧版termux安装的系统没有内置的互通存储目录，通过创建软链接连接termux储存目录时mv 文件 ../后回到../没有文件，可以去系统的/data/data/com.termux 目录查看，建议直接mv至~(用户目录)</li>
-<li><strong>注意：本文往后以Debian系系统(Debian、Ubuntu、Kali等)为例，其他系统包管理器命令自行查找（如ArchLinux的pacman）</strong></li>
-<li>apt添加储存库：
-&gt;```bash</li>
-</ul>
-<blockquote>
-<p>apt-get install software-properties-common
-add-apt-repository ppa:openjdk-r/ppa #jdk8示例</p>
-<pre><code></code></pre>
-</blockquote>
-</blockquote>
+<h2 id="手机开服务器见左侧"><a class="header" href="#手机开服务器见左侧"><strong>手机开服务器见左侧</strong></a></h2>
+<p><a href="https://aiksxd.github.io/PCPEMutliplayP1.html">移动端搭建服务器教程</a></p>
 <h2 id="各种游戏联机方法示例"><a class="header" href="#各种游戏联机方法示例">各种游戏联机方法示例</a></h2>
 <p>只列出部分游戏，主要看自己判断；支持ip直连（内网穿透或公网主机）的也都支持异地组网</p>
-<ul>
-<li>生存创造类</li>
-</ul>
+<h3 id="异地组网适合仅提供本地服务器与本地搜索入口的应用注游戏自身指定服务器的不可比如内置联机服务器的破解游戏"><a class="header" href="#异地组网适合仅提供本地服务器与本地搜索入口的应用注游戏自身指定服务器的不可比如内置联机服务器的破解游戏">异地组网：适合仅提供本地服务器与本地搜索入口的应用（注：游戏自身指定服务器的不可，比如内置联机服务器的破解游戏）</a></h3>
 <blockquote>
-<p>内+异：MC、TR、饥荒
-远程协助：DR2C</p>
+<p>MC、TR(PE)、饥荒、星露谷、铁锈、红警、求生之路系列</p>
 </blockquote>
-<ul>
-<li>经营类</li>
-</ul>
+<h3 id="内网穿透适合提供指定ip入口的应用"><a class="header" href="#内网穿透适合提供指定ip入口的应用">内网穿透：适合提供指定IP入口的应用</a></h3>
 <blockquote>
-<p>内+异：星露谷</p>
+<p>TR、MC、饥荒、星露谷、铁锈、星露谷、求生之路系列</p>
 </blockquote>
-<ul>
-<li>策略类</li>
-</ul>
+<h3 id="远程协助适合主机类共屏游戏手柄不可远程输入所以有手柄的作主机让键盘当客机"><a class="header" href="#远程协助适合主机类共屏游戏手柄不可远程输入所以有手柄的作主机让键盘当客机">远程协助：适合主机类共屏游戏，手柄不可远程输入，所以有手柄的作主机让键盘当客机</a></h3>
 <blockquote>
-<p>内+异：铁锈
-异：红警，钢4</p>
-</blockquote>
-<ul>
-<li>竞技类</li>
-</ul>
-<blockquote>
-<p>内+异+远：武装原型
-异：使命全系列、鸭子游戏、回旋标</p>
+<p>DR2C、武装原型、鸭子游戏、回旋标</p>
 </blockquote>
 <h2 id="类型一提供ip直连的程序通过中间服务器实现远程联机"><a class="header" href="#类型一提供ip直连的程序通过中间服务器实现远程联机"><strong>类型一</strong>：提供<strong>IP直连</strong>的程序（通过中间服务器实现远程联机）</a></h2>
 <p><strong>判断方法</strong>：允许通过输入<strong>字符串类型的值</strong>来连接服务器（如同<strong>浏览器的地址栏</strong>），该类型程序一般允许用户自己创建连接服务器或者直接连接，典型的如：我的世界(Minecraft)、泰拉瑞亚(Terraria)、星露谷物语(Stardew Valley)、铁锈战争(Rusted Warfare)、生存战争(Survivalcraft)联机版等</p>
@@ -1440,9 +1283,9 @@ unzip 目标文件名.zip -d 释放目标目录（如无自动创建）</p>
 <pre><code></code></pre>
 </blockquote>
 </blockquote>
-<h3 id="安装linux系统-1"><a class="header" href="#安装linux系统-1">安装Linux系统</a></h3>
+<h3 id="安装linux系统"><a class="header" href="#安装linux系统">安装Linux系统</a></h3>
 <p>也可以不装，不过有些应用依赖无法启用(如dotnet)，可能回导致应用无法启动，这时就需要安装系统(proot/chroot)，否则可以直接使用启动命令</p>
-<h4 id="android5以上通用方法简单内存充足时推荐-1"><a class="header" href="#android5以上通用方法简单内存充足时推荐-1">Android5以上通用方法（简单，内存充足时推荐）</a></h4>
+<h4 id="android5以上通用方法简单内存充足时推荐"><a class="header" href="#android5以上通用方法简单内存充足时推荐">Android5以上通用方法（简单，内存充足时推荐）</a></h4>
 <blockquote>
 <p>+为什么建议该方法：
 &gt;+ kali nethunter方法安装termux的linux系统，使用的包都可以支持最新版，不过这也导致了一些不兼容问题
@@ -1486,7 +1329,7 @@ toor
 kali内置的工具不做介绍，并且有些需要root才可正常使用</p>
 </blockquote>
 </blockquote>
-<h4 id="android5-6安装系统方法-1"><a class="header" href="#android5-6安装系统方法-1">Android5-6安装系统方法</a></h4>
+<h4 id="android5-6安装系统方法"><a class="header" href="#android5-6安装系统方法">Android5-6安装系统方法</a></h4>
 <blockquote>
 <ul>
 <li>kali见上</li>
@@ -1551,7 +1394,7 @@ chmod +x ~/atilo
 <p>安装好系统后下面参考linux操作方法开服，不过termux要下载arm64的包，其他设备的linux系统架构自行查看并下载使用对应包</p>
 <p>如果apt seach也找不到对应的包可能是你没更新源</p>
 </blockquote>
-<h4 id="android7安装系统方法-1"><a class="header" href="#android7安装系统方法-1">Android7&amp;+安装系统方法</a></h4>
+<h4 id="android7安装系统方法"><a class="header" href="#android7安装系统方法">Android7&amp;+安装系统方法</a></h4>
 <blockquote>
 <ul>
 <li>脚本安装（功能丰富，推荐）
@@ -1576,7 +1419,7 @@ proot-distro login ubuntu #进入系统命令</p>
 </code></pre>
 </blockquote>
 </blockquote>
-<h4 id="termux系统常见问题-1"><a class="header" href="#termux系统常见问题-1">termux系统常见问题</a></h4>
+<h4 id="termux系统常见问题"><a class="header" href="#termux系统常见问题">termux系统常见问题</a></h4>
 <blockquote>
 <ul>
 <li>旧版termux安装的系统没有内置的互通存储目录，通过创建软链接连接termux储存目录时mv 文件 ../后回到../没有文件，可以去系统的/data/data/com.termux 目录查看，建议直接mv至~(用户目录)</li>
@@ -1592,32 +1435,17 @@ add-apt-repository ppa:openjdk-r/ppa #jdk8示例</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="各种游戏联机方法示例-1"><a class="header" href="#各种游戏联机方法示例-1">各种游戏联机方法示例</a></h2>
 <p>只列出部分游戏，主要看自己判断；支持ip直连（内网穿透或公网主机）的也都支持异地组网</p>
-<ul>
-<li>生存创造类</li>
-</ul>
+<h3 id="异地组网适合仅提供本地服务器与本地搜索入口的应用注游戏自身指定服务器的不可比如内置联机服务器的破解游戏-1"><a class="header" href="#异地组网适合仅提供本地服务器与本地搜索入口的应用注游戏自身指定服务器的不可比如内置联机服务器的破解游戏-1">异地组网：适合仅提供本地服务器与本地搜索入口的应用（注：游戏自身指定服务器的不可，比如内置联机服务器的破解游戏）</a></h3>
 <blockquote>
-<p>内+异：MC、TR、饥荒
-远程协助：DR2C</p>
+<p>MC、TR(PE)、饥荒、星露谷、铁锈、红警、求生之路系列</p>
 </blockquote>
-<ul>
-<li>经营类</li>
-</ul>
+<h3 id="内网穿透适合提供指定ip入口的应用-1"><a class="header" href="#内网穿透适合提供指定ip入口的应用-1">内网穿透：适合提供指定IP入口的应用</a></h3>
 <blockquote>
-<p>内+异：星露谷</p>
+<p>TR、MC、饥荒、星露谷、铁锈、星露谷、求生之路系列</p>
 </blockquote>
-<ul>
-<li>策略类</li>
-</ul>
+<h3 id="远程协助适合主机类共屏游戏手柄不可远程输入所以有手柄的作主机让键盘当客机-1"><a class="header" href="#远程协助适合主机类共屏游戏手柄不可远程输入所以有手柄的作主机让键盘当客机-1">远程协助：适合主机类共屏游戏，手柄不可远程输入，所以有手柄的作主机让键盘当客机</a></h3>
 <blockquote>
-<p>内+异：铁锈
-异：红警，钢4</p>
-</blockquote>
-<ul>
-<li>竞技类</li>
-</ul>
-<blockquote>
-<p>内+异+远：武装原型
-异：使命全系列、鸭子游戏、回旋标</p>
+<p>DR2C、武装原型、鸭子游戏、回旋标</p>
 </blockquote>
 <h2 id="类型一提供ip直连的程序通过中间服务器实现远程联机-1"><a class="header" href="#类型一提供ip直连的程序通过中间服务器实现远程联机-1"><strong>类型一</strong>：提供<strong>IP直连</strong>的程序（通过中间服务器实现远程联机）</a></h2>
 <p><strong>判断方法</strong>：允许通过输入<strong>字符串类型的值</strong>来连接服务器（如同<strong>浏览器的地址栏</strong>），该类型程序一般允许用户自己创建连接服务器或者直接连接，典型的如：我的世界(Minecraft)、泰拉瑞亚(Terraria)、星露谷物语(Stardew Valley)、铁锈战争(Rusted Warfare)、生存战争(Survivalcraft)联机版等</p>
@@ -2235,119 +2063,61 @@ app_update 1281930 +tml版本号 validate
 <li><strong>远程协助</strong>一般只有<strong>主机的手柄</strong>输入可以被识别，<strong>其他连接者</strong>只能<strong>使用键盘</strong>，因此大部分软件远程控制只能<strong>主机使用手柄</strong>。</li>
 </ul>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="类型二提供局域网的程序通过异地组网实现远程联机-2"><a class="header" href="#类型二提供局域网的程序通过异地组网实现远程联机-2"><strong>类型二：提供局域网的程序</strong>（通过异地组网实现远程联机）</a></h2>
-<p><strong>判断方法</strong>：提供IP直连的基本都支持局域网，因为你可以用路<strong>由器分配的地址</strong>和<strong>对应程序的端口</strong>实现<strong>内网中不同设备</strong>的<strong>信息交换</strong>，只是可能有些程序不提供现成的独立页面和自动搜索；也有一些程序仅支持使用局域网联机不开放IP直连，此类游戏一般<strong>有多人游戏的入口</strong>但既<strong>没有本地预设的P1234玩家位置</strong>，也没有IP直连的输入框，可能能够<strong>自动搜索</strong>网络下的房间。</p>
-<ol>
-<li>
-<h3 id="1部署本地服务器必需-准备-2"><a class="header" href="#1部署本地服务器必需-准备-2"><strong>1.部署本地服务器(必需-准备)</strong></a></h3>
-</li>
-</ol>
-<blockquote>
-<p><strong>启动</strong>对应的<strong>服务端程序</strong>（可能需要填入部分配置信息）并等待部署完成即可，有的软件不自带服务端的启动程序，或者其不能够满足服务器的需求，因此需要下载对应的服务端</p>
-<ul>
-<li>
-<h4 id="局域网房间通式-2"><a class="header" href="#局域网房间通式-2">局域网房间通式</a></h4>
-</li>
-</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="本文视频中的链接汇总-1"><a class="header" href="#本文视频中的链接汇总-1"><strong>本文&amp;视频中的链接汇总</strong></a></h2>
 <blockquote>
 <ul>
-<li>房主：启动目标游戏---&gt;多人游戏---&gt;创建主机---&gt;启动组网程序并加入同一组网网络---&gt;等待其他玩家加入</li>
-<li>访客：启动目标游戏---&gt;多人游戏---&gt;启动组网程序并加入同一组网网络---&gt;回到游戏在局域网下搜索主机并加入对应的房间</li>
-</ul>
-</blockquote>
-<ul>
-<li>
-<h4 id="泰拉瑞亚terraria示例eg-2"><a class="header" href="#泰拉瑞亚terraria示例eg-2">泰拉瑞亚Terraria（示例eg）</a></h4>
-</li>
+<li><strong>Termux</strong>
+&gt;<a href="https://github.com/termux/termux-app/wiki/Termux-on-android-5-or-6">github安卓6及以下版本</a>
+&gt;<a href="https://github.com/termux">github安卓7及以上版本</a></li>
+<li><strong>Mindustry像素工厂</strong></li>
 </ul>
 <blockquote>
-<p>房主启动游戏后选择多人游戏---&gt;创建主机即可（pe，pc同理）</p>
+<p><a href="https://github.com/Anuken/Mindustry/releases">Mindustry的Github发行页面</a></p>
 </blockquote>
 <ul>
-<li>
-<h4 id="我的世界minecrafteg-2"><a class="header" href="#我的世界minecrafteg-2">我的世界Minecraft（eg）</a></h4>
-</li>
+<li><strong>Terraria互通服</strong>
+&gt;<a href="https://github.com/Pryaxis/TShock/releases/download/v4.5.18/TShock4.5.18_Terraria1.4.3.6.zip">1.4.3.6及以下版本的TShock(github直链)</a></li>
 </ul>
 <blockquote>
-<h5 id="方法一启用游戏内置局域网服务器-2"><a class="header" href="#方法一启用游戏内置局域网服务器-2">方法一：启用游戏内置局域网服务器</a></h5>
-<blockquote>
-<p>房主启动游戏后选择单人游戏---&gt;进入选定世界---&gt;按键ESC---&gt;对局域网开放---&gt;(允许作弊：启用命令)创建一个局域网世界(给定的随机端口也可nat使用，但没必要)</p>
-</blockquote>
-<h5 id="方法二部署服务端-2"><a class="header" href="#方法二部署服务端-2">方法二：部署服务端</a></h5>
-<blockquote>
-<p>请跳转至内网穿透部分查看部署服务器端方法，部署完后再回来下一步</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<ol start="2">
-<li>
-<h3 id="2异地组网方式通用-实现-2"><a class="header" href="#2异地组网方式通用-实现-2"><strong>2.异地组网方式(通用-实现)</strong></a></h3>
-</li>
-</ol>
-<blockquote>
-<p><strong>前言：<strong>异地组网相较于其他方式依赖于</strong>软件的自动搜索</strong>，只是在理论上简单，实际操作更可能遇到问题，此时最好查询<strong>官方文档</strong>，这里我提出以下<strong>两</strong>点建议：</p>
-<ol>
-<li>组网成功后可以在<strong>命令提示符</strong>中<strong>ping</strong>软件给出的<strong>虚拟网内其他用户的地址</strong>，以检查是否能够连通，若不能ping通大概率是不成功的</li>
-<li>若<strong>能ping通</strong>但软件自动搜索<strong>不能搜到</strong>，则<strong>检查防火墙</strong>的相关配置，若还是不行可以在对应的<strong>社区咨询</strong></li>
-</ol>
-<ul>
-<li>
-<p><strong>中转服务器类型异地组网</strong>
-<img src="https://s11.ax1x.com/2023/08/15/pPMof7F.png" alt="异地组网流程图，但不一定正确" /></p>
-</li>
-<li>
-<p><strong>P2P类型异地组网</strong>
-<img src="https://s11.ax1x.com/2023/08/15/pPMo5tJ.png" alt="异地组网流程图，但不一定正确" />
-<strong>我在这里列出常见的平台</strong>：（以下为<strong>普通用户配置:不购买套餐</strong>)</p>
-</li>
-<li>
-<h4 id="常见平台-4"><a class="header" href="#常见平台-4">常见平台</a></h4>
-</li>
-</ul>
-<blockquote>
-<ul>
-<li><a href="https://pgy.oray.com/download/"><strong>蒲公英(已不完全免费)</strong></a>：学习成本低；付费不推荐，简单，只要<strong>登录同一个账号</strong>即可；</li>
-<li><em><strong>Hiper</strong></em>(重名太多找不到链接)：<strong>一个</strong>注册的<strong>账号付费后</strong>可以邀请其他人加入使用；签到送时长；学习成本低；宽带较好</li>
-<li><a href="https://bugxia.com/357.html"><strong>EasyN2N</strong></a>：学习成本较低；<strong>只能Windows间使用</strong>，会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；加入同一个小组即可</li>
-<li><strong><a href="https://www.radmin-lan.cn/">Radmin LAN</a></strong>：学习成本低；<strong>只能Windows间使用</strong>，会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；加入同一个房间即可</li>
-<li><strong><a href="https://www.7iot.net/">UDPPLAN(博客)</a></strong>：会<strong>选择自动安装</strong>一个<strong>虚拟网卡</strong>；简单免费；无需账号</li>
-<li><strong><a href="https://www.teamviewer.cn/cn/">TeamViewer</a></strong>(<strong>安装</strong>要选<strong>VPN)</strong>：学习成本低；简单易用；但<strong>需要注册账号</strong></li>
-<li><strong><a href="https://www.zerotier.com/">ZeroTier</a></strong>：有一定学习成本；会<strong>自动安装</strong>一个<strong>虚拟网卡</strong>；管理能力强；但<strong>对网络要求较高，不过可以自己搭建plant</strong></li>
-<li><strong><a href="https://tailscale.com/">Tailscale</a></strong></li>
-<li><strong><a href="https://pk.llren.com/">游侠(已不完全免费)</a>十分简单，需要实名认证</strong></li>
-<li><strong>．．．．．．</strong>（数据来源于2023.1，<strong>可能不准确</strong>如有需要在下面留言更新）</li>
-</ul>
+<p><a href="https://store.steampowered.com/app/1281930/tModLoader/">TML（Steam商店地址)(Mod）</a>
+<a href="https://github.com/mistzzt/TShock/releases">TShock服务端下载</a>
+<a href="https://github.com/Moneylover3246/Crossplay">CrossPlay跨版本插件</a>
+<a href="https://www.bbstr.net/r/79/">CrossPlay插件在TrBBS上的页面（旧）</a></p>
 </blockquote>
 <ul>
-<li>
-<h4 id="异地组网操作流程-2"><a class="header" href="#异地组网操作流程-2"><strong>异地组网操作流程</strong></a></h4>
-</li>
+<li><strong>Minecraft互通服</strong></li>
 </ul>
 <blockquote>
-<p>0.注册账号[可能没有这一步]
-1.<strong>创建</strong>一个<strong>网络</strong>，将<strong>网络的ID和验证密钥</strong>或者<strong>是网络名称和密钥</strong>给访客
-2.访客通过给定的密钥加入该网络，即可实现异地组网</p>
-<ul>
-<li>无论是主机还是访客创建，只要在同一个网络下都一样，如果主机无法创建网络可以让访客试试</li>
-<li>房主创建本地服务器后，一般进入游戏选择多人游戏在局域网下搜索房主即可，有的游戏允许其他人通过组网平台给定的ip直连</li>
-</ul>
+<p><a href="https://www.minecraft.net/en-us/download/server/bedrock/">单开基岩版无插件无互通平台</a>
+<a href="https://papermc.io/downloads">MCpaper端下载</a>
+<a href="https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/master/">Geyser下载</a>
+<a href="https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/master/">Floodgate下载</a>
+<a href="https://www.spigotmc.org/resources/multiverse-core.390/updates">多世界插件Multiverse-Core</a>
+<a href="https://www.mcbbs.net/thread-909834-1-1.html">背包隔离插件</a>
+<a href="https://www.spigotmc.org/resources/iridium-skyblock-1-13-1-19.62480/">空岛插件</a>
+<a href="https://www.spigotmc.org/resources/vault.34315/">空岛需要的前置插件</a>
+<a href="https://files.minecraftforge.net/net/minecraftforge/forge/">Forge下载</a>
+<a href="https://www.spigotmc.org/resources/viaversion.19254/">跨版本插件</a></p>
 </blockquote>
 <ul>
-<li>
-<h4 id="图文示例-6"><a class="header" href="#图文示例-6"><strong>图文示例</strong></a></h4>
-</li>
+<li><strong>生存战争Survivalcraft联机版</strong></li>
 </ul>
 <blockquote>
-<p>此处以<strong>蒲公英</strong>和<strong>红警2</strong>、<strong>RadminLAN</strong>和<strong>Minecraft</strong>为例（<strong>图示</strong>+<strong>简短文字描述</strong>）：</p>
+<p><a href="https://space.bilibili.com/292546719?spm_id_from=333.337.search-card.all.click">SC联机版作者团队：瓦西里沃尔特</a></p>
+</blockquote>
 <ul>
-<li><strong>蒲公英</strong>使用方法：
-<img src="https://s11.ax1x.com/2023/08/15/pPMo711.png" alt="蒲公英使用教程" /></li>
-<li><strong>RadminLAN</strong>使用方法（<strong>通用</strong>）：
-<img src="https://s11.ax1x.com/2023/08/15/pPMoO0O.png" alt="RadminLAN使用教程" /></li>
+<li><strong>红警双端联机</strong></li>
 </ul>
+<blockquote>
+<p><a href="https://www.bilibili.com/video/BV13h411676X">手机运行红警(b站视频教程)</a></p>
 </blockquote>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div><ul>
+<h2 id="总结-1"><a class="header" href="#总结-1"><strong>总结</strong></a></h2>
+<blockquote>
+<p><strong>以上方法的最终目标都是打破空间限制实现远程联机，综合来看，原本联机空间越严格的程序在远程联机的方法上操作起来反而更简单。本次教程主要面向新萌，没什么技术力，如果有什么问题可以向我咨询，有什么错误可以指出，就是我不一定在线，回复可能较慢，见谅，感谢您的浏览O(∩_∩)O</strong></p>
+</blockquote>
+<hr />
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><ul>
 <li>Date: 2023-02-01 22:23:40</li>
 </ul>
 <h2 id="前言-1"><a class="header" href="#前言-1">前言</a></h2>
@@ -2560,7 +2330,7 @@ app_update 1281930 +tml版本号 validate
 <img src="https://s11.ax1x.com/2023/08/14/pPMOFun.png" alt="其他人观看直播原理，看到该消息可能是图片加载失败，和视频里的流程图是一样的，可以去看视频当中的" /></li>
 </ul>
 </blockquote>
-<h2 id="拓展-2"><a class="header" href="#拓展-2">拓展</a></h2>
+<h2 id="拓展"><a class="header" href="#拓展">拓展</a></h2>
 <ul>
 <li>
 <h3 id="解决内网穿透提供宽带速度不够的问题"><a class="header" href="#解决内网穿透提供宽带速度不够的问题">解决内网穿透提供宽带速度不够的问题</a></h3>
@@ -2589,7 +2359,7 @@ app_update 1281930 +tml版本号 validate
 <li><strong>手机端</strong>控制<strong>音量大小</strong>和<strong>是否传输声音</strong>（=开关麦）；<strong>电脑端</strong>可以选择设置<strong>本地播放</strong>方便<strong>调试声音</strong></li>
 </ul>
 </blockquote>
-<h2 id="总结-1"><a class="header" href="#总结-1">总结</a></h2>
+<h2 id="总结-2"><a class="header" href="#总结-2">总结</a></h2>
 <blockquote>
 <p><strong>通过内网穿透直播</strong>仅适合<strong>面向小众群体</strong>，例如<strong>学生</strong>等<strong>无法与直播平台签约</strong>或者<strong>不想和直播平台签约</strong>又<strong>想体验直播</strong>的人群，或者只是<strong>单纯想挂在自己博客上</strong>让访客碰运气看看有没有直播。
 这项技术<strong>优点</strong>是<strong>搭建迅速而且免费</strong>（<strong>不花钱可以使用，人数不多体验还是很好的</strong>），<strong>有域名</strong>的话可以使用更好的映射软件，<strong>它们提供更好的免费的宽带</strong>，如<strong>OpenFrp</strong>（地址上面链接），感兴趣的可以尝试一下，我下面会发布<strong>整合包的链接</strong>（<strong>不含内网穿透工具</strong>和<strong>推流工具</strong>，<strong>需自行额外安装</strong>）</p>
@@ -2818,7 +2588,7 @@ app_update 1281930 +tml版本号 validate
 <img src="https://s11.ax1x.com/2023/08/14/pPMOFun.png" alt="其他人观看直播原理，看到该消息可能是图片加载失败，和视频里的流程图是一样的，可以去看视频当中的" /></li>
 </ul>
 </blockquote>
-<h2 id="拓展-3"><a class="header" href="#拓展-3">拓展</a></h2>
+<h2 id="拓展-1"><a class="header" href="#拓展-1">拓展</a></h2>
 <ul>
 <li>
 <h3 id="解决内网穿透提供宽带速度不够的问题-1"><a class="header" href="#解决内网穿透提供宽带速度不够的问题-1">解决内网穿透提供宽带速度不够的问题</a></h3>
@@ -2847,7 +2617,7 @@ app_update 1281930 +tml版本号 validate
 <li><strong>手机端</strong>控制<strong>音量大小</strong>和<strong>是否传输声音</strong>（=开关麦）；<strong>电脑端</strong>可以选择设置<strong>本地播放</strong>方便<strong>调试声音</strong></li>
 </ul>
 </blockquote>
-<h2 id="总结-2"><a class="header" href="#总结-2">总结</a></h2>
+<h2 id="总结-3"><a class="header" href="#总结-3">总结</a></h2>
 <blockquote>
 <p><strong>通过内网穿透直播</strong>仅适合<strong>面向小众群体</strong>，例如<strong>学生</strong>等<strong>无法与直播平台签约</strong>或者<strong>不想和直播平台签约</strong>又<strong>想体验直播</strong>的人群，或者只是<strong>单纯想挂在自己博客上</strong>让访客碰运气看看有没有直播。
 这项技术<strong>优点</strong>是<strong>搭建迅速而且免费</strong>（<strong>不花钱可以使用，人数不多体验还是很好的</strong>），<strong>有域名</strong>的话可以使用更好的映射软件，<strong>它们提供更好的免费的宽带</strong>，如<strong>OpenFrp</strong>（地址上面链接），感兴趣的可以尝试一下，我下面会发布<strong>整合包的链接</strong>（<strong>不含内网穿透工具</strong>和<strong>推流工具</strong>，<strong>需自行额外安装</strong>）</p>
@@ -2904,7 +2674,7 @@ apt install libasound2-dev
 </code></pre>
 </blockquote>
 <p>？：cargo tree | grep udev</p>
-<h3 id="总结-3"><a class="header" href="#总结-3">总结</a></h3>
+<h3 id="总结-4"><a class="header" href="#总结-4">总结</a></h3>
 <blockquote>
 <pre><code class="language-bash">apt install curl pkg-config libudev-dev build-essential libasound2-dev
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-WebEN.html" class="active"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-WebCN.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-WebEN.html" class="active"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -176,30 +176,24 @@
                         <h3 id="about-p2p--peerjs"><a class="header" href="#about-p2p--peerjs"><strong>About P2P &amp; PeerJS</strong>:</a></h3>
 <p>P2P is a distributed network architecture where each participant (also known as a node) acts as both a client and a server
 Unlike the traditional client-server model, P2P allows direct communication between nodes without the need for relay through a central server</p>
-<p>PeerJS: PeerJS is a JavaScript library based on WebRTC for simplifying P2P communication implementation</p>
+<p>PeerJS: A JavaScript library based on WebRTC for simplifying P2P communication implementation</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<h3 id="45updateonly-multi-room-version"><a class="header" href="#45updateonly-multi-room-version">4.5Update(only multi-room Version):</a></h3>
+<h3 id="update"><a class="header" href="#update">Update:</a></h3>
 <ul>
-<li>Auto-join &amp; Auto-reconnect</li>
-<li>custome room title, summary, cover</li>
-<li>Nodes Map display(displayed alternately on the left and right &amp; Double-click to join)</li>
-<li>By default, index request the id of &quot;P2P-Live-Web-Default-Id&quot; (It made better index connection. if your root id has already been occupied, you need to modify it)</li>
+<li>Better Auto-join(number for setting)</li>
+<li>upload image as cover &amp; message</li>
+<li>function of refresh redo</li>
+<li>new media source(support more devices)</li>
+<li>display the number of persons in the room</li>
+<li>repair the bug of tab closed but connection active</li>
+<li>video full screen &amp; better style</li>
+<li>auto-clean message</li>
+<li>single version update</li>
 </ul>
 <h3 id="next-version-plan"><a class="header" href="#next-version-plan">Next Version Plan:</a></h3>
 <ul>
-<li>refresh fn redo!</li>
-<li>Auto-clean message</li>
-<li>single file update</li>
-<li>new media source</li>
-<li>css, rename...</li>
+<li>clean bug</li>
 </ul>
-<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
-<h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
-<ol>
-<li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links</li>
-<li>The broadcaster clicks the <strong>Start Local Stream</strong> button and shares their ID with the audience</li>
-<li>The audience can connect to any broadcaster's ID, but the connection must remain uninterrupted If the connection is broken in the middle, a new connection object is required</li>
-</ol>
 <h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/P2PLiveRoot.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
 <p><em>if someone has already opened root page on the Internet, you can directly use <a href="https://aiksxd.github.io/P2PLiveIndex.html">URL -&gt; Index</a></em></p>
 <ul>
@@ -208,19 +202,19 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <li>P2PLiveRoot.html acts as the website's root node (responsible for monitoring and providing all IDs of live stream initiators to the homepage)</li>
 <li>P2PLiveHost.html &amp; P2PLiveAudience.html are auxiliary pages placed in the same directory</li>
 </ul>
-<h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
+<h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
 <ul>
 <li>[For Server]</li>
 </ul>
 <ol>
-<li>open the root node page(P2PLiveRoot.html)</li>
-<li>share it to users</li>
+<li>use browser to load the root node page(P2PLiveRoot.html) with available Internet</li>
+<li>share id to users</li>
 </ol>
 <ul>
 <li>[For Audiences]</li>
 </ul>
 <ol>
-<li>Visit the homepage(P2PLiveIndex.html), [enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button(deafault connect id can be modified in file)]</li>
+<li>Use browser to load the homepage(P2PLiveIndex.html) with available Internet, [enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button(deafault connect id can be modified in file)]</li>
 <li>After completing step one, audience members can view all active live streaming rooms under the root node (based on the connectivity status of the live streaming pages)</li>
 </ol>
 <ul>
@@ -230,41 +224,40 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <li>Visit the homepage(P2PLiveIndex.html), [enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button(deafault connect id can be modified in file)]</li>
 <li>Clicks <strong>Go To Live</strong> and then clicks <strong>Stream Source</strong> button</li>
 </ol>
-<h2 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h2>
+<h3 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h3>
 <ol>
-<li>The <strong>root node</strong> has the <strong>highest priority for streaming</strong>, overriding all child nodes and their subsequent children's live streams</li>
-<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node or monitor (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
-<li>If the connection is established before the host starts sharing the media stream, clicking the button again will <strong>refresh the received media stream</strong></li>
-<li>This file combines <strong>sender and receiver into one</strong>, relying solely on the frontend. This means that everyone's permissions are equal. If deployed in a development or insecure environment, content should be encapsulated and permission levels set</li>
+<li>If the connection is established before the host starts sharing the media stream, clicking the button again will <strong>refresh the received media stream</strong>(or refresh web)</li>
 <li>In the event of the host losing connection, the information from the host's child nodes will not be transmitted to other host's child nodes</li>
 <li>Video quality may initially be blurry when passed from child nodes to sub-child nodes; waiting for synchronization may resolve this (quality synchronization observed after 26 seconds in a test)</li>
 <li>By default, index request the id of &quot;P2P-Live-Web-Default-Id&quot; (It made better index connection. if your root id has already been occupied, you need to modify it)</li>
 </ol>
-<h3 id="extensions"><a class="header" href="#extensions">Extensions:</a></h3>
+<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
+<h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
 <ol>
-<li>For the multi-room type, by creating a root node on your own device, deploying the remaining pages on the web site, and specifying the root node connection, you can implement a simple live streaming website</li>
-<li>For the single live room type, similarly, create a page on your own, start streaming after obtaining the ID, deploy another page on the web, and specify the ID connection to achieve a specific live room</li>
+<li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links</li>
+<li>The broadcaster clicks the <strong>Start Local Stream</strong> button and shares their ID with the audience</li>
+<li>The audience can connect to any broadcaster's ID, but the connection must remain uninterrupted If the connection is broken in the middle, a new connection object is required</li>
 </ol>
-<h3 id="adapting-and-expanding-streaming-sources"><a class="header" href="#adapting-and-expanding-streaming-sources">Adapting and Expanding Streaming Sources</a></h3>
-<ul>
-<li>The desktop stream is obtained by default using MediaDevices.getDisplayMedia(), which means that it only shares the desktop. This also implies that <strong>most mobile devices</strong> are unable to initiate live streams and can <strong>only receive media streams and text information</strong>. Additionally, this functionality requires operation in a local development environment or under HTTPS to function properly</li>
-<li>If there is a need for mobile screen streaming, accessing the camera, taking photos, etc., you can refer to the getUserMedia() API and modify the page's getLocalStream() function</li>
-</ul>
+<h3 id="considerations-1"><a class="header" href="#considerations-1"><strong>Considerations</strong>:</a></h3>
+<ol>
+<li>The <strong>root node</strong> has the <strong>highest priority for streaming</strong>, overriding all child nodes and their subsequent children's live streams</li>
+<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node or monitor (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
+</ol>
 <h3 id="for-p2p-live-web"><a class="header" href="#for-p2p-live-web">For <strong>P2P-Live-web</strong></a></h3>
 <p>it employs a <strong>node-based delivery</strong> that allows data to be passed directly from one node to another, enabling the same text interaction message to be received by anyone connected without relying on a central server, thus significantly reducing network latency</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
 <h3 id="commonly-used-arrays"><a class="header" href="#commonly-used-arrays">Commonly used arrays</a></h3>
 <ul>
 <li>
-<p>nodesMap[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>: <strong>todo</strong>, <strong>Live_Title</strong>, <strong>Live_Summary</strong>, <strong>Live_CoverURL</strong>, <strong>host_Id</strong>, <strong>host_Name</strong>, <strong>child_Nodes</strong>, <strong>root_Id</strong>]</p>
+<p>nodesMap[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>, <strong>Live_Title</strong>, <strong>Live_Summary</strong>, <strong>Live_CoverURL</strong>, <strong>host_Id</strong>, <strong>host_Name</strong>, <strong>child_Nodes</strong>, <strong>root_Id</strong>]</p>
 </li>
 <li>
-<p>child_Nodes[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>: <strong>todo</strong>, <strong>own_Id</strong>, <strong>own_Name</strong>, <strong>temp_recorder</strong>, <strong>child_A_Id</strong>, <strong>child_A_name</strong>, <strong>child_Nodes_Of_Child_A</strong>, <strong>child_B_Id</strong>...]</p>
+<p>child_Nodes[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>, <strong>own_Id</strong>, <strong>own_Name</strong>, <strong>useless array for extension</strong>, <strong>child_A_Id</strong>, <strong>child_A_name</strong>, <strong>child_Nodes_Of_Child_A</strong>, <strong>child_B_Id</strong>...]</p>
 </li>
 </ul>
 <h3 id="mark"><a class="header" href="#mark">mark</a></h3>
 <ul>
-<li>msgClass: 0 -&gt; msg, 1 -&gt; nodes Collecter, 2 -&gt; streaming request, 3 -&gt; remingder of replacing the parent node</li>
+<li>msgClass: 0 -&gt; msg, 1 -&gt; nodes Collecter, 2 -&gt; streaming request, 3 -&gt; remingder of replacing the parent node, 4 -&gt; application of refresh media stream</li>
 </ul>
 <h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
 <h3 id="connect-without-feedbackfailed"><a class="header" href="#connect-without-feedbackfailed">Connect without feedback(failed):</a></h3>
