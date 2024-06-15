@@ -180,19 +180,19 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
 <h3 id="update"><a class="header" href="#update">Update:</a></h3>
 <ul>
-<li>Better Auto-join(number for setting)</li>
-<li>upload image as cover &amp; message</li>
-<li>function of refresh redo</li>
-<li>new media source(support more devices)</li>
-<li>display the number of persons in the room</li>
-<li>repair the bug of tab closed but connection active</li>
-<li>video full screen &amp; better style</li>
-<li>auto-clean message</li>
-<li>single version update</li>
+<li>In index to choose your room type(Live &amp; FiveOnline)</li>
+<li>P2PGameFiveOnLineHost.html For Host</li>
+<li>P2PGameFiveOnLineHost.html For Players/Audiences</li>
+<li>dark theme update</li>
+<li>Better Msg with icon</li>
+<li>better effective code</li>
 </ul>
 <h3 id="next-version-plan"><a class="header" href="#next-version-plan">Next Version Plan:</a></h3>
 <ul>
-<li>clean bug</li>
+<li>Redraw()</li>
+<li>Game Mode -&gt; 2&amp;3 update</li>
+<li>better root msg</li>
+<li>single Version update</li>
 </ul>
 <h2 id="multi-room-type-url-root"><a class="header" href="#multi-room-type-url-root"><a href="https://aiksxd.github.io/P2PLiveRoot.html">Multi-Room Type (URL-&gt;ROOT)</a></a></h2>
 <p><em>if someone has already opened root page on the Internet, you can directly use <a href="https://aiksxd.github.io/P2PLiveIndex.html">URL -&gt; Index</a></em></p>
@@ -218,7 +218,7 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <li>After completing step one, audience members can view all active live streaming rooms under the root node (based on the connectivity status of the live streaming pages)</li>
 </ol>
 <ul>
-<li>[For Streamers]</li>
+<li>[For Host] Noticed: In index to choose your room type(Live &amp; FiveOnline)</li>
 </ul>
 <ol>
 <li>Visit the homepage(P2PLiveIndex.html), [enter the <strong>root node's ID</strong>, and click the <strong>Connect</strong> button(deafault connect id can be modified in file)]</li>
@@ -231,7 +231,7 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <li>Video quality may initially be blurry when passed from child nodes to sub-child nodes; waiting for synchronization may resolve this (quality synchronization observed after 26 seconds in a test)</li>
 <li>By default, index request the id of &quot;P2P-Live-Web-Default-Id&quot; (It made better index connection. if your root id has already been occupied, you need to modify it)</li>
 </ol>
-<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/P2PLiveWeb.html">Single Room Type Live Streaming</a></a></h2>
+<h2 id="single-room-type-live-streaming"><a class="header" href="#single-room-type-live-streaming"><a href="https://aiksxd.github.io/SingleP2PLiveVersion.html">Single Room Type Live Streaming</a></a></h2>
 <h3 id="instructions-1"><a class="header" href="#instructions-1">Instructions:</a></h3>
 <ol>
 <li>Load the file <strong>locally</strong> or <strong>access directly</strong> via the following links</li>
@@ -249,15 +249,24 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <h3 id="commonly-used-arrays"><a class="header" href="#commonly-used-arrays">Commonly used arrays</a></h3>
 <ul>
 <li>
-<p>nodesMap[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>, <strong>Live_Title</strong>, <strong>Live_Summary</strong>, <strong>Live_CoverURL</strong>, <strong>host_Id</strong>, <strong>host_Name</strong>, <strong>child_Nodes</strong>, <strong>root_Id</strong>]</p>
+<p>nodesMap[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 0(child)/1(host), <strong>2.ids Of Members In Room</strong>, <strong>3.roomType</strong>, <strong>Live_Title</strong>, <strong>Live_Summary</strong>, <strong>Live_CoverURL</strong>, <strong>host_Id</strong>, <strong>host_Name</strong>, <strong>child_Nodes</strong>, <strong>root_Id</strong>]</p>
 </li>
 <li>
-<p>child_Nodes[ <strong>msgClass</strong> -&gt; 1, <strong>source</strong>: 0(child)/1(host), <strong>Total number of child nodes</strong>: number, <strong>all of ids in room</strong>, <strong>own_Id</strong>, <strong>own_Name</strong>, <strong>useless array for extension</strong>, <strong>child_A_Id</strong>, <strong>child_A_name</strong>, <strong>child_Nodes_Of_Child_A</strong>, <strong>child_B_Id</strong>...]</p>
+<p>childNodes[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 1(host), <strong>2.Number Of child Nodes</strong>: number, <strong>3.unused for your extension</strong>, <strong>4.own_Id</strong>, <strong>5.own_Name</strong>, <strong>6.unused for your extension</strong>, <strong>7.here_A_Id</strong>, <strong>8.here_A_name</strong>, <strong>9.here_Nodes_Of_Child_A</strong>, <strong>10.here_B_Id</strong>...]</p>
+</li>
+<li>
+<p>hereNodes[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 0(child), <strong>2.Number Of child Nodes</strong>: number, <strong>3.unused for your extension</strong>, <strong>4.own_Id</strong>, <strong>5.own_Name</strong>, <strong>6.unused for your extension</strong>, <strong>7.here_A_Id</strong>, <strong>8.here_A_name</strong>, <strong>9.here_Nodes_Of_Child_A</strong>, <strong>10.here_B_Id</strong>...]</p>
 </li>
 </ul>
 <h3 id="mark"><a class="header" href="#mark">mark</a></h3>
 <ul>
-<li>msgClass: 0 -&gt; msg, 1 -&gt; nodes Collecter, 2 -&gt; streaming request, 3 -&gt; remingder of replacing the parent node, 4 -&gt; application of refresh media stream</li>
+<li>dataTypes: 0 -&gt; msg, 1 -&gt; nodes Collecter, 2 -&gt; streaming request, 3 -&gt; remingder of replacing the parent node, 4 -&gt; application of refresh media stream</li>
+</ul>
+<blockquote>
+<p>for game+: 6 -&gt; Game Info, 7 -&gt; Game Chessman, 8 -&gt; Game Player</p>
+</blockquote>
+<ul>
+<li>Connection Mark: 0: parent, 1: guest(for the index), 2: bridge(when connect circle), 3: root, 4: indexRoot(for the index)</li>
 </ul>
 <h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
 <h3 id="connect-without-feedbackfailed"><a class="header" href="#connect-without-feedbackfailed">Connect without feedback(failed):</a></h3>
@@ -265,7 +274,7 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <h3 id="regarding-exchange"><a class="header" href="#regarding-exchange">Regarding <strong>exchange</strong></a></h3>
 <p>it is <strong>only used for bilateral</strong> exchange of media streams rather than transmission. Both the connecting and receiving parties need to submit media streams. If a third party is added, one person's media stream will be <strong>overwritten</strong></p>
 <ul>
-<li><a href="https://aiksxd.github.io/e.g.exchange.html">e.g.Exchange</a></li>
+<li><a href="https://aiksxd.github.io/exchange.html">Exchange</a></li>
 </ul>
 <h2 id="about-local-peer-server"><a class="header" href="#about-local-peer-server"><strong>About Local Peer Server</strong>:</a></h2>
 <p>(<strong>ignore it if you don't run peerjs server locally</strong>):</p>

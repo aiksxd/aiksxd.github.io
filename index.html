@@ -180,20 +180,17 @@
 <p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
 <h3 id="更新"><a class="header" href="#更新">更新:</a></h3>
 <ul>
-<li>刷新功能重做</li>
-<li>显式房间人数(roomIds数组)</li>
-<li>自动清除信息</li>
-<li>流媒体源扩展(更多设备支持)</li>
-<li>图片上传封面与图片消息</li>
-<li>修复关闭标签页但连接仍然保留的BUG</li>
-<li>直播网页全屏</li>
-<li>单文件版本更新</li>
-<li>自动连接优化(参数可自调autoJoin(每个节点推荐人数))</li>
-<li>视频标签样式优化</li>
+<li>In index to choose your room type(Live &amp; FiveOnline)</li>
+<li>P2PGameFiveOnLineHost.html 主办方文件</li>
+<li>P2PGameFiveOnLineHost.html 玩家/观众文件</li>
+<li>暗色主题</li>
+<li>头像与信息</li>
+<li>速度更快的代码方式</li>
 </ul>
 <h3 id="下个版本的计划"><a class="header" href="#下个版本的计划">下个版本的计划:</a></h3>
 <ul>
-<li>如有bug则修，一般不会再有大更新了</li>
+<li>Redraw()</li>
+<li>Game Mode -&gt; 2&amp;3 update</li>
 <li>汉化工作</li>
 </ul>
 <h2 id="多房间型url-root"><a class="header" href="#多房间型url-root"><a href="https://aiksxd.github.io/P2PLiveRoot.html">多房间型(URL-&gt;ROOT)</a></a></h2>
@@ -223,7 +220,7 @@
 <li>[ 对于主播 ]</li>
 </ul>
 <ol>
-<li>联网并使用浏览器读取主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮</li>
+<li>联网并使用浏览器读取主页(P2PLiveIndex.html)，<strong>填入根节点的ID</strong>并按下<strong>连接</strong>按钮(In index to choose your room type(Live &amp; FiveOnline))</li>
 <li>点击<strong>去开播</strong>之后点击<strong>共享本地流</strong></li>
 </ol>
 <h3 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h3>
@@ -233,7 +230,7 @@
 <li>子节点在传递给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
 <li>通常，主页会默认尝试连接id&quot;P2P-Live-Web-Default-Id&quot; (可以使得连接到持有此id的页面更加便捷，但是如果被占用，自己的root页面就无法再持有，所以可以修改成自己的再转发给别人)</li>
 </ol>
-<h2 id="单文件版本"><a class="header" href="#单文件版本"><a href="https://aiksxd.github.io/P2PLiveWeb.html">单文件版本</a></a></h2>
+<h2 id="单文件版本"><a class="header" href="#单文件版本"><a href="https://aiksxd.github.io/SingleP2PLiveVersion.html">单文件版本</a></a></h2>
 <h3 id="用法-1"><a class="header" href="#用法-1">用法:</a></h3>
 <ol>
 <li>将文件在<strong>本地读取</strong>或<strong>直接访问</strong>现成网址等</li>
@@ -251,20 +248,29 @@
 <h3 id="常用数组"><a class="header" href="#常用数组">常用数组</a></h3>
 <ul>
 <li>
-<p>nodesMap[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>, <strong>直播标题</strong>, <strong>直播简介</strong>, <strong>直播封面</strong>, <strong>主办方id</strong>, <strong>主办方子节点</strong>, <strong>根节点id</strong>]</p>
+<p>nodesMap[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>房间内所有成员ID</strong>: number, <strong>房间类型</strong>, <strong>直播标题</strong>, <strong>直播简介</strong>, <strong>直播封面</strong>, <strong>主办方id</strong>, <strong>主办方子节点</strong>, <strong>根节点id</strong>]</p>
 </li>
 <li>
-<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id(限单文件版)</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>未启用的扩展接口</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
+<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>未启用的扩展接口</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
+</li>
+<li>
+<p>hereNodes[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 0(child), <strong>2.Number Of child Nodes</strong>: number, <strong>3.unused for your extension</strong>, <strong>4.own_Id</strong>, <strong>5.own_Name</strong>, <strong>6.unused for your extension</strong>, <strong>7.here_A_Id</strong>, <strong>8.here_A_name</strong>, <strong>9.here_Nodes_Of_Child_A</strong>, <strong>10.here_B_Id</strong>...]</p>
 </li>
 </ul>
 <h3 id="标识"><a class="header" href="#标识">标识</a></h3>
 <ul>
 <li>消息类型: 0 -&gt; 互动信息, 1 -&gt; 节点信息收集用, 2 -&gt; 流媒体请求, 3 -&gt; 提醒更换父节点， 4 -&gt; 流媒体呼叫刷新请求</li>
 </ul>
+<blockquote>
+<p>for game+: 6 -&gt; Game Info, 7 -&gt; Game Chessman, 8 -&gt; Game Player</p>
+</blockquote>
+<ul>
+<li>Connection Mark: 0: parent, 1: guest(for the index), 2: bridge(when connect circle), 3: root, 4: indexRoot(for the index)</li>
+</ul>
 <h2 id="对于exchange"><a class="header" href="#对于exchange">对于<strong>exchange</strong></a></h2>
 <p><strong>仅用于两端</strong>相互交换流媒体而非传递，要求连接方和接收方都提交流媒体，如果增加第三者，其中一个人的流媒体会被<strong>覆盖</strong></p>
 <ul>
-<li><a href="https://aiksxd.github.io/e.g.exchange.html">e.g.Exchange</a></li>
+<li><a href="https://aiksxd.github.io/exchange.html">Exchange</a></li>
 </ul>
 <h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
 <h3 id="连接无反馈"><a class="header" href="#连接无反馈">连接无反馈</a></h3>
