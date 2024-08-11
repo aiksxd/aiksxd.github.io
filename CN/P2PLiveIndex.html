@@ -14,24 +14,24 @@
             <textarea id="roomSummary" rows="3" cols="32" readonly="readonly"></textarea>
             <div id="nodeInfo">
                 <div id="stable">
-                    <button id="hostBlock" onclick="echoNodesMap(nodesMap[9], 0, nodesMap[7], 1)">Host Node</button>
-                    <button id="refreshMap" onclick="indexRefreshMap(1)">Refresh</button>
+                    <button id="hostBlock" onclick="echoNodesMap(nodesMap[9], 0, nodesMap[7], 1)">房主节点</button>
+                    <button id="refreshMap" onclick="indexRefreshMap(1)">刷新</button>
                 </div>
                 <div id="block0"></div>
                 <div id="block1"></div>
             </div>
         </div>
         <div>
-            <button id="autoJoin" class="actionButton" onclick="autoJoin(2)">auto<br />Join</button>
-            <button id="closeInfo" class="actionButton" onclick="openRoomInfo()">Close</button>
+            <button id="autoJoin" class="actionButton" onclick="autoJoin(2)">自动<br />加入</button>
+            <button id="closeInfo" class="actionButton" onclick="openRoomInfo()">关闭</button>
         </div>
     </div>
     <!-- Host Setting -->
     <div id="liveSetting">
         <div id="liveInputBox" style="height: 100%; width: 100%; margin-top: 2%;">
-            Room Title : <input type="text" id="liveTitle" class="liveInput" placeholder="Room Title"><br />
-            Cover URL: <input type="text" id="liveCoverURL" class="liveInput" placeholder="URL of img served as Cover"><br />
-            Summary  : <textarea id="LiveSummary" name="roomSummary" rows="5" cols="20" placeholder="Input your Summary there..."></textarea><br />
+            房间标题: <input type="text" id="liveTitle" class="liveInput" placeholder="填入房间标题"><br />
+            封面地址: <input type="text" id="liveCoverURL" class="liveInput" placeholder="上传一个URL地址作为封面"><br />
+            房间简介: <textarea id="LiveSummary" name="roomSummary" rows="5" cols="20" placeholder="填入房间标题"></textarea><br />
             <!-- Notice: Upload Room Cover only become available after created room<br /> -->
             <!-- Cover:<select id="roomCover" onchange="inputCoverURL(this.selectedIndex)">
                 <option value="null" selected="selected">Custome</option>
@@ -40,50 +40,50 @@
                 <option value="2">Multiplay</option>
             </select><br /> -->
         </div><div>
-            Options:<br />
-            1.pravite<input type="checkbox" id="ifPravite"><br />
-            2.Room Type:<select id="roomType">
-                <option value="0" selected="selected">Live</option>
-                <option value="1">FiveOnline</option>
-                <option value="2">Multiplay</option>
+            选项:<br />
+            1.不公开<input type="checkbox" id="ifPravite"><br />
+            2.房间类型:<select id="roomType">
+                <option value="0" selected="selected">Live(直播)</option>
+                <option value="1">FiveOnline(五子棋)</option>
+                <option value="2">Multiplay(未开发)</option>
             </select>
         </div>
         <div>
-            <button id="createRoom" class="actionButton">Create Room</button>
-            <button id="closeLiveMenu" class="actionButton" onclick="showLive()">Close</button>
+            <button id="createRoom" class="actionButton">创建房间</button>
+            <button id="closeLiveMenu" class="actionButton" onclick="showLive()">关闭</button>
         </div>
     </div>
     <!-- Control Panel -->
     <div class="container" id="control" style="height: 25%;">
         <!-- Join a live web -->
         <div class="box">
-            <div id="myid" style="font-weight: bold;">Connecting to PeerServer...</div><br />
+            <div id="myid" style="font-weight: bold;">正在连接到PeerJs服务器...</div><br />
 
-            <div style="font-weight: bold; font-size: 20px;">Direct Connect:</div>
-            <input type="text" id="directConnectId" placeholder="Input room Id...">
-            <button id="directConnectButton">GoTo</button><br />
+            <div style="font-weight: bold; font-size: 20px;">直接连接至房间:</div>
+            <input type="text" id="directConnectId" placeholder="填入房间ID...">
+            <button id="directConnectButton">跳转</button><br />
             
-            <div style="font-weight: bold; font-size: 32px;">Rooms List:
-                <button id="live" onclick="showLive()">Go To Live</button>
+            <div style="font-weight: bold; font-size: 32px;">房间列表:
+                <button id="live" onclick="showLive()">去开播</button>
             </div>
-            Display Room Type:<select id="roomSort" onchange="appearRooms()">
+            展示房间类型:<select id="roomSort" onchange="appearRooms()">
                 <option value="" selected="selected">All</option>
-                <option value="0">Live</option>
-                <option value="1">FiveOnline</option>
-                <option value="2">Multiplay</option>
+                <option value="0">Live(直播)</option>
+                <option value="1">FiveOnline(五子棋)</option>
+                <option value="2">Multiplay(未开发)</option>
             </select>
         </div>
         <div class="box">
             <!-- <button onclick="changeTheme()">Dark - Light Mode</button><br /> -->
-            <button onclick="echoHistoricalConnectedId()">console.log( Historical Connected Ids )</button><br />
-            <button onclick="defaultConnect()">Click me to connect the deafult Root Id</button><br />
+            <button onclick="echoHistoricalConnectedId()">console.log( 控制台打印历史连接id )</button><br />
+            <button onclick="defaultConnect()">点我连接默认根节点</button><br />
             <!-- <input type="checkbox" id="ifAutoReconnect" checked="checked">Automatic Reconnect when connection closed<br /> -->
             <!-- Connect box -->
             <div id="connectRoot" style="visibility: hidden;">
-                Join a root node:<input type="text" id="peerId" placeholder="Input counterpart's Id" autofocus="true">
-                <button id="connectButton">Connect</button><br />
+                加入一个根节点:<input type="text" id="peerId" placeholder="填入根节点ID..." autofocus="true">
+                <button id="connectButton">连接</button><br />
             </div>
-            <div id="status" style="font-weight: bold;">Status: Connecting to PeerServer...</div>
+            <div id="status" style="font-weight: bold;">状态: 正在连接到PeerJs服务器...</div>
         </div>
     </div>
     <div id="rooms">
@@ -118,8 +118,8 @@
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
             console.log(id);
-            document.getElementById("myid").innerHTML = "Your ID:<br/>" + id;
-            document.getElementById("status").innerHTML="Status: Root Node Created";
+            document.getElementById("myid").innerHTML = "你的ID:<br/>" + id;
+            document.getElementById("status").innerHTML="状态: 根节点已创建";
         });
         peer.on('error', function(err) {
             if (err.type === 'unavailable-id') {
@@ -129,12 +129,12 @@
                 // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
                 peer.on('open', (id) => {
                     console.log(id);
-                    document.getElementById("myid").innerHTML = "Your ID:<br/>" + id;
-                    document.getElementById("status").innerHTML="Status: Need to connect to the Root Node";
+                    document.getElementById("myid").innerHTML = "你的ID:<br/>" + id;
+                    document.getElementById("status").innerHTML="状态: 需要连接到根节点！";
                     defaultConnect();
                 });
             } else {
-                alert("initial work ERROR(check in console)");
+                alert("初始化错误(在控制台检查错误)");
             }
         });
         if(peer.id === defaultId){
@@ -223,7 +223,7 @@
 
         function defaultConnect(){
             if (peer.id == defaultId){
-                alert("Root node can't connect others");
+                alert("根节点无法连接其他节点");
                 return;
             }
             if (root) {
@@ -237,10 +237,10 @@
         // *Inside the function, the "root" variable is assigned the value of the connection made with the peer using the peer Id obtained from the input field with the Id "peerId".
         document.getElementById('connectButton').addEventListener('click', () => {
             if (peer.id == defaultId){
-                alert("Root node can't connect others");
+                alert("根节点无法连接其他节点");
                 return;
             }
-            document.getElementById("status").innerHTML="Status: Connecting to Root Node...";
+            document.getElementById("status").innerHTML="状态: 正在连接至根节点...";
             
             if (document.getElementById("peerId").value ){
                 if(connectHistroy.slice(-1)[0] != document.getElementById("peerId").value){
@@ -332,8 +332,8 @@
                 } else if(root){
                     if(root.open){
                         rootId = root.peer;
-                    } else { alert("Please join a Root Node at first!"); return; }
-                } else { alert("Please join a Root Node at first!"); return; }
+                    } else { alert("请先加入一个根节点!"); return; }
+                } else { alert("请先加入一个根节点!"); return; }
             }
             switch (document.getElementById("roomType").selectedIndex) {
                 case 0:
@@ -346,7 +346,7 @@
                     // TODO
                     break;
                 default:
-                    console.log("Error type of room");
+                    console.log("错误的房间类型");
                     break;
             }
         });

@@ -14,45 +14,44 @@
             <textarea id="roomSummary" rows="5" cols="33" readonly="readonly"></textarea>
             <div id="nodeInfo">
                 <div id="stable">
-                    <button id="hostBlock" onclick="echoNodesMap(nodesMap[9], 0, nodesMap[7], 1)">Host Node</button>
-                    <button id="refreshMap" onclick="refreshMap(1)">Refresh</button>
+                    <button id="hostBlock" onclick="echoNodesMap(nodesMap[9], 0, nodesMap[7], 1)">房主节点</button>
+                    <button id="refreshMap" onclick="refreshMap(1)">刷新</button>
                 </div>
                 <div id="block0"></div>
                 <div id="block1"></div>
             </div>
         </div>
         <div>
-            <button id="autoJoin" class="actionButton" onclick="autoJoin(3)">auto<br />Join</button>
-            <button id="closeInfo" class="actionButton" onclick="openRoomInfo()">Close</button>
+            <button id="autoJoin" class="actionButton" onclick="autoJoin(3)">自动<br />加入</button>
+            <button id="closeInfo" class="actionButton" onclick="openRoomInfo()">关闭</button>
         </div>
     </div>
     <!-- Id interaction -->
     <div class="container">
         <div class="box">
             <!-- Sender -->
-            <div style="font-weight: bold;">Audience</div>
+            <div style="font-weight: bold;">观众</div>
             <!-- Connect box -->
-            <button id="refreshButton" onclick="refreshMedia()">Refresh</button>
-            <button id="openRoomInfoButton" onclick="openRoomInfo()">Room Info</button>
-            <div id="myid" style="font-weight: bold;">Connecting to PeerServer...</div>
-            <div id="status" style="font-weight: bold;">Status: Waiting to Connecting to PeerServer...</div>
-            <input type="checkbox" id="ifAutoReconnect" checked="checked">Automatic Reconnection<br />
+            <button id="refreshButton" onclick="refreshMedia()">刷新</button>
+            <button id="openRoomInfoButton" onclick="openRoomInfo()">房间信息</button>
+            <div id="myid" style="font-weight: bold;">正在连接到PeerJs服务器...</div>
+            <div id="status" style="font-weight: bold;">状态: 正在连接到PeerJs服务器...</div>
+            <input type="checkbox" id="ifAutoReconnect" checked="checked">自动重连<br />
         </div>
         <div class="box">
-            <button onclick="fullWebVideo()" id="fullScreen">Full Page Video</button><br />
+            <button onclick="fullWebVideo()" id="fullScreen">视频全页面</button><br />
             <div>
-                <img id="myIcon" style="width: 32px; height: 32px;"><div style="display: inline-block;">Custome Icon & Name<br/><input type="text" id="name" placeholder="Input your name here..." /></div><br />
+                <img id="myIcon" style="width: 32px; height: 32px;"><div style="display: inline-block;">自定义昵称与头像<br/><input type="text" id="name" placeholder="填入你的昵称..." /></div><br />
                 <input type="file" name="icon" id="uploadIcon" onchange="iconInput()">
             </div>
-            <input type="checkbox" id="predictive">Predictive<br />
+            <input type="checkbox" id="predictive">提前下子<br />
         </div>
         <div class="box">
             <div id="playersList"></div>
-            <span id="nowTurn">Now Turn: 1 </span>
-            <span id="sumOfRoom">Members: 1</span>
-            <span id="countDown">Spare Time: ∞</span><br />
-            <input type="checkbox" id="ifAutoClean">Auto-clean Msgs[max->100]<br />
-            <button onclick="cleanMsg()">CleanMsgs</button><br />
+            <span id="nowTurn">当前回合： 1 </span>
+            <span id="sumOfRoom">成员数: 1</span><br />
+            <input type="checkbox" id="ifAutoClean">自动清理信息[最大->100]<br />
+            <button onclick="cleanMsg()">清理信息</button><br />
         </div>
     </div>
     
@@ -60,18 +59,18 @@
     <div class="videoBox">
         <div id="canvasMap">
             <br /><br /><br /><br />
-            MapSize: Height:<input type="number" id="maxHeight" class="setting" value="10" readonly> Width:<input type="number" id="maxWidth" class="setting" value="10" disabled="true"><br />
-            MaxPlayers: <input type="number" id="maxPlayers" class="setting" value="5" readonly><br />
-            GameMode: <select id="gameMode" disabled>
-                <option value="0" selected="selected">SLG Mode</option>
-                <option value="1">Energy Mode</option>
-                <option value="2">Card Mode</option>
+            棋盘大小: 高:<input type="number" id="maxHeight" class="setting" value="10" readonly> 宽:<input type="number" id="maxWidth" class="setting" value="10" disabled="true"><br />
+            最大玩家数: <input type="number" id="maxPlayers" class="setting" value="5" readonly><br />
+            游戏模式: <select id="gameMode" disabled>
+                <option value="0" selected="selected">回合制</option>
+                <option value="1">能量制(未完工)</option>
+                <option value="2">抽卡制(未完工)</option>
             </select><br />
-            HostJoinGame: <input type="checkbox" checked="true" class="setting" id="hostJoinGame" disabled><br />
+            房主参与游戏: <input type="checkbox" checked="true" class="setting" id="hostJoinGame" disabled><br />
             <div id="modeMenu">
-                WaitingTime: <input type="checkbox" id="ifCountDown"><input type="number" id="waitingTime" class="setting" value="30" min="1" readonly><br />
+                最大等待时间(未完工): <input type="number" id="waitingTime" class="setting" value="30" min="1" readonly><br />
             </div>
-            <button id="join" onclick="parent.send([8, 0, peer.id, myIcon, getMyName()])">Join Game</button>
+            <button id="join" onclick="parent.send([8, 0, peer.id, myIcon, getMyName()])">加入游戏</button>
         </div>
         <!-- Message box -->
         <div id="chatContainer">
@@ -79,8 +78,8 @@
             <div class="sendInput">
                 <!-- Send box -->
                 <input type="text" id="sendMessageBox" placeholder="Input message here..." autofocus="true" />
-                <button type="button" id="uploadImgButton">Img</button>
-                <button type="button" id="sendButton" onclick="sendMsg()">Send</button><br />
+                <button type="button" id="uploadImgButton">图片</button>
+                <button type="button" id="sendButton" onclick="sendMsg()">发送</button><br />
                 <input id="msgImgInput" type="file" onchange="sendImg()" style="display: none;">
             </div>
         </div>
@@ -150,8 +149,8 @@
             MyName.value = urlName;
             hereNode = [ 1, 0, 0, [], id, getMyName(), []]
             console.log(id);
-            document.getElementById("myid").innerHTML = "Your Id:<br/>" + id;
-            document.getElementById("status").innerHTML="Status: Connecting to Live Room...";
+            document.getElementById("myid").innerHTML = "你的ID:<br/>" + id;
+            document.getElementById("status").innerHTML="状态: 正在连接到直播间...";
             tryConnect( 0, urlId, false);   // try to connect to the room
         });
 
@@ -322,7 +321,7 @@
                                     //     autoJoin(nodesMap, 2, 0);
                                     // }
                                     liveSend(data);
-                                    document.getElementById("status").innerHTML="Status: awaitng parent node autoReConnect to room( You can also ReConnect by yourself)!"
+                                    document.getElementById("status").innerHTML="状态：等待父节点重连至房间(你也可以自己重连)!"
                                     // get the new nodeMap
                                     guest = peer.connect(nodesMap[7])
                                     guest.on('data', (data) => {
@@ -465,7 +464,7 @@
                                             if (turn == myNumber) {
                                                 document.getElementById("canvasMap").style.backgroundColor = 'rgb(80, 83, 80)';
                                             }
-                                            document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
+                                            document.getElementById("nowTurn").innerHTML = "当前回合: "+turn+" ";
                                         }
                                         // let i = 1;
                                         // // let position = false;
@@ -496,14 +495,14 @@
                                         // // }
                                         // // if(turn >= players.length){
                                         // //     trun = 1;
-                                        // //     document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
+                                        // //     document.getElementById("nowTurn").innerHTML = "当前回合: "+turn+" ";
                                         // // }
                                         // // if(data[3] == peer.id){
                                         // //     peer.distory();
                                         // // } else if (audienceIds.includes(data[3])){
                                         // //     audiences[audienceIds.indexOf(data[3])].close();
                                         // // }
-                                        appearMsg([ 0, null, "System", "player: "+ players[data[2]][3]+" was kicked"]);
+                                        appearMsg([ 0, null, "系统", "玩家: "+ players[data[2]][3]+"被踢"]);
                                         break;
                                     case 3: // SB quit in gameing
                                         // TODO
@@ -520,8 +519,8 @@
                     parent.on('open', () => {
                         // changingParentConnection = false;
                         parent.send(hereNode);
-                        document.getElementById("status").innerHTML="Status: Connected to Live Room Successfully."
-                        appearMsg([ 0, null, "System", "Connected successfully"]);
+                        document.getElementById("status").innerHTML="状态：成功连接到直播间"
+                        appearMsg([ 0, null, "系统", "连接成功"]);
                     });
                     
                     // parent.on('error', (err) => {
@@ -529,10 +528,10 @@
                     // });
 
                     parent.on('close', () => {
-                        document.getElementById("status").innerHTML="Status: Room Connection Closed. Please Refresh the Connection!"
+                        document.getElementById("status").innerHTML="状态: 房间连接断开. 请重连!"
 
                         if(document.getElementById("ifAutoReconnect").checked){
-                            document.getElementById("status").innerHTML="Status: Reconnecting to room...";
+                            document.getElementById("status").innerHTML="状态: 正在重连至房间...";
                             
                             autoJoin(3);
                             
@@ -619,19 +618,19 @@
                         root.close();
                     }
 
-                    document.getElementById("status").innerHTML="Status: Connecting..."
+                    document.getElementById("status").innerHTML="状态：连接中...";
                         
                     root = peer.connect(id);
 
                     root.on('open', () => {
                         root.send(nodesMap);
-                        document.getElementById("status").innerHTML="Status: Connected to Root Node Successfully!"
+                        document.getElementById("status").innerHTML="状态：成功连接到根节点";
                     });
                     
                     root.on('close', () => {
-                        document.getElementById("status").innerHTML="Status: Root Connection Closed!"; 
+                        document.getElementById("status").innerHTML="状态：根节点连接断开！"; 
                         if(document.getElementById("ifAutoReconnect").checked){
-                            document.getElementById("status").innerHTML="Status: Reconnecting to last Root Node...";
+                            document.getElementById("status").innerHTML="状态：重连至上个根节点中";
                             
                             tryConnect(0, urlInfo[0], false);
                         }
@@ -647,7 +646,7 @@
                     
                     root.on('open', () => {
                         document.getElementById('peerId').value=id;
-                        document.getElementById("status").innerHTML="Status: Connected to Root Node Successfully!"
+                        document.getElementById("status").innerHTML="状态：成功连接到根节点";
                     });
 
                     // document.getElementById("peerId").addEventListener(
@@ -676,7 +675,7 @@
                     root.on('close', () => {
                         // root = null;
                         document.getElementById("status").innerHTML="Status: Root Connection Closed!";
-                        document.getElementById('connectButton').innerHTML="Connect";
+                        // document.getElementById('connectButton').innerHTML="Connect";
                         
                         if(document.getElementById("ifAutoReconnect").checked){
                             document.getElementById("status").innerHTML="Status: Reconnecting to last Root Node...";
@@ -836,7 +835,7 @@
                             } else if (document.getElementById("predictive").checked){
                                 positonDeliver = position;
                             } else {
-                                alert("it is not your turn!(If you want, use predictive)");
+                                alert("现在不是你的回合!(如果需要，可选提前落子)");
                             }
                             break;
                         case 1:
@@ -876,7 +875,7 @@
                     if (turn == myNumber) {
                         document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
                     }
-                    document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
+                    document.getElementById("nowTurn").innerHTML = "当前回合: "+turn+" ";
                     unavailablePosition.push(chessman[1]);
                     positionOwners.push(chessman[2]);
 
@@ -893,7 +892,7 @@
                     if (unavailablePosition.length === maxHeight*maxWidth) {
                         lastGameMap = gameMap;
                         // gameMap = null;
-                        alert("No Winner!");   // style TODO
+                        alert("没有赢家!");   // style TODO
                         turn = null;
                         return;
                     }
@@ -913,7 +912,7 @@
                                 if (t>=5){        // 5 on line
                                     lastGameMap = gameMap;
                                     // gameMap = null;
-                                    alert("Winner is "+ player[3]);   // style TODO
+                                    alert("胜者是："+ player[3]);   // style TODO
                                     turn = null;
                                     break;
                                 }
