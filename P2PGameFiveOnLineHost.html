@@ -119,6 +119,7 @@
         const LiveTitle = document.getElementById("LiveTitle");
         const LiveSummary = document.getElementById("LiveSummary");
         const LiveCoverURL= document.getElementById("LiveCoverURL");
+        let coverURL = "";
         // Listen for the event when a Peer connection is successfully opened
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
