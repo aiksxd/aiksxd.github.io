@@ -3,21 +3,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/styleFiveOnline.css">
 </head>
 <body>
     <!-- Host Setting -->
     <div id="liveSetting">
-        <img id="liveCover">
+        <img id="LiveCover">
         <div style="height: 100%; width: 30%; margin-top: 2%;">
-            <input type="text" id="LiveTitle" class="liveInput" placeholder="填入房间标题"><br />
-            <textarea id="LiveSummary" rows="5" cols="33" placeholder="填入房间描述"></textarea><br />
+            <input type="text" id="LiveTitle" class="liveInput" placeholder="房间标题"><br>
+            <textarea id="LiveSummary" rows="5" cols="33" placeholder="填入房间描述..."></textarea><br>
         </div>
         <div style="height: 100%; width: 30%; margin-top: 2%;">
-            <input type="text" id="LiveCoverURL" class="liveInput" placeholder="上传一个URL地址作为封面"><br />
+            <input type="text" id="LiveCoverURL" class="liveInput" placeholder="上传一个URL地址作为封面"><br>
             <input id="LiveCoverInput" type="file" onchange="liveCoverInput()">上传本地图片<br/><br/>
-            <button onclick="peer.disconnect()">锁住房间(无法恢复！)</button>
-            <button onclick="peer.reconnect()">重连至PeerJS服务器</button>
+            <button onclick="peer.disconnect()">锁住房间(断开Peer连接)</button><br/>
+            <button onclick="peer.reconnect()">以原Id重连至PeerJS服务器</button><br/>
+            <button onclick="resetMap()">重置棋盘</button>
         </div>
         <div>
             <button id="closeLiveMenu" class="actionButton" onclick="showLive()">关闭</button>
@@ -50,46 +51,46 @@
             <button id="refreshButton" onclick="refreshMap()">刷新</button>
             <button id="openRoomInfoButton" onclick="openRoomInfo()">房间信息</button>
             <button type="button" id="roomSetting" onclick="showLive()">房间设置</button>
-            <div id="myid" style="font-weight: bold;">连接PeerJs服务器中...</div>
+            <div id="myid" style="font-weight: bold;">正在连接到Peer服务器...</div>
             <div id="connectRoot" style="visibility: hidden;">
-                Join a root node:<input type="text" id="peerId" placeholder="填入根节点ID...">
-                <button id="connectButton">连接</button><br />
+                加入一个根节点:<input type="text" id="peerId" placeholder="填入根节点ID...">
+                <button id="connectButton">连接</button><br>
             </div>
-            <div id="status" style="font-weight: bold;">状态：等待连接到PeerJS服务器...</div>
-            <!-- <input type="checkbox" id="ifAutoReconnect" checked="checked">Automatic Reconnection<br /> -->
+            <div id="status" style="font-weight: bold;">状态: 正在等待连接到Peer服务器...</div>
+            <!-- <input type="checkbox" id="ifAutoReconnect" checked="checked">Automatic Reconnection<br> -->
         </div>
         <div class="box">
-            <button onclick="fullWebVideo()" id="fullScreen">视频全页面</button><br />
+            <button onclick="fullWebVideo()" id="fullScreen">铺满屏幕</button>
+            <button onclick="hiddenAbility()" id="hiddenAbility">隐藏技能</button><br>
             <div>
-                <img id="myIcon" style="width: 32px; height: 32px;"><div style="display: inline-block;">自定义昵称与头像<br/><input type="text" id="name" placeholder="填入你的昵称..." /></div><br />
+                <img id="myIcon" style="width: 32px; height: 32px;"><div style="display: inline-block;">自定义头像与昵称<br/><input type="text" id="name" placeholder="填入你的名字..." /></div><br>
                 <input type="file" name="icon" id="uploadIcon" onchange="iconInput()">
             </div>
-            <input type="checkbox" id="predictive">提前下子<br />
         </div>
         <div class="box">
             <div id="playersList"></div>
-            <span id="nowTurn">当前回合： 1 </span>
-            <span id="sumOfRoom">成员数: 1</span><br />
-            <input type="checkbox" id="ifAutoClean">自动清理信息[最大->100]<br />
-            <button onclick="cleanMsg()">清理信息</button><br />
-            点击编号以将玩家踢出房间.
+            <span id="nowTurn">当前回合: 1 </span>
+            <span id="sumOfRoom">成员数: 1</span>
+            <span id="modeOutput">剩余时间: ∞</span><br>
+            <input type="checkbox" id="ifAutoClean">自动清理信息[最大->100]<br>
+            <button onclick="cleanMsg()">清理信息</button><br>
+            点击玩家编号可将玩家踢出房间.
         </div>
     </div>
     
     <!-- Live interaction-->
     <div class="videoBox">
         <div id="canvasMap">
-            <br /><br /><br /><br />
-            棋盘大小: 高:<input type="number" id="maxHeight" class="setting" value="10" min="1"> 宽:<input type="number" id="maxWidth" class="setting" value="10" min="1"><br />
-            最大玩家数: <input type="number" id="maxPlayers" class="setting" value="5" min="1"><br />
+            <br><br>
+            棋盘大小: 高<input type="number" id="maxHeight" class="setting" value="10" min="1"> 宽:<input type="number" id="maxWidth" class="setting" value="10" min="1"><br>
+            最大玩家数: <input type="number" id="maxPlayers" class="setting" value="5" min="1"><br>
             游戏模式: <select id="gameMode" onchange="modeModify(this.selectedIndex)">
                 <option value="0" selected="selected">回合制</option>
-                <option value="1">能量制(未完工)</option>
-                <option value="2">抽卡制(未完工)</option>
-            </select><br />
-            房主参与游戏: <input type="checkbox" class="setting" checked="true" id="hostJoinGame"><br />
+                <option value="1">能量制</option>
+                <!-- <option value="2">Card Mode</option> -->
+            </select><br>
+            房主加入游戏: <input type="checkbox" class="setting" checked="true" id="hostJoinGame"><br>
             <div id="modeMenu">
-                最大等待时间(未完工): <input type="number" id="waitingTime" class="setting" value="30" min="1"><br />
             </div>
             <button id="start" onclick="start()">开始游戏</button>
         </div>
@@ -98,9 +99,9 @@
             <div id="chatBox"></div>
             <div class="sendInput">
                 <!-- Send box -->
-                <input type="text" id="sendMessageBox" placeholder="填入你想发送的信息..." autofocus="true" />
+                <input type="text" id="sendMessageBox" placeholder="填入你想发的信息..." autofocus="true" />
                 <button type="button" id="uploadImgButton">图片</button>
-                <button type="button" id="sendButton" onclick="sendMsg()">发送</button><br />
+                <button type="button" id="sendButton" onclick="sendMsg()">发送</button><br>
                 <input id="msgImgInput" type="file" onchange="sendImg()" style="display: none;">
             </div>
         </div>
@@ -112,65 +113,17 @@
         const peer = new Peer({ debug: 2})      //use PeerJS official server
     </script>
     <script src="js/fn.js"></script>
+    <script src="js/fiveOnlineFn.js"></script>
     <script>
-        let conn = null;
-        let mediaOpen = null;
-        let openInfoTimes = 0;
-        let openLiveTimes = 0;
-        let parent = null;
-        let ifAutoScroll = true;
-        let localStream = null;
-        let remoteStream = null;
-        let ifHitAim = null;
-        let lastAimId = null;
-        let layers = [0];
-        let lastLayerNumber = null;
-        let audiences = new Array();
-        let audienceIds = new Array();
-        let conns = new Array();
-        let connIds = new Array();
-        let nodesMap = new Array();     // init later
-        let childNodes = new Array();
-        let params = new URLSearchParams(document.location.search.substring(1));
         let urlInfo = [params.get("rootId"), params.get("title"), params.get("summary"), params.get("coverURL")]
         const LiveTitle = document.getElementById("LiveTitle");
         const LiveSummary = document.getElementById("LiveSummary");
         const LiveCoverURL= document.getElementById("LiveCoverURL");
-        const MyName = document.getElementById("name");
-        const WebVideo = document.getElementById('canvasMap');
-
-        // For game
-        let players = [5];  // [ maxPlayerNumber, [number, peerId, icon, name] ]
-        let deliver = null;
-        let unavailablePosition = [];
-        let positionOwners = [];
-        let clickTimes = 0;
-        let lastAimPosition = 0;
-        let chessmanCode_0_Cost = 3;
-        let leftEnergy = 0;
-        let lastOperationTime = 0;
-        let positonDeliver = null;
-        let turn = 1;
-        let maxHeight = 10;
-        let maxWidth = 10;
-        let maxEnergy = 5;
-        let chessmanCode_1_Cost = 3;
-        let gameMode = [0, false, [], [maxEnergy, chessmanCode_1_Cost], []];
-        let mapSize = [maxHeight, maxWidth];
-        let gameMap = [mapSize]
-        let startTime = null;
-        let myNumber = null;
-        let kickNumbers = new Array();
-        let offlinePlayer = [];
-        let lastGameMap = null;
-        let gameInfo = [6, players, gameMap, gameMode, startTime, unavailablePosition, positionOwners];
-        let charactersURLs = ['',''];
-        
         // Listen for the event when a Peer connection is successfully opened
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
         peer.on('open', (id) => {
-            if (LiveTitle.value || LiveSummary.innerHTML || LiveCoverURL.value){
-                nodesMap = [ 1, 1, [id], 1, LiveTitle.value, LiveSummary.innerHTML, LiveCoverURL.value, id, getMyName(), childNodes, urlInfo[0]];
+            if (LiveTitle.value || LiveSummary.value || LiveCoverURL.value){
+                nodesMap = [ 1, 1, [id], 1, LiveTitle.value, LiveSummary.value, LiveCoverURL.value, id, getMyName(), childNodes, urlInfo[0]];
             } else {
                 // childNodes=[0.dataType, 1.sourceMark, 2.NumberOfchildNodes, 3.unused for you ]
                 childNodes = [ 1, 1, 0, [], id, getMyName(), []];
@@ -183,7 +136,7 @@
             if(urlInfo[0]){
                 tryConnect(3, urlInfo[0], false, false);
             } else {
-                document.getElementById("status").innerHTML="状态：不公开的房间";
+                document.getElementById("status").innerHTML="状态：现在这里是根节点(不公开房间)";
             }
         });
 
@@ -219,11 +172,6 @@
                         // }else{console.log('Msg delivered failed');}
 
                         liveSend(data);
-                        if(root){
-                            if(root.open){
-                                root.send(data);
-                            }
-                        }
                         
                         appearMsg(data);
                         break;
@@ -234,6 +182,7 @@
                             audiences.push(conns[aimPosition]);
 
                             // for game:
+                            gameInfo = [6, players, gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting];
                             conns[aimPosition].send(gameInfo);
 
                             console.log("Msg Connected to: " + data[4]);
@@ -262,9 +211,9 @@
                             }
                             let i = 1;
                             let position = false;
-                            while(i<players.length){
+                            while(i<players.length){    // check the same id for this player cancel ready
                                 if(players[i] instanceof Array){
-                                    if(position){
+                                    if(position){   // if somebody left was found, player with the nuber after his number will be modified
                                         players[i][0]--;
                                         player = players[i];
                                         document.getElementsByClassName("playersInfo")[i-1].children[0].innerHTML = i+": ";
@@ -285,7 +234,7 @@
                                 }
                             }
                             if(! position){
-                                let newPlayer = [players.length, data[2], data[3], data[4]];    // [number, peerId, icon, name]
+                                let newPlayer = [players.length, data[2], data[3], data[4], data[5]];    // [number, peerId, icon, name]
                                 players.push(newPlayer);
                                 displayNewPlayer(newPlayer);
                                 liveSend([8, 1, newPlayer]);
@@ -350,7 +299,7 @@
             });
         });
 
-        const inputs = Array.from(document.getElementsByClassName('setting'));
+        let inputs = Array.from(document.getElementsByClassName('setting'));
         inputs.forEach(input => {
             input.addEventListener('focusout',() => {
                     maxWidth = Number(document.getElementById("maxWidth").value);
@@ -360,7 +309,7 @@
                     players[0] = Number(document.getElementById("maxPlayers").value);
                     gameMode = [document.getElementById("gameMode").selectedIndex, document.getElementById("hostJoinGame").checked];
                     // gameInfo = [6, players, gameMap, gameMode, startTime, unavailablePosition, positionOwners];
-                    liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners]); // null for quickly sending
+                    liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]);
                 },
                 true,
             );
@@ -368,7 +317,7 @@
         document.getElementById("gameMode").addEventListener(
             "focusout",() => {
                 gameMode = [document.getElementById("gameMode").selectedIndex, document.getElementById("hostJoinGame").checked];
-                liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners]); // null for quickly sending
+                liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]);
             },
             true,
         );
@@ -376,35 +325,68 @@
         function modeModify(mode) {
             switch (mode) {
                 case 0:
-                    document.getElementById("modeMenu").innerHTML = 'WaitingTime: <input type="number" id="waitingTime" class="setting" value="30" min="1"><br />';
+                    document.getElementById("modeMenu").innerHTML = '最大等待时间(启用与否 & 时间设置): <input type="checkbox" id="ifCountDown"><input type="number" id="waitingTime" class="setting" value="60" min="1"><br>';
+                    document.getElementById("ifCountDown").addEventListener('focusout',() => {
+                        if (document.getElementById("ifCountDown").checked && (gameMode[0] === 0)) {
+                            maxWaitingTime = document.getElementById("waitingTime").value;
+                        } else {
+                            maxWaitingTime = null;
+                        }
+                        modeSetting[0] = [maxWaitingTime];
+                        liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]);
+                    });
+                    document.getElementById("waitingTime").addEventListener('focusout',() => {
+                        if (document.getElementById("ifCountDown").checked && (gameMode[0] === 0)) {
+                            maxWaitingTime = document.getElementById("waitingTime").value;
+                        } else {
+                            maxWaitingTime = null;
+                        }
+                        modeSetting[0] = [maxWaitingTime];
+                        liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]);
+                    });
                     break;
                 case 1:
-                    document.getElementById("modeMenu").innerHTML = '';
-                    charactersURLs.forEach(charactersURLs => {
-                        let character = document.createElement("img");
-                        character.setAttribute('src', charactersURLs);
-                        character.classList.add('cells');
-                        document.getElementById("modeMenu").appendChild(character);
+                    document.getElementById("modeMenu").innerHTML = '选择你的技能: ';
+                    document.getElementById("modeOutput").innerHTML ="剩余能量: 0";
+                    abilitiesURLS.slice(1).forEach(abilitiesURL => {
+                        let ability = document.createElement("img");
+                        ability.setAttribute('src', abilitiesURL);
+                        ability.setAttribute('onclick', "chooseAbility("+ abilitiesURLS.indexOf(abilitiesURL) +")");
+                        ability.classList.add('cells');
+                        ability.classList.add('abilities');
+                        document.getElementById("modeMenu").appendChild(ability);
                     });
                     document.getElementById("modeMenu").appendChild(document.createElement("br"));
                     let input = document.createElement("input");
                     input.setAttribute('type', "number");
-                    input.classList.add('setting');
+                    input.classList.add('mode2Setting');
                     input.setAttribute('min', "0");
 
                     let input1 = input.cloneNode();
                     input1.id = "commonChessmanCost";
-                    input1.setAttribute('value', "3");
-                    document.getElementById("modeMenu").appendChild(document.createTextNode("commonChessmanCost: "));
+                    input1.setAttribute('value', modeSetting[1][1]);
+                    document.getElementById("modeMenu").appendChild(document.createTextNode("普通棋子能量开销: "));
                     document.getElementById("modeMenu").appendChild(input1);
                     document.getElementById("modeMenu").appendChild(document.createElement("br"));
 
                     let input2 = input.cloneNode();
-                    input2.id = "MaxEnergy";
-                    input2.setAttribute('value', "5");
-                    document.getElementById("modeMenu").appendChild(document.createTextNode("MaxEnergy: "));
+                    input2.id = "maxEnergy";
+                    input2.setAttribute('value', maxEnergy);
+                    document.getElementById("modeMenu").appendChild(document.createTextNode("最大能量上限: "));
                     document.getElementById("modeMenu").appendChild(input2);
                     document.getElementById("modeMenu").appendChild(document.createElement("br"));
+
+                    input.remove();
+
+                    let mode2Inputs = Array.from(document.getElementsByClassName('mode2Setting'));
+                    mode2Inputs.forEach(input => {
+                        input.addEventListener('focusout',() => {
+                            modeSetting[1][1] = Number(document.getElementById("commonChessmanCost").value);
+                            maxEnergy = Number(document.getElementById("maxEnergy").value);
+                            modeSetting[1][0] = maxEnergy;
+                            liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]);
+                        });
+                    });
                     break;
                 default:
                     break;
@@ -432,21 +414,15 @@
             newPlayerIcon.classList.add('icon');
             newPlayer.appendChild(newPlayerIcon);
 
-            if(player[5]){  // TODO
-                let newPlayerCharacter = document.createElement("img");
-                let character = null;
-                switch (player[5]) {
-                    case 1:
-                        character = "";
-                        break;
-                    default:
-                        character = "";
-                        console.log("unknown character");
-                        break;
+            if(gameMode[0] == 1){
+                let newPlayerAbility = document.createElement("img");
+                if (player[4]) {
+                    newPlayerAbility.setAttribute("src", abilitiesURLS[player[4]]);
+                } else {
+                    newPlayerAbility.setAttribute("src", abilitiesURLS[1]);
                 }
-                newPlayerCharacter.setAttribute("src", character);
-                newPlayerCharacter.classList.add('icon');
-                newPlayer.appendChild(newPlayerCharacter);
+                newPlayerAbility.classList.add('icon');
+                newPlayer.appendChild(newPlayerAbility);
             }
 
             let newPlayerName = document.createElement("span");
@@ -461,18 +437,16 @@
         function start(){
             // check setting
             document.getElementById("start").focus;     // for save modified
-            maxWidth = Number(document.getElementById("maxWidth").value);
-            maxHeight = Number(document.getElementById("maxHeight").value);
             mapSize = [maxHeight, maxWidth];
             gameMap = [mapSize]
             // players[0] = Number(document.getElementById("maxPlayers").value);
             gameMode = [document.getElementById("gameMode").selectedIndex, document.getElementById("hostJoinGame").checked];
             if(maxHeight < 0 || maxWidth < 0 || maxHeight * maxWidth > 20250000){
-                alert("超出房间最大地图(X*Y <= 20250000 & X, Y > 0)");
+                alert("over the number of Mapsize(X*Y <= 20250000 & X, Y > 0)");
                 return;
             }
             if( maxPlayers < 0 || maxPlayers > 2500){
-                alert("超出房间最大玩家数(0, 2500)");
+                alert("over the number of Players(0, 2500)");
                 return;
             }
 
@@ -484,9 +458,9 @@
             // let temp = [players[0]]
             // let i = 1;
             // let t = 1;
-            if(gameMode[1]){
+            if(gameMode[1]){    // host join game
                 myNumber = players.length;
-                newPlayer = [players.length, peer.id, myIcon, getMyName()];
+                newPlayer = [players.length, peer.id, myIcon, getMyName(), myAbility];
                 liveSend([8, 1, newPlayer]);
                 players.push(newPlayer);
                 displayNewPlayer(newPlayer);
@@ -503,31 +477,25 @@
             // }
             // players = temp;
 
-            gameInfo = [6, players, gameMap, gameMode, startTime, unavailablePosition, positionOwners];
+            gameInfo = [6, players, gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting];
             drawMap();
-            liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners]);
+            liveSend([6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]);
             
-            if (myNumber == 1) {
-                document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
-            }
-        }
-
-        function drawMap(){
-            if(startTime){
-                document.getElementById("canvasMap").innerHTML = "<div id=\"gameMap\"></div>";
-                for(let t=1; t<=maxHeight*maxWidth; t++){
-                    let cell = document.createElement("img");
-                    cell.classList.add('cells');
-                    cell.setAttribute("onclick", "applyForPut(this)");
-                    cell.id = t;
-                    let newLine = document.createElement("br");
-                    document.getElementById("gameMap").appendChild(cell);
-                    if(t%maxWidth==0){
-                        document.getElementById("gameMap").appendChild(newLine);
+            switch (gameMode[0]) {
+                case 0:
+                    if (myNumber == 1) {
+                        document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
                     }
-                }
-            } else {
-                document.getElementById("canvasMap").innerHTML = '\n        <br><br><br><br>\n        MapSize: Height:<input type="number" id="maxHeight" class="setting" value="10"> Width:<input type="number" id="maxWidth" class="setting" value="10"><br>\n        MaxPlayers: <input type="number" id="maxPlayers" class="setting" value="2"><br>\n        GameMode: <select id="gameMode">\n            <option value="1" selected="selected">SLG Mode</option>\n            <option value="2">Energy Mode</option>\n            <option value="3">Card Mode</option>\n        </select><br>\n        HostJoinGame: <input type="checkbox" checked="true" id="hostJoinGame"><br>\n        <button id="start" onclick="start()">Start Game</button>\n    ';
+                    if (modeSetting[0][0]) {
+                        waitingTime = maxWaitingTime;
+                        timer = setInterval(countDown, 1000);
+                    }
+                    break;
+                case 1:
+                    setInterval(()=>{document.getElementById("modeOutput").innerHTML = "Spare Energy: "+ (energy()*0.001).toFixed(3).slice(0, -2)}, 100);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -535,247 +503,51 @@
             return null;
         }
 
-        function applyForPut(position){
-            let positionId = Number(position.id);
-            if(positionId && !(unavailablePosition.includes(positionId))){
-                // if(lastAimPosition !== position){
-                //     if(lastAimPosition){
-                //         lastAimPosition.classList.remove('focus');
-                //     }
-                //     position.classList.add('focus');
-                //     lastAimPosition = position;
-                // } else 
-                if(myNumber){
-                    let now = new Date();
-                    switch (gameInfo[3][0]) {
-                        case 0:
-                            if(turn === myNumber){
-                                document.getElementById("canvasMap").style.backgroundColor = 'rgb(28, 33, 40)';
-                                if(parent){     // noticed: No circuit protection
-                                    parent.send([7, 0, [1, positionId, myNumber, now.getTime()]]);
-                                } else {
-                                    liveSend([7, 1, [1, positionId, myNumber, now.getTime()]]);
-                                    drawChessman([1, positionId, myNumber, now.getTime()]);
-                                }
-                            } else if (document.getElementById("predictive").checked){
-                                positonDeliver = position;
-                            } else {
-                                alert("现在不是你的回合!(如果需要，可选提前落子)");
-                            }
-                            break;
-                        case 1:
-                            if(energy() > 3){
-                                leftEnergy - chessmanCode_1_Cost;
-                                if(parent){
-                                    parent.send([7, 0, [1, positionId, myNumber, now.getTime()]]);
-                                } else {
-                                    liveSend([7, 1, [1, positionId, myNumber,now.getTime()]]);
-                                    drawChessman([1, positionId, myNumber, now.getTime()]);
-                                }
-                            } else if (document.getElementById("predictive").checked){
-                                if(3 - leftEnergy < 1){
-                                    setTimeout(applyForPut(position), (3 - leftEnergy)*1000);
-                                    return;
-                                }
-                            }
-                            break;
-                        default:
-                            console.log("unknown game mode")
-                            break;
-                    }
-                }
-            }
-        }
-
-        function drawChessman(chessman, effect){
-            turn++;
-            switch (chessman[0]) {
-                case 1:
-                    if(turn >= players.length){
-                        turn = 1;
-                    }
-                    let controller = false;
-                    while (kickNumbers.includes(turn)) {
-                        turn++;
-                        if(turn >= players.length){
-                            if (controller) {
-                                break;
-                            }
-                            turn = 1;
-                            controller = true;
-                        }
-                    }
-                    if (turn == myNumber) {
-                        document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
-                    }
-                    document.getElementById("nowTurn").innerHTML = "当前回合: "+turn+" ";
-                    unavailablePosition.push(chessman[1]);
-                    positionOwners.push(chessman[2]);
-                    
-                    player = players[chessman[2]];
-                    aimCell = document.getElementById(String(chessman[1]));
-                    aimCell.classList.add("owner"+ player[0]);
-                    if(player[2]){
-                        aimCell.setAttribute("src", player[2]); // .innerHTML = "<img class=\"playerNumber"+ sourcePlayer[0] +"\" src=\"" + sourcePlayer[2] + ">";
-                    } else {
-                        // document.getElementById(String(chessman[1])).innerHTML = "<span class=\"playerNumber"+ sourcePlayer[0] +"\" >" + sourcePlayer[0] + "</span>";
-                        let colour = 255*((player[0] + 2)/(player[0] + 4));
-                        aimCell.setAttribute("style", "background-color: rgb("+parseInt(((((player[0]+1) % 5) + 1)/5)*colour)+", "+parseInt(((((player[0]+1) % 4) + 1)/4)*colour)+", "+parseInt(((((player[0]+1) % 3) + 1)/3)*colour)+")");
-                    }
-                    if (unavailablePosition.length === maxHeight*maxWidth) {
-                        lastGameMap = gameMap;
-                        // gameMap = null;
-                        alert("没有赢家!");   // style TODO
-                        turn = null;
-                        return;
-                    }
-                    [(-maxWidth)+1, 1, maxWidth+1, maxWidth].forEach(direction => {
-                        let i = -4;
-                        let t = 1;
-                        let limit = chessman[1] % maxWidth;    // limit for out of canvas
-                        if(limit == 0){limit = maxWidth;}
-                        while (i<=4 && i<= maxWidth - limit) {
-                            if(i==0 || i < 1-limit ){i++; continue;}
-                            // console.log(""+ (1-limit) +";"+ (maxWidth-limit) +"");
-                            let aimPosition = chessman[1]+(i*direction);
-                            // console.log(aimPosition);
-                            if(unavailablePosition.includes(aimPosition) && positionOwners[unavailablePosition.indexOf(aimPosition)] == chessman[2]){
-                                t++;
-                                // console.log(chessman[2]+"th<------->"+aimPosition+"------------->"+t);
-                                if (t>=5){        // 5 on line
-                                    lastGameMap = gameMap;
-                                    // gameMap = null;
-                                    alert("胜者是："+ player[3]);   // style TODO
-                                    turn = null;
-                                    break;
-                                }
-                            } else if(5-i < 5-t){   // quit in advence
-                                break;
-                            } else {    // this position without the chessman of aim player
-                                t = 1;
-                            }
-                            i++;
-                        }
-                    });
-                    break;
-            
-                default:
-                    console.log("drew unknown");
-                    break;
-            }
-        }
-
-
-        function reDraw(playerNumber, reDrawType) {
-            let t = 0;
-                let aims = document.getElementsByClassName("owner"+ playerNumber);
-                while (t < aims.length) {
-                    aims[t].removeAttribute("style");
-                    switch (reDrawType) {
-                        case 1:     // update chessmans icon
-                            aims[t].setAttribute('src', players[playerNumber][2]);
-                            break;
-                        case 2:     // kick someone
-                            aims[t].removeAttribute("src");
-                            aims[t].classList.remove("owner"+ playerNumber);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-        }
-
-        function energy() {
-            if(!lastOperationTime){
-                lastOperationTime = gameInfo[4];
-            }
-            let now = new Date();
-            let t = now.getTime() - lastOperationTime + leftEnergy;
-            if(t > maxEnergy){  // custome DEBUG
-                leftEnergy = maxEnergy;
-            } else {
-                leftEnergy = t;
-            }
-            lastOperationTime = now.getTime();
-            return leftEnergy;
-        }
-
         function kick(number) {
-            if(confirm("你确定要踢出第"+number+"位玩家吗?")){
+            if(confirm("你确定要踢出编号为"+number+"的玩家吗?")){
                 liveSend([8, 2, Number(number)]);
-                // let i = number;
-                kickNumbers.push(number);
-                // players.splice(i, 1);
-                document.getElementsByClassName("playersInfo")[number-1].childNodes[2].innerHTML = document.getElementsByClassName("playersInfo")[number-1].childNodes[2].innerHTML + "(kicked)";
-                if (number == myNumber) {
-                    document.getElementById("canvasMap").style.backgroundColor = 'rgb(34,39,46)';
-                    myNumber = null;
-                }
-                if (turn == number) {
-                    turn++;
-                    if(turn >= players.length){
-                        turn = 1;
+                if (startTime) {
+                    kickNumbers.push(number);
+                    document.getElementsByClassName("playersInfo")[number-1].childNodes[2].innerHTML = document.getElementsByClassName("playersInfo")[number-1].childNodes[2].innerHTML + "(kicked)";
+                    if (number == myNumber) {
+                        document.getElementById("canvasMap").style.backgroundColor = 'rgb(34,39,46)';
+                        myNumber = null;
                     }
-                    let controller = false;
-                    while (kickNumbers.includes(turn)) {
-                        turn++;
-                        if(turn >= players.length){
-                            if (controller) {
-                                alert("Error: 游戏无玩家");
-                                break;
+                    if (turn == number && startTime && (gameMode[0] == 0)) {
+                        nextTurn();
+                    }
+                    appearMsg([ 0, null, "系统", "玩家: "+ players[number][3]+" 被踢出"]);
+                } else {
+                    let i = number;
+                    players.splice(i, 1);
+                    document.getElementsByClassName("playersInfo")[i-1].remove();
+                    while(i<players.length){
+                        if(players[i] instanceof Array){
+                            players[i][0]--;
+                            let player = players[i];
+                            if(!player[2]){      // kick and change default color
+                                let colour = 255*((player[0] + 2)/(player[0] + 4));
+                                document.getElementsByClassName("playersInfo")[i-1].children[1].setAttribute("style", "background-color: rgb("+parseInt(((((player[0]+1) % 5) + 1)/5)*colour)+", "+parseInt(((((player[0]+1) % 4) + 1)/4)*colour)+", "+parseInt(((((player[0]+1) % 3) + 1)/3)*colour)+")");
                             }
-                            turn = 1;
-                            controller = true;
+                            document.getElementsByClassName("playersInfo")[i-1].children[0].setAttribute("onclick", "kick("+ player[0] +")");
+                            document.getElementsByClassName("playersInfo")[i-1].children[0].innerHTML = i+": ";
                         }
+                        i++;
                     }
-                    if (turn == myNumber) {
-                        document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
-                    }
-                    document.getElementById("nowTurn").innerHTML = "当前回合: "+turn+" ";
                 }
-                appearMsg([ 0, null, "系统", "玩家: "+ players[number][3]+"被踢"]);
-                // while(i<players.length){
-                //     if(players[i] instanceof Array){
-                //         players[i][0]--;
-                //         let player = players[i];
-                //         if(!player[2]){      // kick and change default color
-                //             let colour = 255*((player[0] + 2)/(player[0] + 4));
-                //             document.getElementsByClassName("playersInfo")[i-1].children[1].setAttribute("style", "background-color: rgb("+parseInt(((((player[0]+1) % 5) + 1)/5)*colour)+", "+parseInt(((((player[0]+1) % 4) + 1)/4)*colour)+", "+parseInt(((((player[0]+1) % 3) + 1)/3)*colour)+")");
-                //         }
-                //         document.getElementsByClassName("playersInfo")[i-1].children[0].setAttribute("onclick", "kick("+ player[0] +")");
-                //         document.getElementsByClassName("playersInfo")[i-1].children[0].innerHTML = i+": ";
-                //     }
-                //     i++;
-                // }
-                // if(number < myNumber){
-                //     myNumber--;
-                // }
-                // if(turn >= players.length){
-                //     turn = 1;
-                //     document.getElementById("nowTurn").innerHTML = "当前回合: "+turn+" ";
-                // }
             }
         }
 
-        // autoScroll the scrollbar
-        document.getElementById("chatBox").addEventListener('onmouseover', ()=>{ ifAutoScroll = false;});
-        document.getElementById("chatBox").addEventListener('onmouseout', ()=>{ ifAutoScroll = true;});
-
-        // Listen for press enter in message box
-        document.getElementById("sendMessageBox").addEventListener('keypress', enter);
-        function enter(e) {
-            let event = e && window.event;
-            if (event.which && event.keyCode == '13'){
-                document.getElementById("sendButton").click();
-            }
-        }
+        document.getElementById("connectButton").addEventListener("click", () => {
+            tryConnect(3, document.getElementById("peerId").value, false, false);
+        });
 
         function showLive() {       // if usr want to live
             if(openLiveTimes==0){
                 openLiveTimes++;
                 document.getElementById('liveSetting').style.height = "25%";
                 LiveTitle.value = nodesMap[4];
-                LiveSummary.innerHTML = nodesMap[5];
+                LiveSummary.value = nodesMap[5];
                 LiveCoverURL.value = nodesMap[6];
             }else{
                 openLiveTimes=0;
@@ -785,7 +557,7 @@
 
         function modify(){
             nodesMap[4] = LiveTitle.value;   // nodesMap update
-            nodesMap[5] = LiveSummary.innerHTML;
+            nodesMap[5] = LiveSummary.value;
             if(liveCoverBase64){
                 nodesMap[6] = liveCoverBase64;
             } else {
@@ -797,6 +569,7 @@
                     root.send(nodesMap);
                 }
             }
+            showLive();
         }
         
         function openRoomInfo() {       // top menu for showing the detail of room
@@ -841,14 +614,14 @@
             }
             childNodes[2] = audienceIds.length;
             // [0] => format, [1] => if from Root of room, [3] => numbers of child nodes from parent node
-            nodesMap = [ 1, 1, getRoomIds(), 1, LiveTitle.value, LiveSummary.innerHTML, LiveCoverURL.value, peer.id, getMyName(), childNodes, urlInfo[0]];  //record this node's info
+            nodesMap = [ 1, 1, getRoomIds(), 1, nodesMap[4], nodesMap[5], nodesMap[6], peer.id, getMyName(), childNodes, urlInfo[0]];  //record this node's info
             if(root){
                 if(root.open){
                     root.send(nodesMap);
                 }
             }
             liveSend(nodesMap);
-            document.getElementById("sumOfRoom").innerHTML = "Members: "+ nodesMap[2].length;
+            document.getElementById("sumOfRoom").innerHTML = "成员数: "+ nodesMap[2].length;
         }
 
         // destroy connection when someone closed the web

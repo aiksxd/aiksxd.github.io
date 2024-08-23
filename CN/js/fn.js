@@ -39,12 +39,12 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
             parent.on('open', () => {
                 // changingParentConnection = false;
                 parent.send(hereNode);
-                document.getElementById("status").innerHTML="Status: Connected to Live Room Successfully!"
-                appearMsg([ 0, null, "System", "Connected successfully"]);
+                document.getElementById("status").innerHTML="状态: 成功连接到直播间!"
+                appearMsg([ 0, null, "系统", "连接成功"]);
             });
             
             // parent.on('error', (err) => {
-            //     document.getElementById("status").innerHTML="Status: Connecting Failed!" + err;
+            //     document.getElementById("status").innerHTML="状态: Connecting Failed!" + err;
             // });
 
             // Receive the reply of text: Host --> Guset
@@ -82,7 +82,7 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
                             //     autoJoin(nodesMap, 2, 0);
                             // }
                             liveSend(data);
-                            document.getElementById("status").innerHTML="Status: awaitng parent node autoReConnect to room( You can also ReConnect by yourself)!"
+                            document.getElementById("status").innerHTML="状态: 等待父节点重连至房间( 你也可以自己重连 )!"
                             // get the new nodeMap
                             guest = peer.connect(nodesMap[7])
                             guest.on('data', (data) => {
@@ -117,7 +117,7 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
                                 awaitedNodeId = null;
                             }
                         } else {
-                            alert("host is not on live");
+                            alert("房主没有开播");
                         }
                     default:
                         console.log("unknown data: " + data);
@@ -125,10 +125,10 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
             });
 
             parent.on('close', () => {
-                document.getElementById("status").innerHTML="Status: Room Connection Closed. Please Refresh the Connection!"
+                document.getElementById("status").innerHTML="状态: 与房间连接断开，请尝试刷新连接!"
 
                 if(document.getElementById("ifAutoReconnect").checked){
-                    document.getElementById("status").innerHTML="Status: Reconnecting to room...";
+                    document.getElementById("status").innerHTML="状态: 正在重连至房间...";
                     
                     autoJoin(3);
                     
@@ -208,27 +208,27 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
                 bridge.close();
             }
             bridge = peer.connect(id);
-            alert("try to connect someone in rooms");
+            alert("警告：正在尝试连接到房间内的成员！");
         case 3:
             // Close old connection
             if (root) {
                 root.close();
             }
 
-            document.getElementById("status").innerHTML="Status: Connecting..."
+            document.getElementById("status").innerHTML="状态: 连接中..."
                 
             root = peer.connect(id);
 
             root.on('open', () => {
                 root.send(nodesMap);
-                document.getElementById("status").innerHTML="Status: Connected to Root Node Successfully!"
+                document.getElementById("status").innerHTML="状态: 成功连接到根节点!"
             });
             
             root.on('close', () => {
-                document.getElementById("status").innerHTML="Status: Root Connection Closed!";
+                document.getElementById("status").innerHTML="状态: 根节点连接断开!";
                 document.getElementById("connectRoot").style.visibility = 'visible';
                 // if(document.getElementById("ifAutoReconnect").checked){
-                //     document.getElementById("status").innerHTML="Status: Reconnecting to last Root Node...";
+                //     document.getElementById("status").innerHTML="状态: Reconnecting to last Root Node...";
                     
                 //     tryConnect(0, urlInfo[0], false);
                 // }
@@ -244,7 +244,7 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
             
             root.on('open', () => {
                 document.getElementById('peerId').value=id;
-                document.getElementById("status").innerHTML="Status: Connected to Root Node Successfully!"
+                document.getElementById("status").innerHTML="状态: 成功连接到根节点!"
             });
 
             // Receive the reply of text: Host --> Guset
@@ -257,13 +257,13 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
 
             root.on('close', () => {
                 // root = null;
-                document.getElementById("status").innerHTML="Status: Root Connection Closed!";
+                document.getElementById("status").innerHTML="状态: 与根节点连接断开!";
                 
                 // if(document.getElementById("ifAutoReconnect").checked){
-                //     document.getElementById("status").innerHTML="Status: Reconnecting to last Root Node...";
+                //     document.getElementById("status").innerHTML="状态: Reconnecting to last Root Node...";
                     
                 //     tryConnect(4, connectHistroy.slice(-1)[0], false);
-                //     // document.getElementById("status").innerHTML="Status: Root Reconnection Failed!";
+                //     // document.getElementById("status").innerHTML="状态: Root Reconnection Failed!";
                 // }
             });
             break;
@@ -349,11 +349,6 @@ function liveSend (msg){
     if(msg instanceof Array){
         if(msg[0] && msg[0] instanceof Number && (!msg[1] instanceof Number)){
             source = msg[1];
-        }
-    }
-    if(root){
-        if(root.open){     // check the data channel
-            root.send(msg);
         }
     }
     if(parent){
@@ -444,7 +439,7 @@ function sendMsg() {   //*This line of code adds an event listener to the elemen
             document.getElementById("msgImgInput").files = null;
         }else{console.log('Connection is closed');}
     }else{
-        document.getElementById("sendMessageBox").setAttribute("placeholder","Void content!!!!!!!!!!!!!!"); //*This line of code sets the placeholder attribute of the element with the ID "sendMessageBox" to display a message indicating that the content should not be empty.
+        document.getElementById("sendMessageBox").setAttribute("placeholder","空的内容!!!!!!!!!!!!!!"); //*This line of code sets the placeholder attribute of the element with the ID "sendMessageBox" to display a message indicating that the content should not be empty.
     }
 }
 
@@ -458,7 +453,7 @@ function sendImg(){
                 msgImgBase64 = reader.result;
             }
         } else {
-            alert("it can't over 1MB");
+            alert("不能超过1MB");
         }
     } else {
         console.log("img transformed Error!");
@@ -626,9 +621,10 @@ function liveCoverInput(){
             reader.readAsDataURL(file);
             reader.onloadend = () => {
                 liveCoverBase64 = reader.result;
+                document.getElementById("LiveCover").src = liveCoverBase64;
             }
         } else {
-            alert("it can't over 1MB");
+            alert("不能超过1MB");
         }
     } else {
         console.log("img transformed Error!");
@@ -647,7 +643,7 @@ function iconInput(){
                 document.getElementById("myIcon").src = myIcon;
             }
         } else {
-            alert("it can't over 1MB");
+            alert("不能超过1MB");
         }
     } else {
         console.log("img transformed Error!");

@@ -137,8 +137,8 @@ body::-webkit-scrollbar {
     height: 0px;
 }
 #roomCover {
-    width: 20%;
-    height: 90%;
+    width: 150px;
+    height: 150px;
     margin: 1%;
     border: 1px solid rgb(0, 0, 0);
 }
@@ -221,7 +221,7 @@ body::-webkit-scrollbar {
     transition: 0.5s;
     height: 0px;
 }
-#liveCover {
+#LiveCover {
     background-color: #373E47;
     width: 150px;
     height: 150px;
@@ -307,28 +307,10 @@ textarea::-webkit-scrollbar-thumb {
     box-sizing: border-box;
     z-index: 99;
 }
-.cells {
-    width: 33px;
-    height: 33px;
-    /* display:inline-block; */
-    box-sizing: border-box;
-}
-.cells:hover {
-    border: 1px solid #afafaf;
-}
 .icon {
     vertical-align: middle;
     width: 32px;
     height: 32px;
-}
-.playersInfo {
-    overflow-x: auto;
-}
-#playersList {
-    background-color: #373E47;
-    overflow-y: auto;
-    white-space:nowrap;
-    max-height: 50px;
 }
 #fullScreen {
     z-index: 99999;
@@ -360,6 +342,10 @@ textarea::-webkit-scrollbar-thumb {
     #liveSetting {
         position: absolute;
         bottom: 0px;
+    }
+    #LiveCover {
+        width: 80px;
+        height: 80px;
     }
     #openRoomInfo {
         position: absolute;
@@ -401,10 +387,6 @@ textarea::-webkit-scrollbar-thumb {
     #streamSourceMenuClose {
         width: 50px;
         height: 50px;
-    }
-    #canvasMap {
-        height: 35%;
-        width: 100%;
     }
 }
 @media only screen and (orientation: landscape) {

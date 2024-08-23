@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/styleFiveOnline.css">
 </head>
 <body>
     <!-- Detail of Room -->
     <div id="openRoomInfo">
-        <img id="roomCover" src="">
+        <img id="roomCover">
         <div id="roomText">
             <div id="roomTitle"></div>
-            <textarea id="roomSummary" rows="5" cols="33" readonly="readonly"></textarea>
+            <textarea id="roomSummary" rows="5" cols="32" readonly="readonly"></textarea>
             <div id="nodeInfo">
                 <div id="stable">
                     <button id="hostBlock" onclick="echoNodesMap(nodesMap[9], 0, nodesMap[7], 1)">Host Node</button>
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div>
-            <button id="autoJoin" class="actionButton" onclick="autoJoin(3)">auto<br />Join</button>
+            <button id="autoJoin" class="actionButton" onclick="autoJoin(3)">auto<br>Join</button>
             <button id="closeInfo" class="actionButton" onclick="openRoomInfo()">Close</button>
         </div>
     </div>
@@ -34,44 +34,43 @@
             <!-- Connect box -->
             <button id="refreshButton" onclick="refreshMedia()">Refresh</button>
             <button id="openRoomInfoButton" onclick="openRoomInfo()">Room Info</button>
+            <button onclick="peer.reconnect()">Reconnect to Peer Server</button>
             <div id="myid" style="font-weight: bold;">Connecting to PeerServer...</div>
             <div id="status" style="font-weight: bold;">Status: Waiting to Connecting to PeerServer...</div>
-            <input type="checkbox" id="ifAutoReconnect" checked="checked">Automatic Reconnection<br />
+            <input type="checkbox" id="ifAutoReconnect" checked="checked">Automatic Reconnection<br>
         </div>
         <div class="box">
-            <button onclick="fullWebVideo()" id="fullScreen">Full Page Video</button><br />
+            <button onclick="fullWebVideo()" id="fullScreen">Full Page Video</button>
+            <button onclick="hiddenAbility()" id="hiddenAbility">hidden Ability</button><br>
             <div>
-                <img id="myIcon" style="width: 32px; height: 32px;"><div style="display: inline-block;">Custome Icon & Name<br/><input type="text" id="name" placeholder="Input your name here..." /></div><br />
+                <img id="myIcon" style="width: 32px; height: 32px;"><div style="display: inline-block;">Custome Avatar & Name<br/><input type="text" id="name" placeholder="Input your name here..." /></div><br>
                 <input type="file" name="icon" id="uploadIcon" onchange="iconInput()">
             </div>
-            <input type="checkbox" id="predictive">Predictive<br />
         </div>
         <div class="box">
             <div id="playersList"></div>
             <span id="nowTurn">Now Turn: 1 </span>
             <span id="sumOfRoom">Members: 1</span>
-            <span id="countDown">Spare Time: ∞</span><br />
-            <input type="checkbox" id="ifAutoClean">Auto-clean Msgs[max->100]<br />
-            <button onclick="cleanMsg()">CleanMsgs</button><br />
+            <span id="modeOutput">Spare Time: ∞</span><br>
+            <input type="checkbox" id="ifAutoClean">Auto-clean Msgs[max->100]<br>
+            <button onclick="cleanMsg()">CleanMsgs</button><br>
         </div>
     </div>
     
     <!-- Live interaction-->
     <div class="videoBox">
         <div id="canvasMap">
-            <br /><br /><br /><br />
-            MapSize: Height:<input type="number" id="maxHeight" class="setting" value="10" readonly> Width:<input type="number" id="maxWidth" class="setting" value="10" disabled="true"><br />
-            MaxPlayers: <input type="number" id="maxPlayers" class="setting" value="5" readonly><br />
+            <br><br>
+            MapSize: Height:<input type="number" id="maxHeight" class="setting" value="10" readonly> Width:<input type="number" id="maxWidth" class="setting" value="10" disabled="true"><br>
+            MaxPlayers: <input type="number" id="maxPlayers" class="setting" value="5" readonly><br>
             GameMode: <select id="gameMode" disabled>
                 <option value="0" selected="selected">SLG Mode</option>
                 <option value="1">Energy Mode</option>
-                <option value="2">Card Mode</option>
-            </select><br />
-            HostJoinGame: <input type="checkbox" checked="true" class="setting" id="hostJoinGame" disabled><br />
+            </select><br>
+            HostJoinGame: <input type="checkbox" checked="true" class="setting" id="hostJoinGame" disabled><br>
             <div id="modeMenu">
-                WaitingTime: <input type="checkbox" id="ifCountDown"><input type="number" id="waitingTime" class="setting" value="30" min="1" readonly><br />
             </div>
-            <button id="join" onclick="parent.send([8, 0, peer.id, myIcon, getMyName()])">Join Game</button>
+            <button id="join" onclick="parent.send([8, 0, peer.id, myIcon, getMyName(), myAbility])">Ready</button>
         </div>
         <!-- Message box -->
         <div id="chatContainer">
@@ -80,7 +79,7 @@
                 <!-- Send box -->
                 <input type="text" id="sendMessageBox" placeholder="Input message here..." autofocus="true" />
                 <button type="button" id="uploadImgButton">Img</button>
-                <button type="button" id="sendButton" onclick="sendMsg()">Send</button><br />
+                <button type="button" id="sendButton" onclick="sendMsg()">Send</button><br>
                 <input id="msgImgInput" type="file" onchange="sendImg()" style="display: none;">
             </div>
         </div>
@@ -91,58 +90,14 @@
         const peer = new Peer({ debug: 2})      //use PeerJS official server
     </script>
     <script src="js/fn.js"></script>
+    <script src="js/fiveOnlineFn.js"></script>
     <script>
-        let openInfoTimes = 0;
-        let lastAimId = null;
-        let layers = [0];
-        let mediaOpen = null;
-        let parent = null;
-        let ifAutoScroll = true;
-        let ifConnectedAim = false;
-        let remoteStream = null;
-        let localStream = null;
-        let audiences = new Array();
-        let audienceIds = new Array();
-        let conn = null;
-        let conns = new Array();
-        let connIds = new Array();
-        let nodesMap = new Array();
-        let params = new URLSearchParams(document.location.search.substring(1));
         let urlId = params.get("id");
         let urlName = params.get("name");
         let hereNode = new Array();
         let changingParentConnection = false;
-        let ifHitAim = false;
-        let lastLayerNumber = null;
         let awaitedNodeId = null;
-        const MyName = document.getElementById("name");
-        const WebVideo = document.getElementById('canvasMap');
-        
-        // For game
-        let players = [5];
-        let deliver = null;
-        let unavailablePosition = [];
-        let positionOwners = [];
-        let clickTimes = 0;
-        let lastAimPosition = 0;
-        let chessmanCode_0_Cost = 3;
-        let leftEnergy = 0;
-        let lastOperationTime = 0;
-        let positonDeliver = null;
-        let turn = 1;
-        let maxEnergy = 5;
-        let chessmanCode_1_Cost = 3;
-        let gameMode = [0];
-        let maxHeight = 10;
-        let maxWidth = 10;
-        let mapSize = [maxHeight, maxWidth];
-        let gameMap = [mapSize]
-        let startTime = null;
-        let myNumber = null;
-        let kickNumbers = new Array();
-        let offlinePlayer = [];
-        let lastGameMap = null;
-        let gameInfo = [6, players, gameMap, gameMode, startTime, unavailablePosition, positionOwners];
+        let ifConnectedAim = false;
         
         // Listen for the event when a Peer connection is successfully opened
         // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
@@ -234,7 +189,6 @@
                                                 parent.send(hereNode);
                                             }
                                         }
-
                                     }
                                 }
                                 // console.log("Disconnected and deleted: " + conns[i].peer);     //DEBUG
@@ -329,7 +283,7 @@
                                         nodesMap = data;
                                         autoJoin(3);
                                         guest.close();
-                                    })
+                                    });
                                     break;
                                 }
                                 // changingParentConnection = true;
@@ -349,9 +303,9 @@
                                     liveSend(data);
                                 }
                                 break;
-                            case 6: // [6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners]
+                            case 6: // [6, [players[0]], gameMap, gameMode, startTime, unavailablePosition, positionOwners, modeSetting]
                                 let i = 1;
-                                if(data[4]){   // already started
+                                if(data[4]){   // already started | Start Game
                                     startTime = data[4];
                                     players[0] = data[1][0];
                                     gameMap = data[2];
@@ -359,7 +313,9 @@
                                     maxHeight = mapSize[0];
                                     maxWidth = mapSize[1];
                                     gameMode = data[3];
-                                    modeModify(gameMode[0]);
+                                    modeSetting = data[7];
+                                    maxEnergy = modeSetting[1][0];
+                                    modeModify(gameMode[0], modeSetting);
                                     if (data[1][1]) {  // firstly receive gameInfo
                                         let i = 1;
                                         gameInfo = data;
@@ -370,17 +326,49 @@
                                         }
                                     }   // because of no sense of void player game, it is without dealing with new gameInfo which is hasn't any player
                                     drawMap();
-                                    
-                                    if (myNumber == 1) {
-                                        document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
+                                    switch (gameMode[0]) {
+                                        case 0:
+                                            if (myNumber == 1) {
+                                                document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
+                                            }
+                                            if (modeSetting[0][0]) {
+                                                waitingTime = maxWaitingTime;
+                                                timer = setInterval(countDown, 1000);
+                                            }
+                                            break;
+                                        case 1:
+                                            setInterval(()=>{document.getElementById("modeOutput").innerHTML = "Spare Energy: "+ (energy()*0.001).toFixed(3).slice(0, -2)}, 100);
+                                            break;
+                                        default:
+                                            break;
                                     }
-                                } else {
+                                } else {    // update host setting
+                                    if(startTime) {  // reset map( if === (startTime && !data[4]) )
+                                        resetMap();
+                                    }
+                                    // console.log(data);  // DEBUG
+                                    modeModify(data[3][0], data[7]);    // if different mode -> view bug
                                     document.getElementById("maxHeight").value = String(data[2][0][0]);
                                     document.getElementById("maxWidth").value = String(data[2][0][1]);
                                     document.getElementById("maxPlayers").value = String(data[1][0]);
+                                    gameMode = [data[3][0], data[3][1]];
                                     document.getElementById("gameMode").selectedIndex = data[3][0];
                                     document.getElementById("hostJoinGame").checked = data[3][1];
-                                    // document.getElementById("canvasMap").innerHTML = "<div id=\"canvasMap\" <br><br><br><br> MapSize: Height:"+ data[2][0][0] +" Width:"+ data[2][0][1] +"<br> MaxPlayers:"+ data[1][0] +" <br> GameMode:"+ data[3][0] +" <br> HostJoinGame:"+ data[3][1] +" <br> <button id=\"join\" onclick=\"parent.send([8, 0, peer.id, myIcon, getMyName()])\">Join Game</button> </div>"
+                                    switch (data[3][0]) {
+                                        case 0:
+                                            if(data[7][0][0]){
+                                                document.getElementById("ifCountDown").checked = true;
+                                                document.getElementById("waitingTime").value = data[7][0];
+                                            }
+                                            break;
+                                        case 1:
+                                            document.getElementById("maxEnergy").value = data[7][1][0];
+                                            document.getElementById("commonChessmanCost").value = data[7][1][1];
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    // document.getElementById("canvasMap").innerHTML = "<div id=\"canvasMap\" <br><br> MapSize: Height:"+ data[2][0][0] +" Width:"+ data[2][0][1] +"<br> MaxPlayers:"+ data[1][0] +" <br> GameMode:"+ data[3][0] +" <br> HostJoinGame:"+ data[3][1] +" <br> <button id=\"join\" onclick=\"parent.send([8, 0, peer.id, myIcon, getMyName()])\">Join Game</button> </div>"
 
                                     if (data[1][1]) {  // firstly receive gameInfo
                                         gameInfo = data;
@@ -430,6 +418,12 @@
                                             if(document.getElementById("join")){
                                                 document.getElementById("join").innerHTML = "Cancel";
                                             }
+                                            if (gameMode[0] == 1) {
+                                                Array.from(document.getElementsByClassName("abilities")).forEach(abilityNode => {
+                                                    abilityNode.classList.add("gray");
+                                                });
+                                            }
+                                            ready = true;
                                         }
                                         displayNewPlayer(data[2]);
                                         break;
@@ -442,68 +436,59 @@
                                                 document.getElementById("join").innerHTML = "Join Game";
                                             }
                                             document.getElementById("canvasMap").style.backgroundColor = 'rgb(28, 33, 40)';
-                                        }
-                                        kickNumbers.push(data[2]);
-                                        document.getElementsByClassName("playersInfo")[data[2]-1].childNodes[2].innerHTML = document.getElementsByClassName("playersInfo")[data[2]-1].childNodes[2].innerHTML + "(kicked)";
-                                        if (turn == data[2]) {
-                                            turn++;
-                                            if(turn >= players.length){
-                                                turn = 1;
+
+                                            if (gameMode[0] == 1 && !startTime) {
+                                                Array.from(document.getElementsByClassName("abilities")).forEach(abilityNode => {
+                                                    abilityNode.classList.remove("gray");
+                                                });
                                             }
-                                            let controller = false;
-                                            while (kickNumbers.includes(turn)) {
-                                                turn++;
-                                                if(turn >= players.length){
-                                                    if (controller) {
-                                                        alert("Error: no player in game");
-                                                        break;
+                                            ready = false;
+                                        }
+                                        if (startTime) {
+                                            kickNumbers.push(data[2]);
+                                            document.getElementsByClassName("playersInfo")[data[2]-1].childNodes[2].innerHTML = document.getElementsByClassName("playersInfo")[data[2]-1].childNodes[2].innerHTML + "(kicked)";
+                                            appearMsg([ 0, null, "System", "player: "+ players[data[2]][3]+" was kicked"]);
+                                        } else {    // remove player & adjust players who behind the removed player
+                                            let i = 1;
+                                            let position = false;
+                                            while(i<players.length){
+                                                if(players[i] instanceof Array){
+                                                    if(position){
+                                                        players[i][0]--;
+                                                        document.getElementsByClassName("playersInfo")[i-1].children[0].innerHTML = i+": ";
+                                                        if(!players[i][2]){      // kick and change default color
+                                                            player = players[i];
+                                                            let colour = 255*((player[0] + 2)/(player[0] + 4));
+                                                            document.getElementsByClassName("playersInfo")[i-1].children[1].setAttribute("style", "background-color: rgb("+parseInt(((((player[0]+1) % 5) + 1)/5)*colour)+", "+parseInt(((((player[0]+1) % 4) + 1)/4)*colour)+", "+parseInt(((((player[0]+1) % 3) + 1)/3)*colour)+")");
+                                                        }
                                                     }
-                                                    turn = 1;
-                                                    controller = true;
-                                                }
+                                                    if(players[i][0] == data[2] && (!position)){   // refer to number
+                                                        players.splice(i, 1);
+                                                        document.getElementsByClassName("playersInfo")[i-1].remove();
+                                                        position = i;   // changed
+                                                    } else {
+                                                        i++;
+                                                    }
+                                                } else {i++;}
                                             }
-                                            if (turn == myNumber) {
-                                                document.getElementById("canvasMap").style.backgroundColor = 'rgb(80, 83, 80)';
-                                            }
-                                            document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
                                         }
-                                        // let i = 1;
-                                        // // let position = false;
-                                        // while(i<players.length){
-                                        //     if(players[i] instanceof Array){
-                                        //         // if(position){
-                                        //         //     players[i][0]--;
-                                        //         //     document.getElementsByClassName("playersInfo")[i-1].children[0].innerHTML = i+": ";
-                                        //         //     if(!players[i][2]){      // kick and change default color
-                                        //         //         player = players[i];
-                                        //         //         let colour = 255*((player[0] + 2)/(player[0] + 4));
-                                        //         //         document.getElementsByClassName("playersInfo")[i-1].children[1].setAttribute("style", "background-color: rgb("+parseInt(((((player[0]+1) % 5) + 1)/5)*colour)+", "+parseInt(((((player[0]+1) % 4) + 1)/4)*colour)+", "+parseInt(((((player[0]+1) % 3) + 1)/3)*colour)+")");
-                                        //         //     }
-                                        //         // }
-                                        //         if(players[i][0] == data[2] && (!position)){   // refer to number
-                                        //             // players.splice(i, 1);
-                                        //             document.getElementsByClassName("playersInfo")[i-1].remove();
-                                        //             position = i;   // changed
-                                        //         } else {
-                                        //             i++;
-                                        //         }
-                                        //     } else {i++;}
+                                        if (turn == data[2] && startTime && (gameMode[0] == 0)) {
+                                            nextTurn();
+                                        }
+                                        // if(position){
+                                        //     if(position < myNumber){
+                                        //         myNumber--;
+                                        //     }
                                         // }
-                                        // // if(position){
-                                        // //     if(position < myNumber){
-                                        // //         myNumber--;
-                                        // //     }
-                                        // // }
-                                        // // if(turn >= players.length){
-                                        // //     trun = 1;
-                                        // //     document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
-                                        // // }
-                                        // // if(data[3] == peer.id){
-                                        // //     peer.distory();
-                                        // // } else if (audienceIds.includes(data[3])){
-                                        // //     audiences[audienceIds.indexOf(data[3])].close();
-                                        // // }
-                                        appearMsg([ 0, null, "System", "player: "+ players[data[2]][3]+" was kicked"]);
+                                        // if(turn >= players.length){
+                                        //     trun = 1;
+                                        //     document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
+                                        // }
+                                        // if(data[3] == peer.id){
+                                        //     peer.distory();
+                                        // } else if (audienceIds.includes(data[3])){
+                                        //     audiences[audienceIds.indexOf(data[3])].close();
+                                        // }
                                         break;
                                     case 3: // SB quit in gameing
                                         // TODO
@@ -676,7 +661,6 @@
                     root.on('close', () => {
                         // root = null;
                         document.getElementById("status").innerHTML="Status: Root Connection Closed!";
-                        document.getElementById('connectButton').innerHTML="Connect";
                         
                         if(document.getElementById("ifAutoReconnect").checked){
                             document.getElementById("status").innerHTML="Status: Reconnecting to last Root Node...";
@@ -707,35 +691,44 @@
             }
         }
 
-        function streamSourceMenu(){
-            if(document.getElementById('streamSource').style.height != "25%"){
-                document.getElementById('streamSource').style.height = "25%";
-            }else{
-                document.getElementById('streamSource').style.height = "0px";
-            } 
-        }
-
-        function modeModify(mode) {
+        function modeModify(mode, modeSetting) {
             switch (mode) {
-                case 0:
-                    document.getElementById("modeMenu").innerHTML = 'WaitingTime: <input type="number" id="waitingTime" class="setting" value="30" min="1" readonly><br />';
+                case 0: //  modeSetting: [maxWaitingTime]
+                    maxWaitingTime = modeSetting[0][0];
+                    document.getElementById("modeMenu").innerHTML = 'WaitingTime: <input type="checkbox" id="ifCountDown" disabled><input type="number" id="waitingTime" class="setting" value="60" min="1" readonly><br>';
                     break;
-                case 1:
-                    document.getElementById("modeMenu").innerHTML = '';
-                    charactersURLs.forEach(charactersURLs => {
-                        let character = document.createElement("img");
-                        character.setAttribute('src', charactersURLs);
-                        character.classList.add('cells');
-                        document.getElementById("modeMenu").appendChild(character);
+                case 1: //  modeSetting: [ maxEnergy, chessmanCode_1_Cost, chessmanCode_2_Cost, chessmanCode_3_Cost ]
+                    document.getElementById("modeMenu").innerHTML = 'choose your ability: ';
+                    document.getElementById("modeOutput").innerHTML ="Spare Energy: 0";
+                    abilitiesURLS.slice(1).forEach(abilitiesURL => {
+                        let ability = document.createElement("img");
+                        ability.setAttribute('src', abilitiesURL);
+                        ability.setAttribute('onclick', "chooseAbility("+ abilitiesURLS.indexOf(abilitiesURL) +")");
+                        ability.classList.add('cells');
+                        ability.classList.add('abilities');
+                        document.getElementById("modeMenu").appendChild(ability);
                     });
+                    document.getElementById("modeMenu").appendChild(document.createElement("br"));
                     let input = document.createElement("input");
                     input.setAttribute('type', "number");
-                    input.setAttribute('readonly');
-                    input.classList.add('setting');
-                    input.setAttribute('min', "0");
-                    let input1 = input.id = "commonChessmanCost";
-                    document.getElementById("modeMenu").appendChild(document.createTextNode("commonChessmanCost"));
+                    input.classList.add('mode2Setting');
+                    input.setAttribute('readonly', 'true');
+
+                    let input1 = input.cloneNode();
+                    input1.id = "commonChessmanCost";
+                    input1.setAttribute('value', modeSetting[1][1]);
+                    document.getElementById("modeMenu").appendChild(document.createTextNode("commonChessmanCost: "));
                     document.getElementById("modeMenu").appendChild(input1);
+                    document.getElementById("modeMenu").appendChild(document.createElement("br"));
+
+                    let input2 = input.cloneNode();
+                    input2.id = "maxEnergy";
+                    input2.setAttribute('value', modeSetting[1][0]);
+                    document.getElementById("modeMenu").appendChild(document.createTextNode("MaxEnergy: "));
+                    document.getElementById("modeMenu").appendChild(input2);
+                    document.getElementById("modeMenu").appendChild(document.createElement("br"));
+
+                    input.remove();
                     break;
                 default:
                     break;
@@ -762,21 +755,15 @@
             newPlayerIcon.classList.add('icon');
             newPlayer.appendChild(newPlayerIcon);
 
-            if(player[5]){  // TODO
-                let newPlayerCharacter = document.createElement("img");
-                let character = null;
-                switch (player[5]) {
-                    case 1:
-                        character = "";
-                        break;
-                    default:
-                        character = "";
-                        console.log("unknown character");
-                        break;
+            if(gameMode[0] == 1){
+                let newPlayerAbility = document.createElement("img");
+                if (player[4]) {
+                    newPlayerAbility.setAttribute("src", abilitiesURLS[player[4]]);
+                } else {
+                    newPlayerAbility.setAttribute("src", abilitiesURLS[1]);
                 }
-                newPlayerCharacter.setAttribute("src", character);
-                newPlayerCharacter.classList.add('icon');
-                newPlayer.appendChild(newPlayerCharacter);
+                newPlayerAbility.classList.add('icon');
+                newPlayer.appendChild(newPlayerAbility);
             }
 
             let newPlayerName = document.createElement("span");
@@ -787,197 +774,9 @@
             newPlayer.appendChild(document.createElement("br"));
             document.getElementById("playersList").appendChild(newPlayer);
         }
-
-        function drawMap(){
-            if(startTime){
-                document.getElementById("canvasMap").innerHTML = "<div id=\"gameMap\"></div>";
-                for(let t=1; t<=maxHeight*maxWidth; t++){
-                    let cell = document.createElement("img");
-                    cell.classList.add('cells');
-                    cell.setAttribute("onclick", "applyForPut(this)");
-                    cell.id = t;
-                    let newLine = document.createElement("br");
-                    document.getElementById("gameMap").appendChild(cell);
-                    if(t%maxWidth==0){
-                        document.getElementById("gameMap").appendChild(newLine);
-                    }
-                }
-            } else {
-                // document.getElementById("canvasMap").innerHTML = '\n        <br><br><br><br>\n        MapSize: Height:<input type="number" id="maxHeight" class="setting" value="10"> Width:<input type="number" id="maxWidth" class="setting" value="10"><br>\n        MaxPlayers: <input type="number" id="maxPlayers" class="setting" value="2"><br>\n        GameMode: <select id="gameMode">\n            <option value="1" selected="selected">SLG Mode</option>\n            <option value="2">Energy Mode</option>\n            <option value="3">Card Mode</option>\n        </select><br>\n        HostJoinGame: <input type="checkbox" checked="true" id="hostJoinGame"><br>\n        <button id="start" onclick="start()">Start Game</button>\n    ';
-            }
-        }
+        
         function effectFeedBack(position, type){
             return null;
-        }
-
-        function applyForPut(position){
-            let positionId = Number(position.id);
-            if(positionId && !(unavailablePosition.includes(positionId))){
-                lastAimPosition = position;
-                // if(lastAimPosition !== position){
-                //     if(lastAimPosition){
-                //         lastAimPosition.classList.remove('focus');
-                //     }
-                //     position.classList.add('focus');
-                //     lastAimPosition = position;
-                // } else 
-                if(myNumber){
-                    let now = new Date();
-                    switch (gameInfo[3][0]) {
-                        case 0:
-                            if(turn === myNumber){
-                                document.getElementById("canvasMap").style.backgroundColor = 'rgb(28, 33, 40)';
-                                if(parent){     // noticed: No circuit protection
-                                    parent.send([7, 0, [1, positionId, myNumber, now.getTime()]]);
-                                } else {
-                                    liveSend([7, 1, [1, positionId, myNumber, now.getTime()]]);
-                                    drawChessman([1, positionId, myNumber, now.getTime()]);
-                                }
-                            } else if (document.getElementById("predictive").checked){
-                                positonDeliver = position;
-                            } else {
-                                alert("it is not your turn!(If you want, use predictive)");
-                            }
-                            break;
-                        case 1:
-                            if(energy() > 3){
-                                leftEnergy - chessmanCode_1_Cost;
-                                if(parent){
-                                    parent.send([7, 0, [1, positionId, myNumber, now.getTime()]]);
-                                } else {
-                                    liveSend([7, 1, [1, positionId, myNumber, now.getTime()]]);
-                                    drawChessman([1, positionId, myNumber, now.getTime()]);
-                                }
-                            } else if (document.getElementById("predictive").checked){
-                                if(3 - leftEnergy < 1){
-                                    setTimeout(applyForPut(position), (3 - leftEnergy)*1000);
-                                    return;
-                                }
-                            }
-                            break;
-                        default:
-                            console.log("unknown game mode")
-                            break;
-                    }
-                }
-            }
-        }
-
-        function drawChessman(chessman, effect){
-            turn++;
-            switch (chessman[0]) {
-                case 1:
-                    if(turn >= players.length){
-                        turn = 1;
-                    }
-                    while (kickNumbers.includes(turn)) {
-                        turn++;
-                    }
-                    if (turn == myNumber) {
-                        document.getElementById("canvasMap").style.backgroundColor = 'rgb(80,83,80)';
-                    }
-                    document.getElementById("nowTurn").innerHTML = "Now Turn: "+turn+" ";
-                    unavailablePosition.push(chessman[1]);
-                    positionOwners.push(chessman[2]);
-
-                    player = players[chessman[2]];
-                    aimCell = document.getElementById(String(chessman[1]));
-                    aimCell.classList.add("owner"+ player[0]);
-                    if(player[2]){
-                        aimCell.setAttribute("src", player[2]); // .innerHTML = "<img class=\"playerNumber"+ sourcePlayer[0] +"\" src=\"" + sourcePlayer[2] + ">";
-                    } else {
-                        // document.getElementById(String(chessman[1])).innerHTML = "<span class=\"playerNumber"+ sourcePlayer[0] +"\" >" + sourcePlayer[0] + "</span>";
-                        let colour = 255*((player[0] + 2)/(player[0] + 4));
-                        aimCell.setAttribute("style", "background-color: rgb("+parseInt(((((player[0]+1) % 5) + 1)/5)*colour)+", "+parseInt(((((player[0]+1) % 4) + 1)/4)*colour)+", "+parseInt(((((player[0]+1) % 3) + 1)/3)*colour)+")");
-                    }
-                    if (unavailablePosition.length === maxHeight*maxWidth) {
-                        lastGameMap = gameMap;
-                        // gameMap = null;
-                        alert("No Winner!");   // style TODO
-                        turn = null;
-                        return;
-                    }
-                    [(-maxWidth)+1, 1, maxWidth+1, maxWidth].forEach(direction => {
-                        let i = -4;
-                        let t = 1;
-                        let limit = chessman[1] % maxWidth;    // limit for out of canvas
-                        if(limit == 0){limit = maxWidth;}
-                        while (i<=4 && i<= maxWidth - limit) {
-                            if(i==0 || i < 1-limit ){i++; continue;}
-                            // console.log(""+ (1-limit) +";"+ (maxWidth-limit) +"");
-                            let aimPosition = chessman[1]+(i*direction);
-                            // console.log(aimPosition);
-                            if(unavailablePosition.includes(aimPosition) && positionOwners[unavailablePosition.indexOf(aimPosition)] == chessman[2]){
-                                t++;
-                                // console.log(chessman[2]+"th<------->"+aimPosition+"------------->"+t);
-                                if (t>=5){        // 5 on line
-                                    lastGameMap = gameMap;
-                                    // gameMap = null;
-                                    alert("Winner is "+ player[3]);   // style TODO
-                                    turn = null;
-                                    break;
-                                }
-                            } else if(5-i < 5-t){   // quit in advence
-                                break;
-                            } else {    // this position without the chessman of aim player
-                                t = 1;
-                            }
-                            i++;
-                        }
-                    });
-                    break;
-            
-                default:
-                    console.log("drew unknown");
-                    break;
-            }
-        }
-
-        function reDraw(playerNumber, reDrawType) {
-            let t = 0;
-                let aims = document.getElementsByClassName("owner"+ playerNumber);
-                while (t < aims.length) {
-                    aims[t].removeAttribute("style");
-                    switch (reDrawType) {
-                        case 1:     // update chessmans icon
-                            aims[t].setAttribute('src', players[playerNumber][2]);
-                            break;
-                        case 2:     // kick someone
-                            aims[t].removeAttribute("src");
-                            aims[t].classList.remove("owner"+ playerNumber);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-        }
-
-        function energy() {
-            if(!lastOperationTime){
-                lastOperationTime = gameInfo[4];
-            }
-            let now = new Date();
-            let t = (now.getTime() - lastOperationTime)/1000 + leftEnergy;
-            if(t > maxEnergy){  // custome DEBUG
-                leftEnergy = maxEnergy;
-            } else {
-                leftEnergy = t;
-            }
-            lastOperationTime = now.getTime();
-            return leftEnergy;
-        }
-
-        // autoScroll the scrollbar
-        document.getElementById("chatBox").addEventListener('onmouseover', ()=>{ ifAutoScroll = false;});
-        document.getElementById("chatBox").addEventListener('onmouseout', ()=>{ ifAutoScroll = true;});
-
-        // Listen for press enter in message box
-        document.getElementById("sendMessageBox").addEventListener('keypress', enter);
-        function enter(e) {
-            let event = e && window.event;
-            if (event.which && event.keyCode == '13'){
-                document.getElementById("sendButton").click();
-            }
         }
         
         MyName.addEventListener(
