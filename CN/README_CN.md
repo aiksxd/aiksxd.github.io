@@ -17,7 +17,7 @@ PeerJS：一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实�
 + 流媒体渠道拓宽
 + 新建独立的音频通道
 
-## [多房间型 -> https://aiksxd.github.io/P2PLiveIndex.html](https://aiksxd.github.io/P2PLiveIndex.html)
+## [多房间型 -> https://aiksxd.github.io/CN/P2PLiveIndex.html](https://aiksxd.github.io/CN/P2PLiveIndex.html)
 + 文件说明：
 + P2PLiveIndex.html 为网站主页（用于传输并展示发起直播的房间信息）
 + P2PLiveHost.html & P2PLiveAudience.html 为附属页面，置于同目录下即可
