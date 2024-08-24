@@ -238,6 +238,7 @@ function applyForPut(position){
                     case 1:
                         if(!(unavailablePosition.includes(positionId))){
                             if (unavailablePosition.includes(Number(selectedPosition))) {
+                                document.getElementById("modeOutput").innerHTML ="剩余能量: "+ (energy(activeCost)*0.001).toFixed(3).slice(0, -2);
                                 if (parent) {
                                     parent.send([7, 0, [activeAbility, [ selectedPosition, positionId ], myNumber, now.getTime()]]);
                                 } else {

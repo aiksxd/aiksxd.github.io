@@ -220,6 +220,7 @@ function applyForPut(position){
                                 return;
                             }
                             if (selectedPosition) {
+                                document.getElementById("modeOutput").innerHTML ="Spare Energy: "+ (energy(activeCost)*0.001).toFixed(3).slice(0, -2);
                                 if (parent) {
                                     parent.send([7, 0, [activeAbility, [ selectedPosition, positionId ], myNumber, now.getTime()]]);
                                 } else {
