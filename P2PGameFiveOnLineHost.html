@@ -549,7 +549,7 @@
                 document.getElementById('liveSetting').style.height = "25%";
                 LiveTitle.value = nodesMap[4];
                 LiveSummary.value = nodesMap[5];
-                LiveCoverURL.value = nodesMap[6];
+                LiveCoverURL.value = coverURL;
             }else{
                 openLiveTimes=0;
                 document.getElementById('liveSetting').style.height = "0px";
@@ -562,6 +562,7 @@
             if(liveCoverBase64){
                 nodesMap[6] = liveCoverBase64;
             } else {
+                coverURL = LiveCoverURL.value;
                 nodesMap[6] = LiveCoverURL.value;
             }
             liveSend(nodesMap);
