@@ -52,6 +52,11 @@
         </div>
         <div class="box" style="margin-top: 10px;">
             <div style="font-weight: bold;">
+                输入"SRS推流地址/密钥"(rtmp -> srs -> webrtc)
+                <input id="streamUrlSRS" type="text" placeholder="input the url of srs media Stream here...">
+                <button type="button" id="uploadStreamSRS" onclick="shareSRSMediaStream(document.getElementById('streamUrlSRS').value)">分享SRS视频流</button>    
+            </div>
+            <div style="font-weight: bold;">
                 分享本地设备:
                 <button type="button" id="browserNavigatorMediaDevices" onclick="askNavigatorMediaDevices()">上传本地设备</button><br>
                 <input type="checkbox" id="ifUseCamera">摄像头
@@ -124,6 +129,7 @@
     </div>
 
     <script src="js/peerjs.min.js"></script>
+    <script src="js/srs.sdk.js"></script>
     <!--script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script-->
     <script>
         const peer = new Peer({ debug: 2})      //use PeerJS official server
