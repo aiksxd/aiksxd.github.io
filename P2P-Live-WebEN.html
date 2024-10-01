@@ -211,6 +211,14 @@ Unlike the traditional client-server model, P2P allows direct communication betw
 <h3 id="srs-support"><a class="header" href="#srs-support"><strong>SRS support</strong>：</a></h3>
 <ol>
 <li>run srs with webRTC support</li>
+</ol>
+<blockquote>
+<ul>
+<li>windows &amp; docker:</li>
+</ul>
+<p><code>docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 --env CANDIDATE=127.0.0.1 -p 8000:8000/udp registry.cn-hangzhou.aliyuncs.com/ossrs/srs:5 ./objs/srs -c conf/rtmp2rtc.conf</code></p>
+</blockquote>
+<ol start="2">
 <li>push <strong>rtmp</strong> stream，pull in web of <strong>Stream Source</strong> button with url like &quot;server/key&quot; and click the button of <strong>share SRS Media Stream</strong></li>
 </ol>
 <h3 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h3>

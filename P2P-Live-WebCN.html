@@ -211,6 +211,14 @@
 <h3 id="srs-support"><a class="header" href="#srs-support"><strong>SRS support</strong>：</a></h3>
 <ol>
 <li>运行srs服务器并添加webRTC支持</li>
+</ol>
+<blockquote>
+<ul>
+<li>windows &amp; docker:</li>
+</ul>
+<p><code>docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 --env CANDIDATE=127.0.0.1 -p 8000:8000/udp registry.cn-hangzhou.aliyuncs.com/ossrs/srs:5 ./objs/srs -c conf/rtmp2rtc.conf</code></p>
+</blockquote>
+<ol start="2">
 <li>向目标地址推rtmp协议流，拉取时在共享本地流填入&quot;目标地址/密钥&quot;并点分享按钮</li>
 </ol>
 <h3 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h3>
