@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ax-Index</title>
+</head>
+<body>
+    <a class="lan" href="https://aiksxd.github.io/PeerApps/PeerLive/index.html"></a><br>
+    <a class="lan" id="fiveOnline" href='https://aiksxd.github.io/PeerApps/PeerGame-Tic-Tac-Toe/en/P2PLiveIndex.html';></a>
+</body>
+<script src="js/language.js"></script>
+<script>
+    switch (navigator.language) {
+        case 'zh-CN':
+            change_Language("zh");
+            document.getElementById('fiveOnline').href = 'https://aiksxd.github.io/PeerApps/PeerGame-Tic-Tac-Toe/zh/P2PLiveIndex.html';
+            break;
+        default:
+            change_Language("en");
+            break;
+    }
+</script>
+</html>

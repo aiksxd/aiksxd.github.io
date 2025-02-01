@@ -260,27 +260,7 @@
         }
 
         document.getElementById('directConnectButton').addEventListener('click', () => {
-            if(guest){if(guest.open){
-                guest.close();
-            }}
-            guest = peer.connect(document.getElementById('directConnectId').value);
-            guest.on('open', () => {
-                console.log("successfully connected: "+ guest.peer)  // DEBUG
-            });
-            guest.on('data', (data) => {
-                nodesMap = data;
-                switch (nodesMap[3]) {  // room type
-                    case 0:
-                        document.location.href = "./P2PLiveAudience.html?id="+ guest.peer +"&name="+ getMyName();       
-                        break;
-                    case 1:
-                        document.location.href = "./P2PGameFiveOnLinePlayer.html?id="+ guest.peer +"&name="+ getMyName();       
-                        break;
-                    default:
-                        console.log("unknown type of room: "+ nodesMap[3]);
-                        break;
-                }
-            });
+            tryConnect(1, document.getElementById('directConnectId').value, true);
         });
 
         // add rooms to box
@@ -359,7 +339,8 @@
             }
             switch (document.getElementById("roomType").selectedIndex) {
                 case 0:
-                    window.open("./P2PLiveHost.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value, '_blank');
+                    alert("Find files of P2P Live Web in Github");
+                    // window.open("./P2PLiveHost.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value, '_blank');
                     break;
                 case 1:
                     window.open("./P2PGameFiveOnLineHost.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value, '_blank');

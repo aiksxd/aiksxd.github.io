@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>P2P简单直播(可互动，基于PeerJS) - AX Blogs</title>
+        <title>P2P-Live-Web-EN - AX Blogs</title>
 
 
         <!-- Custom HTML head -->
@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html" class="active"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-en.html"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-Comments.html"><strong aria-hidden="true">1.3.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-en.html" class="active"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-Comments.html"><strong aria-hidden="true">1.3.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -173,64 +173,62 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="关于p2p--peerjs"><a class="header" href="#关于p2p--peerjs"><strong>关于P2P &amp; PeerJS</strong>：</a></h3>
-<p>P2P 是一种分布式网络架构，其中每个参与者（也称为节点）充当客户端和服务器的角色。
-与传统的客户端-服务器模型不同，P2P 允许直接的节点之间通信，而无需通过中央服务器进行转发。</p>
-<p><a href="https://peerjs.com/">PeerJS</a>：一个基于 WebRTC 的 JavaScript 库，用于简化 P2P 通信的实现。</p>
+                        <h3 id="about-p2p--peerjs"><a class="header" href="#about-p2p--peerjs"><strong>About P2P &amp; PeerJS</strong>:</a></h3>
+<p>P2P is a distributed network architecture where each participant (also known as a node) acts as both a client and a server
+Unlike the traditional client-server model, P2P allows direct communication between nodes without the need for relay through a central server</p>
+<p><a href="https://peerjs.com/">PeerJS</a>: A JavaScript library based on WebRTC for simplifying P2P communication implementation</p>
 <p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<p>它采用<strong>节点式传递</strong>，允许数据直接从一个节点传递到另一个节点，这意味着无论连接谁，都可以收到相同的文字互动信息，而且<strong>无需依赖中央服务器</strong>，大大减少网络延迟。</p>
-<p><img src="https://github.com/aiksxd/material/blob/main/img/DeliverGIF.gif" alt="DeliverGIF" /></p>
-<h3 id="更新"><a class="header" href="#更新">更新:</a></h3>
+<h3 id="updates"><a class="header" href="#updates">Updates:</a></h3>
 <ul>
-<li>新功能：</li>
-<li>会议功能(与独立音频功能合并)更新</li>
-<li>tauri PC端程序分支</li>
-<li>更多自定义界面控件，展开关闭控制面板</li>
-<li>丰富程序反馈文本提示</li>
-<li>app模式 (网页端默认不启用，app默认启用)</li>
-<li>提交内容增加缓存（默认启用）</li>
-<li>部分UI，配色优化</li>
+<li>New Features:</li>
+<li>Meeting function (merged with independent audio function) update</li>
+<li>Tauri PC application branch</li>
+<li>More custom interface controls, expand/collapse control panel</li>
+<li>Enriched program feedback text prompts</li>
+<li>App mode (not enabled by default on the web, enabled by default in the app)</li>
+<li>Added cache for submissions (enabled by default)</li>
+<li>Partial UI and color scheme optimizations</li>
 </ul>
-<h3 id="调整"><a class="header" href="#调整">调整</a></h3>
+<h3 id="adjustments"><a class="header" href="#adjustments">Adjustments:</a></h3>
 <ul>
-<li>停用原有的网页全屏按钮</li>
-<li>流传输还原回旧版并更新，同时修复了旧版的问题</li>
-<li>根节点改名为网络名称(群组编号，更容易理解)</li>
-<li>nodesMap推送不再有差别</li>
-<li>修复了一些历史遗留bug</li>
+<li>Disabled the original web full-screen button</li>
+<li>Reverted stream transmission to the old version and updated it, while fixing issues from the old version</li>
+<li>Renamed root node to network name (group number, easier to understand)</li>
+<li>nodesMap push no longer has discrepancies</li>
+<li>Fixed some historical bugs</li>
 </ul>
-<h2 id="在线版本---httpsaiksxdgithubiopeerappspeerlivep2pliveindexhtml"><a class="header" href="#在线版本---httpsaiksxdgithubiopeerappspeerlivep2pliveindexhtml"><a href="https://aiksxd.github.io/PeerApps/PeerLive/P2PLiveIndex.html">在线版本 -&gt; https://aiksxd.github.io/PeerApps/PeerLive/P2PLiveIndex.html</a></a></h2>
-<h3 id="用法"><a class="header" href="#用法">用法：</a></h3>
+<h2 id="online-version--httpsaiksxdgithubiopeerappspeerlivep2pliveindexhtml"><a class="header" href="#online-version--httpsaiksxdgithubiopeerappspeerlivep2pliveindexhtml"><a href="https://aiksxd.github.io/PeerApps/PeerLive/P2PLiveIndex.html">Online Version-&gt; https://aiksxd.github.io/PeerApps/PeerLive/P2PLiveIndex.html</a></a></h2>
+<h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
 <ol>
-<li>使用浏览器/应用程序在有网络的情况下加载主页(index.html)</li>
+<li>Use browser/app to load the homepage(index.html) with available Internet,</li>
 </ol>
 <blockquote>
-<p>[如果无法连接到网络名称，直接输入<strong>房间ID</strong> / 使用<strong>不公开</strong>选项创建房间]
+<p>[if can't connect to a network name, directly enter by <strong>room ID</strong> / Create room with <strong>pravite</strong> option]
 <img src="https://github.com/aiksxd/material/blob/main/img/Live-Step-1.png" alt="Step-1" /></p>
 </blockquote>
 <ul>
-<li>[ 对于观众 ]</li>
+<li>[For Host]</li>
 </ul>
 <ol start="2">
-<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)
+<li>Clicks <strong>Create Room</strong> and then clicks <strong>Stream Source</strong> button in room setting to set your stream
 <img src="https://github.com/aiksxd/material/blob/main/img/Host-Step-2.png" alt="Host-Step-2" /></li>
 </ol>
 <ul>
-<li>[ 对于主播 ]</li>
+<li>[For Audiences]</li>
 </ul>
 <ol start="2">
-<li>点击<strong>创建房间</strong>之后点击<strong>共享本地流</strong>，选择合适的方式共享流媒体
+<li>After completing step one, audience members can view all active rooms, click it and click <strong>auto Join</strong>(or input room ID for directly jumping to room page)
 <img src="https://github.com/aiksxd/material/blob/main/img/Audience-Step-2.png" alt="Audience-Step-2" /></li>
 </ol>
-<h3 id="srs支持"><a class="header" href="#srs支持"><strong>SRS支持</strong>：</a></h3>
+<h3 id="srs-support"><a class="header" href="#srs-support"><strong>SRS support</strong>：</a></h3>
 <ol>
-<li>运行srs服务器并添加webRTC支持(以下选一种)</li>
+<li>run srs with webRTC support(<strong>1. Only choose one of them</strong>)</li>
 </ol>
 <blockquote>
 <ul>
-<li>windows/linux推荐直接下载运行
-<a href="https://github.com/ossrs/srs/releases">下载安装链接</a></li>
-<li>Windows 创建并运行 srs-rtmp2rtc.bat</li>
+<li>windows/linux local app
+<a href="https://github.com/ossrs/srs/releases">Download SRS app to run then go to 2.</a></li>
+<li>Windows create &amp; run srs-rtmp2rtc.bat</li>
 </ul>
 <pre><code class="language-bat">for /f &quot;tokens=2*&quot; %%i in ('REG QUERY &quot;HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\App Paths\srs\ins_dir&quot;') do set srs_home=%%j
 
@@ -259,23 +257,29 @@ docker run --rm --env CANDIDATE=$CANDIDATE \
 </code></pre>
 </blockquote>
 <ol start="2">
-<li>向目标地址推rtmp协议流（例如rtmp://localhost/live/livestream），拉取时在共享本地流SRS功能区域的密钥位置填入&quot;密钥&quot;并点分享按钮(第一个是SRS服务器地址，默认localhost。第二个是推流时填入的密钥，需要手动填写)</li>
-<li>特别注意，推流时设置选择<strong>硬件编码器</strong>，并且把<strong>B帧</strong>功能关闭，否则会出现丢帧情况！！
-<img src="https://github.com/aiksxd/material/blob/main/img/Host-Step-3-zh.png" alt="Host-Step-3" /></li>
+<li>push <strong>rtmp</strong> stream，pull in web of <strong>Stream Source</strong> button with the key of stream and click the button of <strong>share SRS Media Stream</strong> in the zone of SRS api(localhost is the address of server, next void one is the key of stream which you need to input)</li>
+<li>NOTICE!: When setting up the stream, choose the hardware encoder and disable the B-frame function; otherwise, frame drops may occur!!
+<img src="https://github.com/aiksxd/material/blob/main/img/Host-Step-3-en.png" alt="Host-Step-3" /></li>
 </ol>
-<h3 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h3>
+<h3 id="considerations"><a class="header" href="#considerations"><strong>Considerations</strong>:</a></h3>
 <ol>
-<li>如果建立连接发生在主机开始共享流媒体之前，再次点击刷新按钮会<strong>刷新接收的流媒体</strong>（如不可用则刷新整个页面）</li>
-<li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
-<li>子节点在传递给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
+<li>If the connection is established before the host starts sharing the media stream, clicking the button again will <strong>refresh the received media stream</strong>(or refresh web)</li>
+<li>In the event of the host losing connection, the information from the host's child nodes will not be transmitted to other host's child nodes</li>
+<li>Video quality may initially be blurry when passed from child nodes to sub-child nodes; waiting for synchronization may resolve this (quality synchronization observed after 26 seconds in a test)</li>
+<li>By default, index request the id of &quot;P2P-Live-Web-Default-Id&quot;</li>
 </ol>
-<h3 id="拓展相关内置数组"><a class="header" href="#拓展相关内置数组">拓展相关：内置数组</a></h3>
+<h3 id="considerations-1"><a class="header" href="#considerations-1"><strong>Considerations</strong>:</a></h3>
+<ol>
+<li>The <strong>root node</strong> has the <strong>highest priority for streaming</strong>, overriding all child nodes and their subsequent children's live streams</li>
+<li><strong>Live media streams are only pushed to child nodes</strong>, unlike the information channel where messages can be received from any node. Therefore, it is advisable for the connected root node to be a live streaming node or monitor (<strong>unidirectional media streaming, bidirectional text messaging</strong>).</li>
+</ol>
+<h3 id="commonly-used-arrays"><a class="header" href="#commonly-used-arrays">Commonly used arrays</a></h3>
 <ul>
 <li>
-<p>nodesMap[ <strong>0消息类型</strong> -&gt; 1, <strong>1来源</strong>: 0(child)/1(host), <strong>2房间内所有成员ID</strong>: number, <strong>3房间类型</strong>, <strong>4直播标题</strong>, <strong>5直播简介</strong>, <strong>6直播封面</strong>, <strong>7主办方id</strong>, <strong>8主办方name</strong>, <strong>9主办方子节点</strong>, <strong>10根节点id</strong>, <strong>11会议信息</strong>]</p>
+<p>nodesMap[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 0(child)/1(host), <strong>2.ids Of Members In Room</strong>, <strong>3.roomType</strong>, <strong>Live_Title</strong>, <strong>Live_Summary</strong>, <strong>Live_CoverURL</strong>, <strong>host_Id</strong>, <strong>host_Name</strong>, <strong>child_Nodes</strong>, <strong>root_Id</strong>, <strong>conference_Map</strong>]</p>
 </li>
 <li>
-<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>未启用的扩展接口</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
+<p>childNodes[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 1(host), <strong>2.Number Of child Nodes</strong>: number, <strong>3.unused for your extension</strong>, <strong>4.own_Id</strong>, <strong>5.own_Name</strong>, <strong>6.unused for your extension</strong>, <strong>7.here_A_Id</strong>, <strong>8.here_A_name</strong>, <strong>9.here_Nodes_Of_Child_A</strong>, <strong>10.here_B_Id</strong>...]</p>
 </li>
 <li>
 <p>hereNodes[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 0(child), <strong>2.Number Of child Nodes</strong>: number, <strong>3.unused for your extension</strong>, <strong>4.own_Id</strong>, <strong>5.own_Name</strong>, <strong>6.unused for your extension</strong>, <strong>7.here_A_Id</strong>, <strong>8.here_A_name</strong>, <strong>9.here_Nodes_Of_Child_A</strong>, <strong>10.here_B_Id</strong>...]</p>
@@ -283,41 +287,39 @@ docker run --rm --env CANDIDATE=$CANDIDATE \
 <li>
 <p>iframeWindow.postMessage[ <strong>0.dataTypes</strong>: 0(switch setting value)/1(change theme), <strong>1.sourceMark</strong>: value]</p>
 </li>
-<li>
-<p><code>conferee_Map = [[0, ...],[0, ...],[0, ...],[0, ...]];     // [indexs], [ids], [names], [stream.id] ; [0:up to now only has taken up position, 1...:conferee]</code></p>
-</li>
 </ul>
-<h3 id="标识"><a class="header" href="#标识">标识</a></h3>
+<h3 id="mark"><a class="header" href="#mark">mark</a></h3>
 <ul>
 <li>
-<p>消息类型: 0 -&gt; 互动信息, 1 -&gt; 节点信息收集用, 2 -&gt; 流媒体请求, 3 -&gt; 提醒更换父节点, 4 -&gt; 流媒体呼叫刷新请求, 5 -&gt; 会议相关</p>
+<p>dataTypes: 0 -&gt; msg, 1 -&gt; nodes Collecter, 2 -&gt; streaming request, 3 -&gt; remingder of replacing the parent node, 4 -&gt; application of refresh media stream</p>
 </li>
 <li>
 <p>Connection Mark: 0: parent, 1: guest(for the index), 2: bridge(when connect circle), 3: root, 4: indexRoot(for the index)</p>
 </li>
 </ul>
 <h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
-<h3 id="连接无反馈"><a class="header" href="#连接无反馈">连接无反馈</a></h3>
-<ul>
-<li>由于P2P本身的局限性，有些网络之间难以建立P2P连接，不过有时可以通过桥接都可以连接网络来解决</li>
-</ul>
-<h2 id="关于本地peer服务器其他方面"><a class="header" href="#关于本地peer服务器其他方面"><strong>关于本地Peer服务器(其他方面)</strong>：</a></h2>
+<h3 id="connect-without-feedbackfailed"><a class="header" href="#connect-without-feedbackfailed">Connect without feedback(failed):</a></h3>
+<p>Due to the inherent limitations of P2P,establishing connections between some networks can be challenging, but this can be resolved by bridging networks</p>
+<h2 id="about-local-peer-server"><a class="header" href="#about-local-peer-server"><strong>About Local Peer Server</strong>:</a></h2>
+<p>(<strong>ignore it if you don't run peerjs server locally</strong>):</p>
 <h3 id="peerserver"><a class="header" href="#peerserver">PeerServer</a></h3>
-<p>先装npm，国内cnpm也可以，然后安装peer：</p>
+<p>Need to install nodejs at first, and then use its npm to install peer</p>
 <pre><code>npm install peer -g
 </code></pre>
-<p>其中-g可选，表示全局安装，安装至用户文件夹，否则仅当前目录
-然后用下面命令可以启用本地peer服务器(路径等值需要与网页内peerjs统一)</p>
-<pre><code>peerjs --port 9000 --key peerjs --path /myapp Started PeerServer on ::, port: 9000, path: /myapp
+<p>-g is selective if you only want to use in a folder
+local peer server run command(value of path need to be united on web &amp; terminal):</p>
+<pre><code> peerjs --port 9000 --key peerjs --path /myapp Started PeerServer on ::, port: 9000, path: /myapp
 </code></pre>
-<p>然后在各个更改peer所用源（config注释示例）</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="P2P-Live-Web-zh.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="P2P-Live-Web-zh.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="P2P-Live-Web-Comments.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -327,8 +329,11 @@ docker run --rm --env CANDIDATE=$CANDIDATE \
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="P2P-Live-Web-zh.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="P2P-Live-Web-zh.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="P2P-Live-Web-Comments.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
