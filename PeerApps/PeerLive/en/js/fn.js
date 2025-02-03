@@ -856,7 +856,7 @@ function getMyName(){
     } else if (peer) {
         return peer.id;
     }
-    return "";
+    return "undefined_Name";
 }
 
 function conference_Play() {
