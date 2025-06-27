@@ -16,7 +16,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            padding: 20px;
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
         }
@@ -38,17 +37,12 @@
         }
         
         .header p {
-            max-width: 700px;
             margin: 0 auto;
             line-height: 1.6;
         }
         
         .container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
         }
         
         .editor-section {
@@ -82,10 +76,14 @@
         }
         
         .canvas-container {
+            touch-action: none; /* 防止浏览器默认触摸行为 */
             position: relative;
             margin: 0 auto;
         }
-        
+
+        #canvas:active {
+            cursor: grabbing;
+        }
         #canvas {
             border: 1px solid var(--border);
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADBJREFUOE9jZGBgEAFifOANPkkmfJqU4WAUjHrBqBeMesGoF1DXCwAgSYUGJzCT7m0AAAAASUVORK5CYII=');
@@ -114,14 +112,11 @@
         }
         
         .control-row {
-            display: flex;
             align-items: center;
-            margin-bottom: 10px;
         }
         
         .control-row label {
-            min-width: 120px;
-            font-weight: 500;
+            min-width: 90px;
         }
         
         input[type="number"], 
@@ -199,6 +194,12 @@
                 max-width: 700px;
             }
         }
+        @media (pointer: coarse) {
+            .controls button {
+                padding: 12px 16px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -223,11 +224,11 @@
             <div class="panel">
                 <div class="control-group">
                     <div class="control-row">
-                        <label for="themeSelect">主题模板:</label>
+                        <label for="themeSelect">模板:</label>
                         <select id="themeSelect">
                             <option value="1" data-width="700" data-height="500">狗头 (默认)</option>
                             <option value="2" data-width="700" data-height="699">安全出口</option>
-                            <option value="custom">自定义主题</option>
+                            <option value="custom">自定义</option>
                         </select>
                     </div>
                     
@@ -241,11 +242,11 @@
                             <input type="file" id="customLayer3" accept="image/*">
                         </div>
                     </div>
+                    <div class="control-row">
+                        <label for="fileInput">中间层:</label>
+                        <input type="file" id="fileInput" accept="image/*">
+                    </div>
                     <div class="controls">
-                        <div class="control-row">
-                            <label for="fileInput">中间层图像:</label>
-                            <input type="file" id="fileInput" accept="image/*">
-                        </div>
                         <button class="green-button" id="zoomInBtn"><i>+</i> 放大</button>
                         <button class="green-button" id="zoomOutBtn"><i>-</i> 缩小</button>
                         <button class="green-button" id="zoomResetBtn"><i>↺</i> 重置缩放</button>
@@ -261,8 +262,8 @@
                         <div class="control-row">
                             <label for="canvasHeight">画布高度:</label>
                             <input type="number" id="canvasHeight" min="100" max="2000" value="500">
-                        </div>
-                        <button class="green-button" id="updateCanvasBtn">应用画布尺寸</button><br><br>
+                        </div><br>
+                        <button class="green-button" id="updateCanvasBtn">应用画布尺寸</button>
                     </div>
                 </div>
             
@@ -440,6 +441,9 @@
                 this.canvas.addEventListener('mouseup', this.stopDragging.bind(this));
                 this.canvas.addEventListener('wheel', this.handleZoom.bind(this));
                 this.canvas.addEventListener('mouseleave', this.stopDragging.bind(this));
+                this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
+                this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
+                this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this));
 
                 // 导出按钮
                 document.getElementById('exportBtn').addEventListener('click', () => {
@@ -535,6 +539,39 @@
                 // 更新状态
                 const percent = Math.round(this.transform.scale * 100);
                 this.updateStatus(`缩放级别: ${percent}%`);
+            }
+
+            
+            handleTouchStart(e) {
+                if (!this.layers.layer2) return;
+                
+                e.preventDefault();
+                this.dragging = true;
+                const touch = e.touches[0];
+                this.lastX = touch.clientX;
+                this.lastY = touch.clientY;
+                this.canvas.style.cursor = 'grabbing';
+            }
+
+            handleTouchMove(e) {
+                if (!this.dragging || !this.layers.layer2) return;
+                
+                e.preventDefault();
+                const touch = e.touches[0];
+                const dx = touch.clientX - this.lastX;
+                const dy = touch.clientY - this.lastY;
+                
+                this.transform.x += dx;
+                this.transform.y += dy;
+                
+                this.lastX = touch.clientX;
+                this.lastY = touch.clientY;
+                this.redraw();
+            }
+
+            handleTouchEnd() {
+                this.dragging = false;
+                this.canvas.style.cursor = 'default';
             }
 
             redraw() {
