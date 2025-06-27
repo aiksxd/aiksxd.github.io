@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.</strong> P2P简单直播(可互动，基于PeerJS)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-en.html" class="active"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-Comments.html"><strong aria-hidden="true">1.3.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.</strong> PeerLive</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-en.html" class="active"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-Comments.html"><strong aria-hidden="true">1.3.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -173,31 +173,9 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="about-p2p--peerjs"><a class="header" href="#about-p2p--peerjs"><strong>About P2P &amp; PeerJS</strong>:</a></h3>
-<p>P2P is a distributed network architecture where each participant (also known as a node) acts as both a client and a server
-Unlike the traditional client-server model, P2P allows direct communication between nodes without the need for relay through a central server</p>
-<p><a href="https://peerjs.com/">PeerJS</a>: A JavaScript library based on WebRTC for simplifying P2P communication implementation</p>
-<p><img src="https://github.com/aiksxd/material/blob/main/img/P2PGIF.gif" alt="P2PGIF" /></p>
-<h3 id="updates"><a class="header" href="#updates">Updates:</a></h3>
-<ul>
-<li>New Features:</li>
-<li>Meeting function (merged with independent audio function) update</li>
-<li>Tauri PC application branch</li>
-<li>More custom interface controls, expand/collapse control panel</li>
-<li>Enriched program feedback text prompts</li>
-<li>App mode (not enabled by default on the web, enabled by default in the app)</li>
-<li>Added cache for submissions (enabled by default)</li>
-<li>Partial UI and color scheme optimizations</li>
-</ul>
-<h3 id="adjustments"><a class="header" href="#adjustments">Adjustments:</a></h3>
-<ul>
-<li>Disabled the original web full-screen button</li>
-<li>Reverted stream transmission to the old version and updated it, while fixing issues from the old version</li>
-<li>Renamed root node to network name (group number, easier to understand)</li>
-<li>nodesMap push no longer has discrepancies</li>
-<li>Fixed some historical bugs</li>
-</ul>
-<h2 id="online-version--httpsaiksxdgithubiopeerappspeerliveindexhtml"><a class="header" href="#online-version--httpsaiksxdgithubiopeerappspeerliveindexhtml"><a href="https://aiksxd.github.io/PeerApps/PeerLive/index.html">Online Version-&gt; https://aiksxd.github.io/PeerApps/PeerLive/index.html</a></a></h2>
+                        <h2 id="repositories-url"><a class="header" href="#repositories-url"><a href="https://github.com/aiksxd/P2P-Live-Web">Repositories URL</a></a></h2>
+<h2 id="online-version--httpsaiksxdgithubioappspeerliveindexhtml"><a class="header" href="#online-version--httpsaiksxdgithubioappspeerliveindexhtml"><a href="https://aiksxd.github.io/apps/PeerLive/index.html">Online Version-&gt; https://aiksxd.github.io/apps/PeerLive/index.html</a></a></h2>
+<h2 id="app-version-downloadgithub"><a class="header" href="#app-version-downloadgithub"><a href="https://github.com/aiksxd/P2P-Live-Web/releases">App Version Download(GitHub)</a></a></h2>
 <h3 id="instructions"><a class="header" href="#instructions">Instructions:</a></h3>
 <ol>
 <li>Use browser/app to load the homepage(index.html) with available Internet,</li>
