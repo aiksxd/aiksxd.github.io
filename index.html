@@ -1,351 +1,204 @@
-<!DOCTYPE HTML>
-<html lang="en" class="navy" dir="ltr">
-    <head>
-        <!-- Book generated using mdBook -->
-        <meta charset="UTF-8">
-        <title>PeerLive - AX Blogs</title>
-
-
-        <!-- Custom HTML head -->
-        
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff">
-
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
-
-        <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
-
-        <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
-
-        <!-- Custom theme stylesheets -->
-
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
-        <!-- Provide site root to javascript -->
-        <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
-        </script>
-
-        <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script>
-            try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
-
-                if (theme.startsWith('"') && theme.endsWith('"')) {
-                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
-                }
-
-                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
-                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
-                }
-            } catch (e) { }
-        </script>
-
-        <!-- Set the theme before any content is loaded, prevents flash -->
-        <script>
-            var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
-            if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('navy')
-            html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
-        </script>
-
-        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
-
-        <!-- Hide / unhide sidebar before it is displayed -->
-        <script>
-            var body = document.querySelector('body');
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
-            if (document.body.clientWidth >= 1080) {
-                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
-                sidebar = sidebar || 'visible';
-            } else {
-                sidebar = 'hidden';
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ax-Index</title>
+    <link rel="stylesheet" type="text/css" href="css/appUI.css">
+    <style>
+        @keyframes draw-path {
+            80% {
+                opacity: 0.8;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
-        </script>
-
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html" class="active"><strong aria-hidden="true">1.</strong> PeerLive</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="P2P-Live-Web-zh.html"><strong aria-hidden="true">1.1.</strong> P2P实现直播网站</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-en.html"><strong aria-hidden="true">1.2.</strong> P2P-Live-Web-EN</a></li><li class="chapter-item expanded "><a href="P2P-Live-Web-Comments.html"><strong aria-hidden="true">1.3.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="PCPEServerMutliplayGuide.html"><strong aria-hidden="true">2.</strong> PCPE双端开服建站联机教程</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="PCPEMutliplayP1.html"><strong aria-hidden="true">2.1.</strong> 移动端开服Android & IOS</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP2.html"><strong aria-hidden="true">2.2.</strong> 内网穿透实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP3.html"><strong aria-hidden="true">2.3.</strong> 异地组网实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP4.html"><strong aria-hidden="true">2.4.</strong> 远程协助实现</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP5.html"><strong aria-hidden="true">2.5.</strong> 链接汇总 & 总结</a></li><li class="chapter-item expanded "><a href="PCPEMutliplayP6.html"><strong aria-hidden="true">2.6.</strong> 评论</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="NatBuildLiveWeb.html"><strong aria-hidden="true">3.</strong> 网穿透实现直播网站</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="NatLiveP1.html"><strong aria-hidden="true">3.1.</strong> 准备工作</a></li><li class="chapter-item expanded "><a href="NatLiveP2.html"><strong aria-hidden="true">3.2.</strong> 过程与拓展</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="RustBevyOnTermux.html"><strong aria-hidden="true">4.</strong> Rust安装bevy于Termux</a></li><li class="spacer"></li></ol>
-            </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
-        </nav>
-
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
+            to {
+                stroke-dashoffset: 0;
+                opacity: 0;
             }
-        </script>
+        }
 
-        <div id="page-wrapper" class="page-wrapper">
+        .H {
+            stroke-dasharray: 540px;
+            stroke-dashoffset: 540px;
+            animation: draw-path 2s ease-out forwards;
+            animation-iteration-count: infinite;
+        }
 
-            <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky">
-                    <div class="left-buttons">
-                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
-                        </label>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
-                        </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                        </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #46af4b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body
+    style="overflow: hidden;
+    background-color: --var(--bg);
+    -webkit-user-select:none;
+    user-select:none;">
 
-                    <h1 class="menu-title">AX Blogs</h1>
+    <div id="loader" class="active">
+        <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
+            <defs>
+                <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blurred"/>
+                <feMerge>
+                    <feMergeNode in="blurred"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+                </filter>
+            </defs>
+            <g>
+                <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0 150 150"
+                    to="360 150 150"
+                    dur="10s"
+                    repeatCount="indefinite"/>
+            </g>
 
-                    <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
-                        </a>
+            <g transform="translate(85,90)scale(0.8,0.8)">
+                <path class="H" stroke="white" stroke-width="10" stroke-linecap="square" stroke-linejoin="bevel" filter="url(#glow)"
+                    d="M34.5 17.5s-4.5-3-3-3c25 11.5 40 121-5.5 121-6.5 0-11.5-2.5-14.5-6.5-32-53.3 109.2-69.2 128-82.5 20-10.7 17.3-41.334-8-40-36 8-18.7 65.3-13.3 90.7 2.7 10.7 6.7 21.334 11.333 32 1.2 2.6 5 12 4 9.5"
+                />
+            </g>
+        </svg>
+    </div>
+    <!-- <div id="shadowCover"></div> -->
 
-                    </div>
-                </div>
-
-                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
-                    </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script>
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
-                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
-                    });
-                </script>
-
-                <div id="content" class="content">
-                    <main>
-                        <h2 id="仓库地址"><a class="header" href="#仓库地址"><a href="https://github.com/aiksxd/P2P-Live-Web">仓库地址</a></a></h2>
-<h2 id="在线版本---httpsaiksxdgithubiopeerappspeerliveindexhtml"><a class="header" href="#在线版本---httpsaiksxdgithubiopeerappspeerliveindexhtml"><a href="https://aiksxd.github.io/PeerApps/PeerLive/index.html">在线版本 -&gt; https://aiksxd.github.io/PeerApps/PeerLive/index.html</a></a></h2>
-<h2 id="app下载地址1github下载地址2gitee"><a class="header" href="#app下载地址1github下载地址2gitee"><a href="https://github.com/aiksxd/P2P-Live-Web/releases">App下载地址1(GitHub)、</a><a href="https://gitee.com/aiksxxd/peer-live/releases">下载地址2(Gitee)</a></a></h2>
-<h3 id="用法"><a class="header" href="#用法">用法：</a></h3>
-<ol>
-<li>使用浏览器/应用程序在有网络的情况下加载主页(index.html)</li>
-</ol>
-<blockquote>
-<p>[如果无法连接到网络名称，直接输入<strong>房间ID</strong> / 使用<strong>不公开</strong>选项创建房间]
-<img src="https://s21.ax1x.com/2025/02/01/pEZUrJ1.png" alt="Step-1" /></p>
-</blockquote>
-<ul>
-<li>[ 对于观众 ]</li>
-</ul>
-<ol start="2">
-<li>观众在执行第一步后可以看到该根节点下的所有活跃直播间(列入标准不在于是否推流，而是直播页面的连接情况)
-<img src="https://s21.ax1x.com/2025/02/01/pEZUyz6.png" alt="Audience-Step-2" /></li>
-</ol>
-<ul>
-<li>[ 对于主播 ]</li>
-</ul>
-<ol start="2">
-<li>点击<strong>创建房间</strong>之后点击<strong>共享本地流</strong>，选择合适的方式共享流媒体
-<img src="https://s21.ax1x.com/2025/02/01/pEZUsRx.png" alt="Host-Step-2" /></li>
-</ol>
-<h3 id="srs支持"><a class="header" href="#srs支持"><strong>SRS支持</strong>：</a></h3>
-<ol>
-<li>运行srs服务器并添加webRTC支持(以下选一种)</li>
-</ol>
-<blockquote>
-<ul>
-<li>windows/linux推荐直接下载运行
-<a href="https://github.com/ossrs/srs/releases">下载安装链接</a></li>
-<li>Windows 创建并运行 srs-rtmp2rtc.bat</li>
-</ul>
-<pre><code class="language-bat">for /f &quot;tokens=2*&quot; %%i in ('REG QUERY &quot;HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\App Paths\srs\ins_dir&quot;') do set srs_home=%%j
-
-echo %srs_home%
-
-for %%I in (&quot;%srs_home%&quot;) do set srs_disk=%%~dI
-
-cd %srs_home%
-@%srs_disk%
-
-objs\srs.exe -c conf\rtmp2rtc.conf
-cmd
-</code></pre>
-<ul>
-<li>docker:
-Windows: </li>
-</ul>
-<pre><code class="language-cmd">docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 --env CANDIDATE=127.0.0.1 -p 8000:8000/udp registry.cn-hangzhou.aliyuncs.com/ossrs/srs:5 ./objs/srs -c conf/rtmp2rtc.conf`
-</code></pre>
-<p>Linux/Android(termux):</p>
-<pre><code class="language-sh">export CANDIDATE=&quot;127.0.0.1&quot;
-docker run --rm --env CANDIDATE=$CANDIDATE \
-  -p 1935:1935 -p 8080:8080 -p 1985:1985 -p 8000:8000/udp \
-  ossrs/srs:4 \
-  objs/srs -c conf/rtmp2rtc.conf
-</code></pre>
-</blockquote>
-<ol start="2">
-<li>向目标地址推rtmp协议流（例如rtmp://localhost/live/livestream），拉取时在共享本地流SRS功能区域的密钥位置填入&quot;密钥&quot;并点分享按钮(第一个是SRS服务器地址，默认localhost。第二个是推流时填入的密钥，需要手动填写)</li>
-<li>特别注意，推流时设置选择<strong>硬件编码器</strong>，并且把<strong>B帧</strong>功能关闭，否则会出现丢帧情况！！
-<img src="https://s21.ax1x.com/2025/02/01/pEZU0o9.png" alt="Host-Step-3" /></li>
-</ol>
-<h3 id="注意事项"><a class="header" href="#注意事项"><strong>注意事项</strong>：</a></h3>
-<ol>
-<li>如果建立连接发生在主机开始共享流媒体之前，再次点击刷新按钮会<strong>刷新接收的流媒体</strong>（如不可用则刷新整个页面）</li>
-<li>在主播丢失连接时，则无法将主播子节点的信息传递给其他主播子节点</li>
-<li>子节点在传递给子子节点时视频质量开始可能模糊，尝试等待即可(一次测试26s后画质同步)</li>
-</ol>
-<h3 id="拓展相关内置数组"><a class="header" href="#拓展相关内置数组">拓展相关：内置数组</a></h3>
-<ul>
-<li>
-<p>nodesMap[ <strong>0消息类型</strong> -&gt; 1, <strong>1来源</strong>: 0(child)/1(host), <strong>2房间内所有成员ID</strong>: number, <strong>3房间类型</strong>, <strong>4直播标题</strong>, <strong>5直播简介</strong>, <strong>6直播封面</strong>, <strong>7主办方id</strong>, <strong>8主办方name</strong>, <strong>9主办方子节点</strong>, <strong>10根节点id</strong>, <strong>11会议信息</strong>]</p>
-</li>
-<li>
-<p>child_Nodes[ <strong>消息类型</strong> -&gt; 1, <strong>来源</strong>: 0(child)/1(host), <strong>子节点个数</strong>: number, <strong>房间内的所有id</strong>, <strong>所属id</strong>, <strong>所属名称</strong>, <strong>未启用的扩展接口</strong>, <strong>子节点A的id</strong>, <strong>子节点A的名称</strong>, <strong>子节点A的子节点</strong>, <strong>子节点B的id</strong>....]</p>
-</li>
-<li>
-<p>hereNodes[ <strong>0.dataTypes</strong>: 1, <strong>1.sourceMark</strong>: 0(child), <strong>2.Number Of child Nodes</strong>: number, <strong>3.unused for your extension</strong>, <strong>4.own_Id</strong>, <strong>5.own_Name</strong>, <strong>6.unused for your extension</strong>, <strong>7.here_A_Id</strong>, <strong>8.here_A_name</strong>, <strong>9.here_Nodes_Of_Child_A</strong>, <strong>10.here_B_Id</strong>...]</p>
-</li>
-<li>
-<p>iframeWindow.postMessage[ <strong>0.dataTypes</strong>: 0(switch setting value)/1(change theme), <strong>1.sourceMark</strong>: value]</p>
-</li>
-<li>
-<p><code>conferee_Map = [[0, ...],[0, ...],[0, ...],[0, ...]];     // [indexs], [ids], [names], [stream.id] ; [0:up to now only has taken up position, 1...:conferee]</code></p>
-</li>
-</ul>
-<h3 id="标识"><a class="header" href="#标识">标识</a></h3>
-<ul>
-<li>
-<p>消息类型: 0 -&gt; 互动信息, 1 -&gt; 节点信息收集用, 2 -&gt; 流媒体请求, 3 -&gt; 提醒更换父节点, 4 -&gt; 流媒体呼叫刷新请求, 5 -&gt; 会议相关</p>
-</li>
-<li>
-<p>Connection Mark: 0: parent, 1: guest(for the index), 2: bridge(when connect circle), 3: root, 4: indexRoot(for the index)</p>
-</li>
-</ul>
-<h2 id="issue"><a class="header" href="#issue">Issue:</a></h2>
-<h3 id="连接无反馈"><a class="header" href="#连接无反馈">连接无反馈</a></h3>
-<ul>
-<li>由于P2P本身的局限性，有些网络之间难以建立P2P连接，不过有时可以通过桥接都可以连接网络来解决</li>
-</ul>
-<h2 id="关于本地peer服务器其他方面"><a class="header" href="#关于本地peer服务器其他方面"><strong>关于本地Peer服务器(其他方面)</strong>：</a></h2>
-<h3 id="peerserver"><a class="header" href="#peerserver">PeerServer</a></h3>
-<p>先装npm，国内cnpm也可以，然后安装peer：</p>
-<pre><code>npm install peer -g
-</code></pre>
-<p>其中-g可选，表示全局安装，安装至用户文件夹，否则仅当前目录
-然后用下面命令可以启用本地peer服务器(路径等值需要与网页内peerjs统一)</p>
-<pre><code>peerjs --port 9000 --key peerjs --path /myapp Started PeerServer on ::, port: 9000, path: /myapp
-</code></pre>
-<p>然后在各个更改peer所用源（config注释示例）</p>
-
-                    </main>
-
-                    <nav class="nav-wrapper" aria-label="Page navigation">
-                        <!-- Mobile navigation buttons -->
-
-                            <a rel="next prefetch" href="P2P-Live-Web-zh.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
-
-                        <div style="clear: both"></div>
-                    </nav>
+    <div class="overlay" id="overlay">
+        <div class="modal" id="modal">
+            <button class="close-btn" onclick="closeModal()"></button>
+            <div class="modal-content">
+                <h2>You Find The Modal!!!</h2>
+                <p>Alright, it's useless</p>
+                <div class="button-container">
+                    <button class="confirm-btn" onclick="closeModal()">确认</button>
                 </div>
             </div>
-
-            <nav class="nav-wide-wrapper" aria-label="Page navigation">
-
-                    <a rel="next prefetch" href="P2P-Live-Web-zh.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
-            </nav>
-
         </div>
+    </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
+    <div id="tooltip">
+        <div class="message-container"></div>
+        <div class="task-queue"></div>
+    </div>
+    
+    <main class="content">
+
+        <iframe
+            id = "homePage"
+            class = "pages"
+            src = "homePage.html">
+        </iframe>
+
+        <iframe
+            id = "settingPage"
+            class = "pages covert"
+            src = "settingPage.html">
+        </iframe>
+
+        <iframe
+            id = "blogPage"
+            class = "pages covert"
+            src = "apps/blog/index.html">
+        </iframe>
+
+    </main>
+    
+    <aside class="sidebar">
+        <div class="menuContainer">
+            <section onclick="changeMenu('homePage')" id="menu-homePage" class="icon active"><svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 576 576"><path d="M273.6 73.86s-148.464 120-216 197.568c-4.872 4.8-9.6 10.848-9.6 19.2 0 14.4 9.6 24 24 24h48v168c0 14.4 9.6 24 24 24h72c14.4 0 24-9.6 24-24v-96h96v96c0 13.248 9.6 24 24 24h72c14.4 0 24-9.6 24-24v-168h48c14.4 0 24-9.6 24-24 0-7.584-3.696-12-9.192-19.2C434.4 193.86 297.6 73.86 297.6 73.86c-8.712-5.928-15.552-6.024-24 0"/></svg></section>
+            <section onclick="changeMenu('settingPage')" id="menu-settingPage" class="icon"><svg width="800" height="800" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M43 56.44H21a6 6 0 0 1-4.8-2.75L5.37 34.75a6 6 0 0 1 0-6L16.3 10.31a6 6 0 0 1 4.8-2.75h21.86a6 6 0 0 1 4.8 2.75l11 18.94a6 6 0 0 1 0 6L47.7 53.69a6 6 0 0 1-4.8 2.75M21 10.56a3 3 0 0 0-2 1.25L8 30.75a2.5 2.5 0 0 0 0 2.5l11 18.94a3 3 0 0 0 2 1.25h21.86a3 3 0 0 0 2-1.25L56 33.25a2.5 2.5 0 0 0 0-2.5L45 11.81a3 3 0 0 0-2-1.25Z" stroke-width="3"/><path d="M32 42a10 10 0 1 1 10-10 10 10 0 0 1-10 10m0-17.14A7 7 0 1 0 39 32a7 7 0 0 0-7-7" stroke-width="3"/></svg></section>
+            <section onclick="changeMenu('blogPage')" id="menu-blogPage" class="icon"><svg height="800" width="800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" xml:space="preserve"><path d="M5 23c-2.2 0-4-1.8-4-4v-8h2v4.5c.6-.3 1.3-.5 2-.5 2.2 0 4 1.8 4 4s-1.8 4-4 4m0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m19 2h-2C22 9.6 14.4 2 5 2V0c10.5 0 19 8.5 19 19m-5 0h-2c0-6.6-5.4-12-12-12V5c7.7 0 14 6.3 14 14m-5 0h-2c0-3.9-3.1-7-7-7v-2c5 0 9 4 9 9"/></svg></section>
+        </div>
+    </aside>
+    <label class="sidebar-toggle-btn">
+        <input onclick="display_menu()" type="checkbox" hidden>
+        <span class="icon-arrow"></span>
+    </label>
+
+    <script src="js/config.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/index.js"></script>
+    <script>
+
+        // init cartoon
+        function initLoader() {
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const loader = document.getElementById('loader');
+            const svg = document.querySelector('#loader svg');
+            const g = svg.querySelector('g');
+            
+            // create lines
+            const createLines = () => {
+                const numLines = 60;
+                const cx = 150;
+                const cy = 150;
+                const radius = 130;
+
+                for (let i = 0; i < numLines; i++) {
+                    const angle = (i / numLines) * 2 * Math.PI;
+                    const x1 = cx + radius * Math.cos(angle);
+                    const y1 = cy + radius * Math.sin(angle);
+                    const x2 = cx + (radius - 15) * Math.cos(angle);
+                    const y2 = cy + (radius - 15) * Math.sin(angle);
+
+                    const line = document.createElementNS(svgNS, 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', 'rgba(255, 255, 255, 0.5)');
+                    line.setAttribute('stroke-width', '3');
+                    
+                    g.appendChild(line);
                 }
             };
 
-            window.onbeforeunload = function() {
-                socket.close();
+            createLines();
+        }
+
+        // end
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1000);
+        }
+
+        // start
+        document.addEventListener('DOMContentLoaded', function() {
+            initLoader();
+            
+            if (localStorage.last_Id) {
+                if (document.getElementById(localStorage.last_Id)) {
+                    changeMenu(localStorage.last_Id);
+                }
             }
-        </script>
+            // if (localStorage.language && localStorage.language !== app_Info['app_Language']) {
+            //     config['language'] = localStorage.language;
+            //     broadcast_Iframe_Info(['lan', config['language']]);
+            // } else if (app_Info['app_Language'] && app_Info['app_Language'] !== config['language']) {
+            //     broadcast_Iframe_Info(['lan', config['language']]);
+            // }
 
-
-
-        <script>
-            window.playground_copyable = true;
-        </script>
-
-
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
-
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
-
-        <!-- Custom JS scripts -->
-
-
-    </div>
-    </body>
+            window.addEventListener('load', function() {
+                
+                hideLoader();
+            });
+        });
+    </script>
+</body>
 </html>

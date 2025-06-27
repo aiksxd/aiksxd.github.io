@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: rgba(0,255,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // 安全访问父窗口引用
+        const getParentRef = () => {
+            try {
+                return parent.document.getElementById('iframe');
+            } catch (e) {
+                console.error('安全策略限制:', e);
+                return null;
+            }
+        };
+
+        // 坐标转换函数
+        const convertCoordinates = (e) => {
+            const iframe = getParentRef();
+            if (!iframe) return null;
+
+            const rect = iframe.getBoundingClientRect();
+            const scaleX = iframe.offsetWidth / iframe.contentWindow.innerWidth;
+            const scaleY = iframe.offsetHeight / iframe.contentWindow.innerHeight;
+
+            return {
+                x: e.clientX * scaleX + rect.left,
+                y: e.clientY * scaleY + rect.top
+            };
+        };
+
+        // iframe鼠标监听
+        document.addEventListener('mousemove', e => {
+            const coords = convertCoordinates(e);
+            if (!coords) return;
+
+            // 冲突解决：优先最新数据
+            if (performance.now() > parent.sharedMousePosition.lastUpdated) {
+                parent.sharedMousePosition.x = coords.x;
+                parent.sharedMousePosition.y = coords.y;
+                parent.sharedMousePosition.lastUpdated = performance.now();
+            }
+        });
+    </script>
+</body>
+</html>

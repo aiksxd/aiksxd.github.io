@@ -1,0 +1,57 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9f7ef;
+    color: #333;
+}
+
+#app {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header, footer {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#scoreboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#question-container, #results {
+    margin-top: 20px;
+}
+
+#question-info {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#options label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#controls button {
+    margin-right: 10px;
+}
+
+#results ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#results li {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

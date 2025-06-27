@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>自由落体运动分析</title>
+    <style>
+        canvas { border: 1px solid #000; margin-top: 50px; }
+        .controls { position: fixed; right: 20px; top: 20px; background: white; padding: 10px; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="900"></canvas>
+    <div class="controls">
+        <label>斜面斜率: <input type="range" id="slope" min="-5" max="5" step="0.1" value="1"></label>
+        <label>初速度: <input type="range" id="v0" min="0" max="100" step="1" value="30"></label>
+        <label>重力: <input type="range" id="gravity" min="0" max="200" step="1" value="9.8"></label>
+        <label>时间缩放: <input type="range" id="timeScale" min="0.01" max="1" step="0.01" value="0.5"></label>
+        <button id="reset">重置</button>
+    </div>
+
+<script>
+class PhysicsSimulator {
+    constructor() {
+        this.canvas = document.getElementById('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.scale = 2;
+        this.origin = { x: 400, y: 300 };
+        
+        this.params = {
+            slope: 1,
+            g: 9.8,
+            timeScale: 0.5,
+            v0: 30,
+        };
+
+        this.animationId = null;
+        this.simulationTime = 0;
+        this.collisionPoints = [];
+    }
+
+    toScreen(pos) {
+        return {
+            x: this.origin.x + pos.x * this.scale,
+            y: this.origin.y - pos.y * this.scale
+        };
+    }
+
+    getSlopeLine() {
+        const d = 50;
+        const k = this.params.slope;
+        return { 
+            k,
+            b: d * Math.sqrt(k*k + 1) - 0.5*this.params.g*(Math.pow(this.simulationTime, 2)**2)
+        };
+    }
+
+    calculateIntersections(r) {
+        const { k, b } = this.getSlopeLine();
+        const A = 1 + k*k;
+        const B = 2 * k * b;
+        const C = b*b - r*r;
+        const discriminant = B*B - 4*A*C;
+        
+        if (discriminant < 0) return [];
+        
+        const sqrtD = Math.sqrt(discriminant);
+        const x1 = (-B + sqrtD)/(2*A);
+        const x2 = (-B - sqrtD)/(2*A);
+        const y1 = k*x1 + b;
+        const y2 = k*x2 + b;
+
+        return [
+            {x: x1, y: y1}, 
+            {x: x2, y: y2}
+        ].filter(p => Math.abs(p.x*p.x + p.y*p.y - r*r) < 1e-6);
+    }
+
+    render() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        const r = 0.5 * this.params.v0 * Math.pow(this.simulationTime, 2);
+        
+        // 绘制坐标系
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.origin.x, 0);
+        this.ctx.lineTo(this.origin.x, this.canvas.height);
+        this.ctx.moveTo(0, this.origin.y);
+        this.ctx.lineTo(this.canvas.width, this.origin.y);
+        this.ctx.strokeStyle = '#ddd';
+        this.ctx.stroke();
+
+        // 绘制斜面
+        const { k, b } = this.getSlopeLine();
+        const intersections = this.calculateIntersections(r);
+        const linePoints = [
+            {x: -400/this.scale, y: k*(-400/this.scale) + b},
+            {x: 400/this.scale, y: k*(400/this.scale) + b}
+        ].map(p => this.toScreen(p));
+
+        // 绘制完整斜面
+        this.ctx.beginPath();
+        this.ctx.moveTo(linePoints[0].x, linePoints[0].y);
+        this.ctx.lineTo(linePoints[1].x, linePoints[1].y);
+        this.ctx.strokeStyle = '#000';
+        this.ctx.stroke();
+
+        // 高亮相交部分
+        if (intersections.length >= 2) {
+            const [p1, p2] = intersections.sort((a,b) => a.x - b.x)
+                .map(p => this.toScreen(p));
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(p1.x, p1.y);
+            this.ctx.lineTo(p2.x, p2.y);
+            this.ctx.strokeStyle = '#ff0000';
+            this.ctx.lineWidth = 3;
+            this.ctx.stroke();
+        }
+
+        // 绘制自由落体圆
+        this.ctx.beginPath();
+        this.ctx.arc(this.origin.x, this.origin.y, r * this.scale, 0, Math.PI*2);
+        this.ctx.strokeStyle = '#00f';
+        this.ctx.stroke();
+
+        // 计算并显示最高点信息
+        if (intersections.length > 0) {
+            const highest = intersections.reduce((a,b) => a.y > b.y ? a : b);
+            const angle = Math.atan2(highest.x, highest.y) * 180/Math.PI;
+            const pos = this.toScreen(highest);
+            
+            this.ctx.beginPath();
+            this.ctx.arc(pos.x, pos.y, 5, 0, Math.PI*2);
+            this.ctx.fillStyle = '#0f0';
+            this.ctx.fill();
+            
+            this.ctx.fillStyle = '#000';
+            this.ctx.font = '14px Arial';
+            this.ctx.fillText(`夹角: ${angle.toFixed(2)}°; 交点高度: ${pos.y.toFixed(2)}`, pos.x + 10, pos.y - 10);
+            // 斜面速度: ${(this.params.g*Math.pow(this.simulationTime, 2)).toFixed(2)};\n
+        }
+    }
+
+    animate() {
+        this.simulationTime += 0.01 * this.params.timeScale;
+        this.render();
+        this.animationId = requestAnimationFrame(() => this.animate());
+    }
+
+    init() {
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                this.params[input.id] = parseFloat(input.value);
+                this.simulationTime = 0;
+            });
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            this.simulationTime = 0;
+        });
+
+        this.animate();
+    }
+}
+
+const simulator = new PhysicsSimulator();
+simulator.init();
+</script>
+</body>
+</html>

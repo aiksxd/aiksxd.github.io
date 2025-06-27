@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root {
+  --ripple-color: rgba(255, 255, 255, 0.5); /* 半透明白色涟漪 */
+}
+body {
+    background-color: black;
+}
+
+.ripple-effect {
+  position: fixed;
+  background: var(--ripple-color);
+  border-radius: 50%;
+  transform: scale(0);
+  pointer-events: none; /* 防止干扰点击事件 */
+  animation: ripple 500ms linear;
+  z-index: 9999;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #1976D2;
+}
+</style>
+</head>
+<body>
+<button onclick="createRipple(event)">点击触发全屏涟漪</button>
+
+<script>
+function createRipple(e) {
+  // 创建涟漪元素
+  const ripple = document.createElement('div');
+  ripple.className = 'ripple-effect';
+  
+  // 计算全屏尺寸
+  const diameter = Math.max(
+    document.documentElement.clientWidth,
+    document.documentElement.clientHeight
+  );
+  
+  // 设置元素尺寸和位置
+  ripple.style.width = ripple.style.height = `${diameter}px`;
+  ripple.style.left = `${e.clientX - diameter/2}px`;
+  ripple.style.top = `${e.clientY - diameter/2}px`;
+
+  // 添加动画结束监听
+  ripple.addEventListener('animationend', () => {
+    ripple.remove();
+  });
+
+  document.body.appendChild(ripple);
+}
+
+// 清除可能残留的涟漪（安全处理）
+window.addEventListener('blur', () => {
+  document.querySelectorAll('.ripple-effect').forEach(ripple => {
+    ripple.remove();
+  });
+});
+</script>
+</body>
+</html>

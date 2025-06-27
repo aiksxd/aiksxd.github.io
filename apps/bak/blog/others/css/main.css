@@ -1,0 +1,8 @@
+#main { 
+    transition: margin 0.7s;
+    -webkit-transition:margin 0.7s;
+    padding: 16px;
+    margin-right: 60px;
+    margin-top: 45px;
+    margin-left: 60px;
+}

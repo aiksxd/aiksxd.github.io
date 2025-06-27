@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown风格层级文档</title>
+    <style>
+        /* 基础重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f8f9fa;
+        }
+
+        /* 通用文档结构样式 */
+        .document-section {
+            position: relative;
+            margin-left: 30px;
+            padding: 10px 0;
+        }
+
+        /* 层级引导线 */
+        .document-section::before {
+            content: "";
+            position: absolute;
+            left: -15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        /* 层级标记点 */
+        .document-section::after {
+            content: "";
+            position: absolute;
+            left: -18px;
+            top: 15px;
+            width: 8px;
+            height: 8px;
+            background: #4dabf7;
+            border-radius: 50%;
+        }
+
+        /* 层级深度控制 */
+        .level-1 { margin-left: 0; }
+        .level-2 { margin-left: 30px; }
+        .level-3 { margin-left: 60px; }
+        .level-4 { margin-left: 90px; }
+
+        /* 兼容原生Markdown标签 */
+        h1, h2, h3, h4, h5, h6,
+        p, ul, ol, blockquote {
+            margin: 10px 0;
+            padding: 8px 15px;
+            background: white;
+            border-left: 3px solid #4dabf7;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        /* 代码块样式 */
+        pre {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .document-section {
+                margin-left: 15px;
+            }
+
+            .level-2 { margin-left: 15px; }
+            .level-3 { margin-left: 30px; }
+            .level-4 { margin-left: 45px; }
+
+            .document-section::before {
+                left: -8px;
+            }
+
+            .document-section::after {
+                left: -11px;
+                width: 6px;
+                height: 6px;
+            }
+        }
+
+        /* 交互增强 */
+        .document-section:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        /* API类 */
+        .api-endpoint {
+            border-left-color: #40c057;
+        }
+
+        .api-method {
+            padding: 2px 6px;
+            background: #40c057;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 手动编写的层级结构 -->
+    <div class="document-section level-1">
+        <h1>项目文档</h1>
+        <div class="document-section level-2">
+            <h2>安装指南</h2>
+            <p>使用npm进行安装：</p>
+            <pre><code>npm install my-package</code></pre>
+        </div>
+
+        <div class="document-section level-2 api-endpoint">
+            <h2>API参考</h2>
+            <div class="document-section level-3">
+                <h3><span class="api-method">GET</span>/api/users</h3>
+                <p>获取用户列表</p>
+                <pre><code>{
+  "id": number,
+  "name": string
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- 原生Markdown兼容区域 -->
+    <h2>原生Markdown示例</h2>
+    <p>这个段落会自动应用样式，无需额外class</p>
+    <ul>
+        <li>列表项1</li>
+        <li>列表项2</li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<style>  *{
+  
+    padding: 0;
+    margin: 0;
+  }
+  body {
+    overflow: hidden;
+  }
+  .waiBianKuang {
+    width: 314px;
+    height: 120px;
+    border-radius: 60px;
+    background-color: #0068de;
+    margin: 50vh auto;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 15px;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+    transition: 0.8s all ease 0s;
+    transform: translate(0,-50%);
+  }
+  .waiBianKuang-YinYing {
+    width: 314px;
+    height: 120px;
+    border-radius: 60px;
+    left: 0px;
+    box-shadow: 0px 0px 20px #000000 inset;
+    position: absolute;
+    z-index: 200;
+  }
+  .ri-Guang {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    left: 0;
+    transition: all 0.8s cubic-bezier(.39,.91,.49,1.23) 0s;
+  }
+  .guang {
+    width: 196px;
+    height: 196px;
+    background-color: rgba(218, 218, 218, 0.25);
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    position: absolute;
+  }
+  .g {
+    z-index: 20;
+  }
+  .g1 {
+    width: 296px;
+    height: 296px;
+    background-color: rgba(218, 218, 218, 0.2);
+    z-index: 10;
+  }
+  .g2 {
+    width: 396px;
+    height: 396px;
+    background-color: rgba(218, 218, 218, 0.15);
+  }
+  .taiYang {
+    width: 90px;
+    height: 90px;
+    background-color: #ffc300;
+    border-radius: 45px;
+    box-shadow: 7px 7px 15px #00000093 ;
+    position: relative;
+    z-index: 120;
+    overflow: hidden;
+  }
+  .taiYang-YinYing {
+    width: 90px;
+    height: 90px;
+    border-radius: 45px;
+    box-shadow: -3px -3px 6px #00000093 inset;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .taiYang-GaoGuang {
+    width: 90px;
+    height: 90px;
+    border-radius: 45px;
+    box-shadow: 3px 3px 6px #ffffff inset;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .yue {
+    width: 90px;
+    height: 90px;
+    border-radius: 45px;
+    background-color: #cccccc;
+    box-shadow: 3px 3px 6px #fff inset;
+    position: relative;
+    top: 0;
+    left: 90px;
+    transition: all 0.6s ease 0s;
+  }
+  .yue1 {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #a8a8a8;
+    position: absolute;
+    top: 40px;
+    left: 16px;
+  }
+  .yue2 {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #a8a8a8;
+    position: absolute;
+    top: 51px;
+    left: 55px;
+  }
+  .yue3 {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #a8a8a8;
+    position: absolute;
+    top: 20px;
+    left: 37px;
+  }
+  #yunZuJian {
+    position: absolute;
+    top: 0;
+    left: 314px;
+    transition: all 0.8s ease 0s;
+  }
+  .yun {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+  }
+  .yun-1 {
+    background-color: #fff;
+    width: 136px;
+    height: 136px;
+    border-radius: 50%;
+    position: absolute;
+  }
+  .y1 {
+    right: -57px;
+    top: 30px;
+    transform: scale(0.6,1);
+  }
+  .y2 {
+    right: -25px;
+    top: 71px;
+    transform: scale(0.7,1);
+  }
+  .y3 {
+    right: 26px;
+    top: 95px;
+    transform: scale(0.6,1);
+  }
+  .y4 {
+    right: 86px;
+    top: 113px;
+    transform: scale(1.2,1.5);
+  }
+  .y5 {
+    right: 157px;
+    top: 84px;
+    transform: scale(1.3,0.8);
+  }
+  .y61 {
+    right: 242px;
+    top: 88px;
+    transform: scale(1.3,0.8);
+  }
+  
+  .yunYinYing {
+    top: -20px;
+    left: -34px;
+    transform: scale(1.2,1);
+    opacity: 0.6;
+  }
+  
+  .xingZuJian {
+    width: 314px;
+    height: 120px;
+    /* background-color: #3b3b3b; */
+    position: absolute;
+    top: -120px;
+    left: 0;
+    transition: 0.8s top cubic-bezier(.39,.91,.49,1.23) 0s; 
+    z-index: 0;
+  }
+  .xingXing {
+    width: 30px;
+    height: 30px;
+    background-color: #171e33;
+    overflow: hidden;
+    position: absolute;
+  }
+  .x {
+    width: 30px;
+    height: 30px;
+    background-color: #171e33;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 3;
+    transition: 0.4 all ease 0s;
+  }
+  .xcolor {
+    width: 26px;
+    height: 26px;
+    background-color: #ffffff;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 1;
+  }
+  
+  .lt {
+    transform: translate(-50%,-50%);
+  }
+  .rt {
+    transform: translate(50%,-50%);
+  }
+  .lb {
+    transform: translate(-50%,50%);
+  }
+  .rb {
+    transform: translate(50%,50%);
+  }
+  .xWei1{
+    left: 62px;
+    top: 4px;
+    transform: scale(0.5);
+  }
+  .xWei2{
+    left: 23px;
+    top: 22px;
+    transform: scale(0.3);
+  }
+  .xWei3{
+    left: 63px;
+    top: 38px;
+    transform: scale(0.3);
+  }
+  .xWei4{
+    left: 32px;
+    top: 70px;
+    transform: scale(0.15);
+  }
+  .xWei5{
+    left: 24px;
+    top: 80px;
+    transform: scale(0.15);
+  }
+  .xWei6{
+    left: 59px;
+    top: 88px;
+    transform: scale(0.2);
+  }
+  .xWei7{
+    left: 161px;
+    top: 16px;
+    transform: scale(0.6);
+  }
+  .xWei8{
+    left: 120px;
+    top: 14px;
+    transform: scale(0.3);
+  }
+  .xWei9{
+    left: 105px;
+    top: 55px;
+    transform: scale(0.15);
+  }
+  .xWei10{
+    left: 145px;
+    top: 60px;
+    transform: scale(0.15);
+  }
+  .xWei11{
+    left: 127px;
+    top: 75px;
+    transform: scale(0.3);
+  }
+  
+  
+  .beiJing {
+    width: 100vw;
+    height: 100vh;
+    transition: 0.4s all ease 0s;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #skr:checked+.waiBianKuang .yue{
+    box-shadow: 3px 3px 6px #ffffff00 inset;
+    opacity: 1;
+    left: 0;
+  }
+  #skr:checked~.beiJing {
+    background-color: #3b3b3b;
+  }
+  #skr:checked+.waiBianKuang .ri-Guang {
+    left: 194px;
+  }
+  #skr:checked+.waiBianKuang #yunZuJian {
+    top: 120px;
+  }
+  #skr:checked+.waiBianKuang {
+    background-color: #171e33;
+  }
+  #skr:checked+.waiBianKuang .xingZuJian {
+    top: 0;
+  }
+  </style>
+<body>
+
+    <input type="checkbox" id="skr" hidden>
+    <div class="waiBianKuang">
+      <label for="skr" class="waiBianKuang-YinYing"></label>
+      <div class="ri-Guang">
+        <div class="guang g"></div>
+        <div class="guang g1"></div>
+        <div class="guang g2"></div>
+        <div class="taiYang">
+          <div class="yue">
+            <div class="yue1"></div>
+            <div class="yue2"></div>
+            <div class="yue3"></div>
+          </div>
+          <div class="taiYang-YinYing"></div>
+          <div class="taiYang-GaoGuang"></div>
+        </div>
+      </div>
+      <div class="xingZuJian">
+        <div class="xingXing xWei1">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei2">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei3">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei4">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei5">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei6">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei7">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei8">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei9">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei10">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+        <div class="xingXing xWei11">
+          <div class="x lt"></div>
+          <div class="x rt"></div>
+          <div class="x lb"></div>
+          <div class="x rb"></div>
+          <div class="xcolor"></div>
+        </div>
+      </div>
+      <div id="yunZuJian">
+        <div class="yun">
+          <div class="yun-1 y1"></div>
+          <div class="yun-1 y2"></div>
+          <div class="yun-1 y3"></div>
+          <div class="yun-1 y4"></div>
+          <div class="yun-1 y5"></div>
+          <div class="yun-1 y61"></div>
+        </div>
+        <div class="yun yunYinYing">
+          <div class="yun-1 y1"></div>
+          <div class="yun-1 y2"></div>
+          <div class="yun-1 y3"></div>
+          <div class="yun-1 y4"></div>
+          <div class="yun-1 y5"></div>
+          <div class="yun-1 y61"></div>
+        </div>
+      </div>
+    </div>
+    <div class="beiJing"></div>
+  </body>

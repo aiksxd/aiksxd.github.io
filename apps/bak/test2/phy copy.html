@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <style>
+        canvas { border: 1px solid #000 }
+    </style>
+</head>
+<body>
+    <script>
+        const { Engine, Render, Runner, Bodies, Composite, Constraint, Mouse, MouseConstraint } = Matter;
+
+        const engine = Engine.create();
+        const render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                wireframes: false
+            }
+        });
+
+        // 物理参数配置
+        const config = {
+            nailSpacing: 120,    // 钉子间距
+            ropeLength: 200,     // 初始绳长
+            radiusReduction: 2,  // 每圈半径减少量
+            breakLength: 50,     // 断裂绳长
+            initialSpeed: 80     // 初始水平速度
+        };
+
+        // 创建钉子
+        const nailA = Bodies.circle(400, 200, 10, { 
+            isStatic: true,
+            render: { fillStyle: '#F00' }
+        });
+        
+        const nailB = Bodies.circle(400, 320, 10, {
+            isStatic: true,
+            render: { fillStyle: '#F00' }
+        });
+
+        // 创建物块
+        const bob = Bodies.circle(400, 200 + config.ropeLength, 15, {
+            density: 0.04,
+            render: { fillStyle: '#00F' }
+        });
+
+        // 斜面
+        const slope = Bodies.rectangle(600, 500, 200, 20, {
+            isStatic: true,
+            angle: -0.3,
+            render: { fillStyle: '#0F0' }
+        });
+
+        // 状态管理
+        let currentNail = nailA;
+        let wrapCount = 0;
+        let constraint = null;
+
+        function createConstraint() {
+            if (constraint) Composite.remove(engine.world, constraint);
+            
+            constraint = Constraint.create({
+                pointA: currentNail.position,
+                bodyB: bob,
+                length: config.ropeLength - wrapCount * config.radiusReduction,
+                stiffness: 1,
+                damping: 0.01
+            });
+            
+            Composite.add(engine.world, constraint);
+        }
+
+        // 初始化
+        Composite.add(engine.world, [nailA, nailB, bob, slope]);
+        createConstraint();
+        Matter.Body.setVelocity(bob, { x: config.initialSpeed, y: 0 });
+
+        // 钉子切换检测
+        function checkNailSwitch() {
+            const delta = Matter.Vector.sub(bob.position, currentNail.position);
+            const angle = Math.atan2(delta.y, delta.x);
+            const angularSpeed = bob.angularVelocity;
+            
+            // 检测完整旋转（2&pi;变化）
+            if (Math.abs(angularSpeed) > 0.1 && 
+                Math.abs(angle - prevAngle) > Math.PI) {
+                wrapCount++;
+                
+                // 切换钉子条件
+                if (wrapCount % 2 === 0) {
+                    currentNail = (currentNail === nailA) ? nailB : nailA;
+                    createConstraint();
+                }
+            }
+            prevAngle = angle;
+        }
+
+        // 断裂检测
+        function checkBreak() {
+            if (constraint.length <= config.breakLength) {
+                Composite.remove(engine.world, constraint);
+                constraint = null;
+            }
+        }
+
+        // 运行循环
+        let prevAngle = 0;
+        Matter.Events.on(engine, 'beforeUpdate', () => {
+            if (constraint) {
+                checkNailSwitch();
+                checkBreak();
+                constraint.length = config.ropeLength - wrapCount * config.radiusReduction;
+            }
+        });
+
+        Engine.run(engine);
+        Render.run(render);
+    </script>
+</body>
+</html>

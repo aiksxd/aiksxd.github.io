@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html style="height: 100%; margin: 0;">
+<head>
+    <style>
+        @keyframes draw-path {
+            80% {
+                opacity: 0.8;
+            }
+            to {
+                stroke-dashoffset: 0;
+                opacity: 0;
+            }
+        }
+
+        .H {
+            stroke-dasharray: 540px;
+            stroke-dashoffset: 540px;
+            animation: draw-path 2s ease-out forwards;
+            animation-iteration-count: infinite;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background-color: #46af4b;
+        }
+
+        #loader {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #loader.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader">
+        <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
+            <defs>
+                <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blurred"/>
+                <feMerge>
+                    <feMergeNode in="blurred"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+                </filter>
+            </defs>
+            <g>
+                <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0 150 150"
+                    to="360 150 150"
+                    dur="10s"
+                    repeatCount="indefinite"/>
+            </g>
+
+            <g transform="translate(85,90)scale(0.8,0.8)">
+                <path class="H" stroke="white" stroke-width="10" stroke-linecap="square" stroke-linejoin="bevel" filter="url(#glow)"
+                    d="M34.5 17.5s-4.5-3-3-3c25 11.5 40 121-5.5 121-6.5 0-11.5-2.5-14.5-6.5-32-53.3 109.2-69.2 128-82.5 20-10.7 17.3-41.334-8-40-36 8-18.7 65.3-13.3 90.7 2.7 10.7 6.7 21.334 11.333 32 1.2 2.6 5 12 4 9.5"
+                />
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        // 初始化加载动画
+        (function() {
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const loader = document.getElementById('loader');
+            const g = document.querySelector('g');
+            
+            // 创建动态线条
+            const createLines = () => {
+                const numLines = 60;
+                const cx = 150;
+                const cy = 150;
+                const radius = 130;
+
+                for (let i = 0; i < numLines; i++) {
+                    const angle = (i / numLines) * 2 * Math.PI;
+                    const x1 = cx + radius * Math.cos(angle);
+                    const y1 = cy + radius * Math.sin(angle);
+                    const x2 = cx + (radius - 15) * Math.cos(angle);
+                    const y2 = cy + (radius - 15) * Math.sin(angle);
+
+                    const line = document.createElementNS(svgNS, 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', 'white');
+                    line.setAttribute('stroke-width', '3');
+                    
+                    g.appendChild(line);
+                }
+            };
+
+            // 淡入动画
+            const init = () => {
+                createLines();
+                loader.classList.add('active');
+            };
+
+            // Tauri关闭处理
+            if (window.__TAURI__) {
+                window.addEventListener('tauri://close-requested', (e) => {
+                    loader.style.transition = 'opacity 0.5s ease-in-out';
+                    loader.style.opacity = '0';
+                    setTimeout(() => window.__TAURI__.window.appWindow.close(), 500);
+                });
+            }
+
+            // 启动初始化
+            if (document.readyState === 'complete') {
+                init();
+            } else {
+                window.addEventListener('DOMContentLoaded', init);
+            }
+        })();
+    </script>
+</body>
+</html>

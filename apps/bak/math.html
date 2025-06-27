@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <style>
+        #editor { 
+            width: 800px;
+            height: 400px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .suggestion-list {
+            position: absolute;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .suggestion-item {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        .suggestion-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .param-placeholder {
+            background: #e3f2fd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor" contenteditable="true"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script>
+        class MathEditor {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.suggestionList = null;
+                this.currentSuggestions = [];
+                this.activeParams = new Map();
+                this.initEditor();
+            }
+
+            initEditor() {
+                // 初始化公式数据库
+                this.formulaDB = this.createFormulaDB();
+                
+                // 创建建议列表
+                this.suggestionList = document.createElement('div');
+                this.suggestionList.className = 'suggestion-list';
+                document.body.appendChild(this.suggestionList);
+                
+                // 事件监听
+                this.container.addEventListener('input', this.debounce(this.handleInput.bind(this), 250));
+                this.container.addEventListener('keydown', this.handleKeyEvents.bind(this));
+                this.suggestionList.addEventListener('click', this.handleSuggestionClick.bind(this));
+            }
+
+            createFormulaDB() {
+                return [
+                    {
+                        trigger: '\\\\int',
+                        name: '定积分',
+                        template: '\\\\int_{{{1}}}^{{{2}}} {{{3}}} d{{{4}}}',
+                        params: 4,
+                        preview: '\\\\int_{a}^{b} f(x) dx'
+                    },
+                    {
+                        trigger: '\\\\frac',
+                        name: '分数',
+                        template: '\\\\frac{{{1}}}{{{2}}}',
+                        params: 2,
+                        preview: '\\\\frac{numerator}{denominator}'
+                    }
+                ];
+            }
+
+            handleInput() {
+                const text = this.getCurrentText();
+                const lastChar = text.slice(-1);
+                
+                if (text.endsWith('\\\\')) {
+                    this.showSuggestions('');
+                } else if (lastChar.match(/[a-zA-Z]/)) {
+                    const trigger = text.split(/\\\\|\\s/).pop();
+                    this.showSuggestions(trigger);
+                } else {
+                    this.hideSuggestions();
+                }
+                
+                this.renderPreview();
+            }
+
+            handleKeyEvents(e) {
+                // 处理参数导航
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    this.navigateToNextParam();
+                }
+                
+                // 处理建议列表导航
+                if (['ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) {
+                    this.handleSuggestionNavigation(e);
+                }
+            }
+
+            navigateToNextParam() {
+                const params = [...this.container.querySelectorAll('.param-placeholder')];
+                const current = document.getSelection().anchorNode;
+                
+                let nextIndex = params.findIndex(p => 
+                    p.compareDocumentPosition(current) & Node.DOCUMENT_POSITION_CONTAINS
+                ) + 1;
+                
+                if (nextIndex >= params.length) nextIndex = 0;
+                
+                if (params[nextIndex]) {
+                    const range = document.createRange();
+                    range.selectNodeContents(params[nextIndex]);
+                    range.collapse(false);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+
+            renderPreview() {
+                const tempRender = document.createElement('div');
+                const content = this.container.innerHTML.replace('/<span[^>]*>.*?<\\/span>/g', '');
+                
+                try {
+                    katex.render(content, tempRender, {
+                        displayMode: true,
+                        throwOnError: false
+                    });
+                    this.container.style.backgroundImage = `
+                        linear-gradient(to right, white 50%, #f8f9fa 50%),
+                        linear-gradient(to right, white 50%, #f8f9fa 50%)
+                    `;
+                    this.container.style.backgroundSize = '100% 100%';
+                    this.container.style.backgroundBlendMode = 'difference';
+                } catch (e) {
+                    console.error('渲染错误:', e);
+                }
+            }
+
+            // 其他关键方法（防抖、光标控制等）与之前方案类似
+            // ...
+        }
+
+        // 初始化编辑器
+        const editor = new MathEditor('editor');
+        
+        // 实时渲染逻辑
+function renderMixedContent() {
+    const rawHTML = this.container.innerHTML;
+    const [textParts, paramSpans] = this.parseContent(rawHTML);
+    
+    // 文本部分用KaTeX渲染
+    const renderedMath = katex.renderToString(textParts.join(''), {
+        displayMode: true,
+        throwOnError: false
+    });
+    
+    // 合并保留参数占位符
+    const finalHTML = renderedMath.replace(/\\{\\{(\\d+)\\}\\}/g, (_, n) => 
+        `<span class="param-placeholder" data-param="${n}">?</span>`
+    );
+    
+    this.container.innerHTML = finalHTML;
+}
+        /*
+        replaceParam(paramId, value) {
+    const sanitizedValue = this.sanitizeInput(value);
+    this.activeParams.set(paramId, sanitizedValue);
+    
+    // 更新所有对应占位符
+    this.container.querySelectorAll(`[data-param="${paramId}"]`).forEach(span => {
+        span.classList.add('param-filled');
+        span.textContent = sanitizedValue;
+    });
+    
+    // 自动焦点转移
+    this.navigateToNextParam();
+}
+        // Web Worker处理公式匹配
+const formulaWorker = new Worker('formula-matcher.js');
+formulaWorker.onmessage = (e) => {
+    this.currentSuggestions = e.data;
+    this.renderSuggestions();
+};
+
+// 虚拟滚动建议列表
+class VirtualizedSuggestions {
+    constructor() {
+        this.visibleCount = 10;
+        this.startIndex = 0;
+        this.itemHeight = 32;
+    }
+    
+    render() {
+        const fragment = document.createDocumentFragment();
+        this.currentSuggestions
+            .slice(this.startIndex, this.startIndex + this.visibleCount)
+            .forEach((item, i) => {
+                const div = document.createElement('div');
+                div.style.height = `${this.itemHeight}px`;
+                div.style.position = 'absolute';
+                div.style.top = `${i * this.itemHeight}px`;
+                // ...填充内容
+                fragment.appendChild(div);
+            });
+        this.suggestionList.style.height = `${this.visibleCount * this.itemHeight}px`;
+        this.suggestionList.appendChild(fragment);
+    }
+}
+        
+        class PluginSystem {
+    constructor(editor) {
+        this.editor = editor;
+        this.plugins = new Map();
+    }
+
+    registerPlugin(plugin) {
+        plugin.install(this.editor);
+        this.plugins.set(plugin.name, plugin);
+    }
+}
+
+// 示例：化学式插件
+class ChemistryPlugin {
+    install(editor) {
+        editor.formulaDB.push({
+            trigger: '\\\\chem',
+            name: '化学式',
+            template: '\\\\chem{{1}}',
+            params: 1,
+            preview: 'H_2O'
+        });
+        
+        editor.addRenderHook(content => 
+            content.replace(/\\\\chem{(.*?)}/g, '<span class="chemical-formula">$1</span>')
+        );
+    }
+}
+        
+        */
+    </script>
+</body>
+</html>

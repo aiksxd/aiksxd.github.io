@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绿色主题答题系统</title>
+    <link rel="stylesheet" href="stylesa.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>答题系统</h1>
+            <button id="toggle-show-answer">显示解析</button>
+        </header>
+        <main>
+            <div id="question-container">
+                <div id="question-header">
+                    <span id="question-number"></span>
+                    <span id="question-type"></span>
+                    <span id="question-score"></span>
+                </div>
+                <div id="question-content"></div>
+                <div id="answer-input"></div>
+                <button id="submit-answer">提交</button>
+            </div>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="result-container" style="display: none;">
+                <h2>答题结果</h2>
+                <ul id="result-list"></ul>
+            </div>
+        </main>
+        <footer>
+            <button id="load-questions">加载题库</button>
+            <button id="start-test">开始测试</button>
+        </footer>
+    </div>
+    <script src="scripta.js"></script>
+</body>
+</html>

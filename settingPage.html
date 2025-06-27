@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/appUI.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --hover-green: #45a049;
+            --light-green: #DFF0D8;
+            --dark-green: #3D8B3D;
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #8bc34a;
+            --accent: #ffeb3b;
+            --light: #f5f9f5;
+            --dark: #263238;
+        }
+        body {
+            overflow-x: hidden;
+            position: relative;
+        }
+        header {
+            margin: 0;
+            padding: 0;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            align-items: center;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--active-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--title);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: var(--active-color);
+        }
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            animation: fadeInUp 1s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .btn:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .pages {
+            padding: 20px;
+            margin-top: 60px; /* Adjust for fixed navbar */
+        }
+
+        /* 取色器 */
+        .color-picker {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .color-preview {
+            width: 100px;
+            height: 50px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <ul class="nav-links">
+                <li><a onclick="switchPage(0)" class="nav-item active lan">Main</a></li>
+                <li><a onclick="switchPage(1)" class="nav-item lan">App manager</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="pages">
+        <div class="feature-group news-section">
+            <span class="H-title lan">Change Theme</span><select id="themeController" class="H-select" onchange="ask_Modify_Theme(this.value)">
+                <option class="lan" value="0" selected="selected">Light</option>
+                <option class="lan" value="1">Night</option>
+            </select><br><br>
+            <span class="H-title lan">Enable Local Storage</span><br>
+            <span class="lan">unavailable in inPrivate window</span>
+            <label class="switch">
+                <input id="use_Local_Storage" class="settingInput" type="checkbox" checked hidden>
+                <span class="slider"></span>
+            </label><br>
+            <button class="lan green-button" onclick="window.parent.localStorage.clear()">Clean Local Storage!</button><br><br>
+
+            <span class="H-title H-point lan">App Mode</span>
+            <label class="switch">
+                <input id="app_Mode" class="settingInput" type="checkbox" hidden checked>
+                <span class="slider" onclick="document.getElementById('showClonePage').click()"></span>
+            </label><br>
+            <span class="lan">unavailable as files:// (at least e.g. http://127.0.0.1)</span><br>
+            <input id="showClonePage" class="parent-input" type="checkbox" checked hidden>
+            <div class="H-child">
+                <span class="lan">Enable Clone Page</span>
+                <label class="switch">
+                    <input id="enable_Clone_Page" class="settingInput" type="checkbox" checked hidden>
+                    <span class="slider"></span>
+                </label>
+            </div><br>
+            
+            <span class="H-title  lan">Language:</span><select class="H-select" id="languageController" onchange="ask_Modify_Language(this.value)">
+                <option value="en" selected="selected">English</option>
+                <option value="zh">中文</option>
+            </select><br>
+
+            
+        </div>
+    </div>
+
+    <div class="pages covert">
+        
+        <div class="color-picker">
+            <input type="range" id="red" min="0" max="255" oninput="updateColor()">
+            <input type="range" id="green" min="0" max="255" oninput="updateColor()">
+            <input type="range" id="blue" min="0" max="255" oninput="updateColor()">
+            <div class="color-preview" id="colorPreview"></div>
+            <div id="hexValue">var(--card-bg)</div>
+        </div>
+
+        <li class="menu-item">
+            <button onclick="ask_Toggle_Immerse_Mode()">Toggle_Immerse_Mode</button>
+        </li>
+        <li class="menu-item">
+            <button onclick="ask_Open_Modal()">ask open modal</button>
+        </li>
+    </div>
+    <div class="pages covert">
+        <div class="feature-group news-section">
+            <!-- <span class="H-title lan">Permission Management</span>
+            <label class="news-item">
+                <input class="toggleNews" type="checkbox" hidden>
+                <h3 class="news-title lan">Permission List</h3>
+                <p class="news-summary lan">Manage application permissions here.</p>
+                <div class="news-detail">
+                    <p class="lan">You can add, remove or modify permissions for each application.</p>
+                    <ul>
+                        <li class="lan">Permission 1: Description</li>
+                        <li class="lan">Permission 2: Description</li>
+                        <li class="lan">Permission 3: Description</li>
+                    </ul>
+                    <p class="lan">To add a new permission, click the "Add Permission" button below.</p>
+                    <button class="lan" onclick="ask_Add_Permission()">Add Permission</button>
+                </div>
+            </label> -->
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/theme.js"></script>
+    <script>
+        // page default language
+        function update_Page_Language(lan) {
+            change_Language(lan, 'settingPage');
+            document.getElementById('languageController').value = lan;
+        }
+        // init config
+        if(window.parent.localStorage.themeIndex && window.parent.localStorage.themeIndex !== document.getElementById('themeController').value){
+            document.getElementById('themeController').value = window.parent.localStorage.themeIndex;
+        }
+        if(window.parent.localStorage.language && window.parent.localStorage.themeIndex !== document.getElementById('languageController').value){
+            document.getElementById('languageController').value = window.parent.localStorage.language;
+        }
+
+        // modify config
+        document.querySelectorAll('.settingInput').forEach(input => {
+            input.addEventListener('click', () => {
+                if (input.id) {
+                    ask_Modify_Config(input.id, input.checked);
+                }
+            });
+        });
+
+        // color picker
+        function updateColor() {
+            const r = document.getElementById('red').value;
+            const g = document.getElementById('green').value;
+            const b = document.getElementById('blue').value;
+            const color = `rgb(${r},${g},${b})`;
+            document.getElementById('colorPreview').style.background = color;
+            document.getElementById('hexValue').textContent = rgbToHex(r, g, b);
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = parseInt(x).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        function switchPage(pageIndex) {
+            let pages = document.querySelectorAll('.pages')
+            let items = document.querySelectorAll('.nav-item')
+            pages.forEach(el => {
+                el.classList.add('covert');
+            });
+            items.forEach(el => {
+                el.classList.remove('active');
+            });
+            pages[pageIndex].classList.toggle('covert');
+            items[pageIndex].classList.toggle('active');
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

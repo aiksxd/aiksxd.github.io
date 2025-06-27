@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
+    <link rel="stylesheet" type="text/css" href="css/tools.css">
+	<link rel="stylesheet" type="text/css" href="css/info.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="alpha.css">
+    <!--script type="text/javascript" src="js/nav.js">
+
+	<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport">
+	<meta content="yes" name="apple-mobile-web-app-capable">
+	<meta content="yes" name="apple-touch-fullscreen">
+	<meta content="black" name="apple-mobile-web-app-status-bar-style">
+	<meta content="320" name="MobileOptimized"-->
+
+  </head>
+
+  <body>
+	<!--导航栏--
+	<ul class="menu">
+	<li class="menu" style="font-size=40px"> </li>
+	<li class="menu active">主页</li>
+	<li class="menu"><a href="#news">直播</a></li>
+	<li class="menu"><a href="#contact">云盘</a></li>
+	<li class="menu"><a href="#about">关于</a></li>
+	</ul-->
+	<div id="myTopbar" class="topbar" onmouseover="toggleTopbar()" onmouseout="toggleTopbar()">
+	  <a href="#"><i class="material-icons">info</i><span class="icon-text">about</span></a>
+	  <a href="#"><i class="material-icons">spa</i><span class="icon-text"></span>services</a>
+	  <a href="#"><i class="material-icons">monetization_on</i><span class="icon-text"></span>clients</a>
+	  <a href="#"><i class="material-icons">email</i><span class="icon-text"></span>contact</a>
+    </div>
+	<!--工具栏-->
+	<button class="tbutton" onclick="openNav()">
+	  <img class="inbimg" src="img/tools.png">
+	</button>
+	<div id="mySidebar" class="sidebar" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
+	  <a href="#"><i class="material-icons">info</i><span class="icon-text">&nbsp;&nbsp;&nbsp;&nbsp;about</span></a><br>
+	  <a href="#"><i class="material-icons">spa</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;services</a><br>
+	  <a href="#"><i class="material-icons">monetization_on</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;clients</a><br>
+	  <a href="#"><i class="material-icons">email</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;contact</a>
+    </div>
+	<!--作者信息栏-->
+	<div id="myInfobar" class="infobar" onmouseover="toggleInfobar()" onmouseout="toggleInfobar()">
+	  <a href="#"><i class="material-icons">info</i><span class="icon-text">&nbsp;&nbsp;&nbsp;&nbsp;about</span></a><br>
+	  <a href="#"><i class="material-icons">spa</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;services</a><br>
+	  <a href="#"><i class="material-icons">monetization_on</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;clients</a><br>
+	  <a href="#"><i class="material-icons">email</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;contact</a>
+	  <img class="infoicon moreinfo">
+	  <p class="infobody moreinfo">
+		复活吧，我的爱人~！<br/>内容填充<br/>内容填充<br/>内容填充<br/>网页代码比较臃肿，卡试<br/>试换个浏览器
+	  </p>
+	  <a class="jump moreinfo" href="">Create mine</a><br/>
+	  <a class="jump moreinfo" href="">Join others</a>
+    </div>
+	<!--正文-->
+    <div id="main" class="alpha">
+	  <!--应用-->
+	  <p class="app">
+		<a href="main/game/fcf.php"><img src="img/fcf.png"></a>
+	  </p>
+	  <p id="test">a<br/>a<br/></p>
+    </div>
+
+	<!--ul id="toold" class="toold">
+    <li class="tooli"><a>alpha<a/></li>
+	</ul>
+	<!--正文开始--
+	<div class="include">
+	<div class="onwericon"	>
+	<img src="" alt="">
+	</div>
+	</div>
+	<!--功能控件--
+	<div class="apps">
+
+	</div>
+	<div class="alpha">
+	a<br/>a<br/>a<br/>a<br/>a
+	</div-->
+  </body>
+</html>
+
+<script>
+//展开收缩
+var mini = true;
+
+function toggleSidebar() {
+     if (mini) {
+          document.getElementById("mySidebar").style.width = "180px";
+          document.getElementById("main").style.marginRight = "180px";
+          this.mini = false;
+            } else {
+          document.getElementById("mySidebar").style.width = "55px";
+          document.getElementById("main").style.marginRight = "85px";
+          this.mini = true;
+          }
+     }
+function toggleInfobar() {
+     if (mini) {//opacity:0透明度
+          document.getElementById("myInfobar").style.width = "180px";
+          document.getElementById("main").style.marginLeft = "180px";;
+                this.mini = false;
+            } else {
+          document.getElementById("myInfobar").style.width = "55px";
+          document.getElementById("main").style.marginLeft = "85px";
+          this.mini = true;
+          }
+     }
+//右下角打开关闭
+var S = document.getElementById('mySidebar');
+var T = document.getElementById('myTopbar');
+var I = document.getElementById('myInfobar');
+var a = 0;var aa = 0;
+function openNav() {
+  if(a==0)
+  {a++;
+    S.style.width = "0px";
+	I.style.width = "0px";
+  }else if(a==1){a++;
+    T.style.height = "0px";
+  }else if(a==2){a++;
+    T.style.height = "40px";
+  }else{
+    a=0;
+    S.style.width = "55px";
+	I.style.width = "55px";
+  }
+}
+function openInfo() {
+  if(I.style.width == "0px"){
+     I.style.width = "200px";
+  }else{
+    I.style.width = "0px";
+  }
+}
+</script>

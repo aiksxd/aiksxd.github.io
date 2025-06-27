@@ -1,0 +1,150 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body {
+    min-height: 2000px;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: #171e33;
+}
+.introduction {
+    height: 100%;
+    /* background:White url('../img/background.png'); */
+}
+.stars {
+    font-size: calc(var(--i)*1px);
+    top: calc(var(--i)*10px);
+    right: calc(var(--i)*2px);
+    color: rgba(255, 255, 255, calc(var(--i)*0.01));
+    position: relative;
+    z-index: 9999;
+}
+#moon {
+    width: 500px;
+    height: 500px;
+    left: 50%;
+    position: sticky;
+    top: -1px;
+}
+.shadow {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: var(--t) var(--t) 20px var(--i) inset;
+    position: absolute;
+}
+.decorations {
+    position: absolute;
+    z-index: 1;
+}
+.light {
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    width: var(--i);
+    height: var(--i);
+    background-color: rgba(218, 218, 218, var(--t));
+    z-index: 0;
+    top: -80px;
+    position: absolute;
+}
+
+.sidebar {
+    height: 100%;
+    width: 0px;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    background-color: #96CA00;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 80px;
+    white-space: nowrap;
+}
+#blogTitle {
+    position: absolute;
+    top: 300px;
+    right: 15%;
+    transform: scale(9,9);
+}
+#profile {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+#avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: auto;
+    display: block;
+    box-shadow: 0px 0px 5px 5px #b9b9b9;
+}
+#name {
+    font-size: 5em;
+    color: Black;
+}
+#saying {
+    font-size: 4em;
+    color: Black;
+}
+#overview::before {    /*???????*/
+    content: '';
+    position: absolute;
+    width: 100%;
+    top: -100px;
+    height: 100px;
+    background: linear-gradient(to top, Gray, transparent);
+    z-index: 999;
+}
+
+.clouds {
+    top: -200px;    /*absolute?????*/
+    height: 600px;
+    width: 50%;
+    position: relative;
+}
+
+#overview {
+  background-color: Gray;
+  height: 2000px;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+}
+
+#more-tools {
+  border-radius: 10px;
+  background: rgba(46, 230, 10, 0);
+  position: fixed;
+  bottom: 5px; right: 5px;
+  padding: 15px;
+  width: 150px;
+  height: 150px;
+  z-index: 999;
+
+  transition: width 1s, height 1s;
+  -webkit-transition: width 1s, height 1s; /* Safari */
+}
+
+.list {
+    min-height: 200px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.posts {
+    position: relative;
+    margin: auto;
+    width: 80%;
+    height: 300px;
+    background-color: White;
+    border-radius: 50px;
+    background: linear-gradient(red, blue);
+}
+.posts:hover {
+    z-index: 999;
+    
+}

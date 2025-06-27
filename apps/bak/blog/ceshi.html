@@ -1,0 +1,59 @@
+<style>
+*{
+    padding: 0;
+    margin: 0;
+  }
+  body {
+    height: 300px;
+    background-color: #171e33;
+  }
+  #moon {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    box-shadow: 7px 7px 15px #000000 ;
+    background-color: #cccccc;
+    position: relative;
+  }
+  .shadow {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: var(--t) var(--t) 20px var(--i) inset;
+    position: absolute;
+  }
+  .guang {
+    width: 196px;
+    height: 196px;
+    background-color: rgba(218, 218, 218, 0.25);
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    position: absolute;
+  }
+  .g {
+    z-index: 20;
+  }
+  .g1 {
+    width: 500px;
+    height: 500px;
+    background-color: rgba(218, 218, 218, 0.2);
+    z-index: 10;
+  }
+  .g2 {
+    width: 600px;
+    height: 600px;
+    background-color: rgba(218, 218, 218, 0.15);
+  }
+  </style>
+<body>
+    <div id="moon">
+        <div class="guang g"></div>
+        <div class="guang g1"></div>
+        <div class="guang g2"></div>
+        <div class="shadow" style=" --i:rgb(0,0,0);--t:-8px;"></div>
+        <div class="shadow" style="--i:rgb(255,255,255);--t:8px;"></div>
+    </div>
+  </body>

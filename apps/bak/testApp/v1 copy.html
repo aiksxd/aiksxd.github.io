@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --dark-green: #27ae60;
+            --light-green: #d5f5e3;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f9f0;
+        }
+
+        .app-list {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .app-item {
+            background: white;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .app-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.2);
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 6px;
+        }
+
+        .app-info {
+            flex: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-meta {
+            flex: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-actions button {
+            margin-left: 10px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-permission {
+            background-color: var(--dark-green);
+            color: white;
+        }
+
+        .btn-update {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-uninstall {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .app-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 20px;
+            background: var(--light-green);
+        }
+
+        .app-details.active {
+            max-height: 500px;
+            padding: 20px;
+        }
+
+        .permission-list {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .permission-item {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .app-header {
+                flex-wrap: wrap;
+            }
+            
+            .app-meta {
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-list">
+        <!-- 示例应用项 -->
+        <div class="app-item">
+            <div class="app-header">
+                <img src="app-icon.png" class="app-icon" alt="应用图标">
+                <div class="app-info">
+                    <div style="flex:1">应用名称</div>
+                    <div class="app-meta">
+                        <span>版本：1.0.0</span>
+                        <span>已签名</span>
+                        <span>自启动：是</span>
+                    </div>
+                </div>
+                <div class="app-actions">
+                    <button class="btn-permission" onclick="togglePermission(this)">权限管理</button>
+                    <button class="btn-update">更新</button>
+                    <button class="btn-uninstall">卸载</button>
+                </div>
+            </div>
+            <div class="app-details">
+                <h3>应用详情</h3>
+                <div class="readme-content">这里是README.md的内容...</div>
+                <div class="permission-list">
+                    <div class="permission-item">读取存储</div>
+                    <div class="permission-item">摄像头访问</div>
+                    <div class="permission-item">网络访问</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 点击应用项切换详情展开
+        document.querySelectorAll('.app-header').forEach(header => {
+            header.addEventListener('click', function(e) {
+                // 排除按钮点击的冒泡
+                if (!e.target.closest('button')) {
+                    const details = this.nextElementSibling;
+                    details.classList.toggle('active');
+                }
+            });
+        });
+
+        // 权限管理切换
+        function togglePermission(btn) {
+            const details = btn.closest('.app-header').nextElementSibling;
+            const permissionList = details.querySelector('.permission-list');
+            const readmeContent = details.querySelector('.readme-content');
+            
+            if (permissionList.style.display === 'grid') {
+                permissionList.style.display = 'none';
+                readmeContent.style.display = 'block';
+                btn.textContent = '权限管理';
+            } else {
+                permissionList.style.display = 'grid';
+                readmeContent.style.display = 'none';
+                btn.textContent = '返回详情';
+            }
+        }
+
+        // 动态加载readme内容（示例）
+        function loadReadme(appId) {
+            // 这里可以添加实际的文件加载逻辑
+            return '示例应用说明...';
+        }
+    </script>
+</body>
+</html>

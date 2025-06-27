@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代化加载动画合集</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e6e6e6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 150, 255, 0.15);
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(128, 0, 255, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .animation-viewer {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 100, 200, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.15);
+        }
+        
+        .animation-container {
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 15, 30, 0.7);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animation-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff00cc, #00dbde, #00ff80, #fc00ff);
+            z-index: -1;
+            border-radius: 14px;
+            animation: borderAnimation 3s linear infinite;
+            background-size: 400%;
+        }
+        
+        .animation-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: inherit;
+            border-radius: 12px;
+            z-index: -1;
+        }
+        
+        .animation-name {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4dccff;
+            text-align: center;
+        }
+        
+        .animation-description {
+            text-align: center;
+            color: #b0b0d0;
+            margin-bottom: 25px;
+            min-height: 60px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 30, 60, 0.5);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        
+        .speed-control label {
+            color: #80c0ff;
+        }
+        
+        .speed-control input {
+            width: 120px;
+        }
+        
+        .animations-selector {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            box-shadow: 0 0 30px rgba(0, 100, 200, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.15);
+        }
+        
+        .animation-card {
+            background: rgba(15, 30, 60, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(80, 120, 200, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .animation-card:hover {
+            transform: translateY(-5px);
+            background: rgba(25, 50, 90, 0.6);
+            box-shadow: 0 5px 15px rgba(0, 100, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+        }
+        
+        .animation-card.active {
+            background: rgba(30, 80, 150, 0.6);
+            border-color: #00dbde;
+            box-shadow: 0 0 20px rgba(0, 219, 222, 0.4);
+        }
+        
+        .animation-preview {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: #70d0ff;
+            text-align: center;
+        }
+        
+        /* 加载动画样式 */
+        /* 1. 旋转圆环 */
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 7px solid rgba(0, 219, 222, 0.2);
+            border-top: 7px solid #00dbde;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        /* 2. 脉冲点 */
+        .pulse-dots {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .pulse-dots div {
+            width: 20px;
+            height: 20px;
+            background: #fc00ff;
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        
+        .pulse-dots div:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .pulse-dots div:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        /* 3. 弹跳点 */
+        .bouncing-dots {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bouncing-dots div {
+            width: 24px;
+            height: 24px;
+            background: #ff00cc;
+            border-radius: 50%;
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+        
+        .bouncing-dots div:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+        
+        .bouncing-dots div:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        
+        /* 4. 进度条 */
+        .progress-bar {
+            width: 200px;
+            height: 12px;
+            background: rgba(0, 219, 222, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 30%;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            border-radius: 10px;
+            animation: progress 2s ease-in-out infinite;
+        }
+        
+        /* 5. 翻转方块 */
+        .flipping-box {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            animation: flip 1.8s ease infinite;
+            border-radius: 8px;
+        }
+        
+        /* 6. 3D旋转立方体 */
+        .cube-container {
+            width: 70px;
+            height: 70px;
+            perspective: 800px;
+        }
+        
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 5s linear infinite;
+        }
+        
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 219, 222, 0.8);
+            border: 2px solid #00dbde;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .front { transform: translateZ(35px); }
+        .back { transform: rotateY(180deg) translateZ(35px); }
+        .right { transform: rotateY(90deg) translateZ(35px); }
+        .left { transform: rotateY(-90deg) translateZ(35px); }
+        .top { transform: rotateX(90deg) translateZ(35px); }
+        .bottom { transform: rotateX(-90deg) translateZ(35px); }
+        
+        /* 动画定义 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.6); opacity: 0.5; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-25px); }
+        }
+        
+        @keyframes progress {
+            0% { left: -40%; width: 40%; }
+            70% { width: 80%; }
+            100% { left: 110%; width: 20%; }
+        }
+        
+        @keyframes flip {
+            0% { transform: rotateX(0) rotateY(0); }
+            25% { transform: rotateX(0) rotateY(180deg); }
+            50% { transform: rotateX(180deg) rotateY(180deg); }
+            75% { transform: rotateX(180deg) rotateY(0); }
+            100% { transform: rotateX(0) rotateY(0); }
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+        
+        @keyframes borderAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .speed-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(100, 150, 255, 0.3);
+            outline: none;
+        }
+        
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00dbde;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 219, 222, 0.8);
+        }
+        
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #8090b0;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-spinner"></i> 现代化加载动画合集</h1>
+            <p class="subtitle">探索各种CSS实现的加载动画效果，可调整速度并查看实时演示</p>
+        </header>
+        
+        <div class="content">
+            <div class="animation-viewer">
+                <h2 class="animation-name" id="current-animation-name">旋转圆环</h2>
+                <div class="animation-container">
+                    <div class="spinner" id="current-animation"></div>
+                </div>
+                <p class="animation-description" id="current-animation-desc">
+                    一个简单的旋转圆环动画，常用于表示加载过程。动画流畅且不占用太多空间。
+                </p>
+                
+                <div class="controls">
+                    <div class="speed-control">
+                        <label for="speed"><i class="fas fa-tachometer-alt"></i> 动画速度:</label>
+                        <input type="range" min="50" max="300" value="100" class="speed-slider" id="speed">
+                        <span id="speed-value">1.0x</span>
+                    </div>
+                    <button class="btn" id="refresh-btn"><i class="fas fa-sync-alt"></i> 重新开始动画</button>
+                </div>
+            </div>
+            
+            <div class="animations-selector">
+                <div class="animation-card active" data-animation="spinner">
+                    <div class="animation-preview">
+                        <div class="spinner"></div>
+                    </div>
+                    <h3 class="card-title">旋转圆环</h3>
+                </div>
+                
+                <div class="animation-card" data-animation="pulse-dots">
+                    <div class="animation-preview">
+                        <div class="pulse-dots">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <h3 class="card-title">脉冲点</h3>
+                </div>
+                
+                <div class="animation-card" data-animation="bouncing-dots">
+                    <div class="animation-preview">
+                        <div class="bouncing-dots">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <h3 class="card-title">弹跳点</h3>
+                </div>
+                
+                <div class="animation-card" data-animation="progress-bar">
+                    <div class="animation-preview">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <h3 class="card-title">进度条</h3>
+                </div>
+                
+                <div class="animation-card" data-animation="flipping-box">
+                    <div class="animation-preview">
+                        <div class="flipping-box"></div>
+                    </div>
+                    <h3 class="card-title">翻转方块</h3>
+                </div>
+                
+                <div class="animation-card" data-animation="cube">
+                    <div class="animation-preview">
+                        <div class="cube-container">
+                            <div class="cube">
+                                <div class="cube-face front">1</div>
+                                <div class="cube-face back">2</div>
+                                <div class="cube-face right">3</div>
+                                <div class="cube-face left">4</div>
+                                <div class="cube-face top">5</div>
+                                <div class="cube-face bottom">6</div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="card-title">3D旋转立方体</h3>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>CSS加载动画合集 | 使用纯CSS和JavaScript实现 | 可调整动画速度 | 响应式设计</p>
+            <p>© 2023 现代化UI动画展示 | 共6种加载动画效果</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentAnimation = document.getElementById('current-animation');
+            const animationName = document.getElementById('current-animation-name');
+            const animationDesc = document.getElementById('current-animation-desc');
+            const speedSlider = document.getElementById('speed');
+            const speedValue = document.getElementById('speed-value');
+            const refreshBtn = document.getElementById('refresh-btn');
+            const animationCards = document.querySelectorAll('.animation-card');
+            
+            // 动画描述数据
+            const animationData = {
+                spinner: {
+                    name: "旋转圆环",
+                    desc: "一个简单的旋转圆环动画，常用于表示加载过程。动画流畅且不占用太多空间。"
+                },
+                "pulse-dots": {
+                    name: "脉冲点",
+                    desc: "三个圆点依次放大缩小，形成脉冲效果。这种动画能吸引用户注意力。"
+                },
+                "bouncing-dots": {
+                    name: "弹跳点",
+                    desc: "三个圆点依次上下弹跳，模拟小球弹跳效果，增加页面活力。"
+                },
+                "progress-bar": {
+                    name: "进度条",
+                    desc: "动态进度条动画，表示加载进度。适合需要显示进度的场景。"
+                },
+                "flipping-box": {
+                    name: "翻转方块",
+                    desc: "3D翻转的方块效果，展示现代感和技术感。"
+                },
+                cube: {
+                    name: "3D旋转立方体",
+                    desc: "完整的3D立方体旋转效果，展示CSS 3D变换的强大功能。"
+                }
+            };
+            
+            // 设置动画速度
+            function setAnimationSpeed(speedFactor) {
+                const animations = document.querySelectorAll('.animation-card .animation-preview > *');
+                animations.forEach(animation => {
+                    animation.style.animationDuration = `${2 / speedFactor}s`;
+                });
+                
+                currentAnimation.style.animationDuration = `${2 / speedFactor}s`;
+                speedValue.textContent = `${speedFactor.toFixed(1)}x`;
+            }
+            
+            // 初始化速度
+            let currentSpeed = 1.0;
+            setAnimationSpeed(currentSpeed);
+            
+            // 速度滑块事件
+            speedSlider.addEventListener('input', function() {
+                currentSpeed = this.value / 100;
+                setAnimationSpeed(currentSpeed);
+            });
+            
+            // 重新开始动画
+            refreshBtn.addEventListener('click', function() {
+                // 重新应用动画
+                const animationClass = currentAnimation.className;
+                currentAnimation.style.animation = 'none';
+                void currentAnimation.offsetWidth; // 触发重绘
+                currentAnimation.style.animation = '';
+                currentAnimation.style.animationDuration = `${2 / currentSpeed}s`;
+            });
+            
+            // 切换动画
+            animationCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除所有active类
+                    animationCards.forEach(c => c.classList.remove('active'));
+                    
+                    // 添加active类到当前卡片
+                    this.classList.add('active');
+                    
+                    // 获取动画类型
+                    const animationType = this.dataset.animation;
+                    
+                    // 更新当前动画
+                    currentAnimation.className = '';
+                    currentAnimation.classList.add(animationType);
+                    
+                    // 更新动画名称和描述
+                    animationName.textContent = animationData[animationType].name;
+                    animationDesc.textContent = animationData[animationType].desc;
+                    
+                    // 设置速度
+                    currentAnimation.style.animationDuration = `${2 / currentSpeed}s`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

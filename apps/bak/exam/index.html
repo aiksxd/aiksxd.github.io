@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智能判断题答题系统</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --error-color: #ff4444;
+            --background: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5, #e8f5e9);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .question-card {
+            transform-origin: top;
+            animation: slideIn 0.4s ease-out;
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            background: #f0f4c3;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .option-btn.selected {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(0.98);
+        }
+
+        .feedback {
+            display: none;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .correct {
+            background: #dcedc8;
+            border: 2px solid var(--primary-color);
+        }
+
+        .wrong {
+            background: #ffcdd2;
+            border: 2px solid var(--error-color);
+        }
+
+        #import-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        #import-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .stats-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="file" id="import-btn" accept=".json" />
+        <div id="question-container"></div>
+        <div class="progress-bar">
+            <div class="progress" style="width: 0%"></div>
+        </div>
+        <button id="submit-btn" class="option-btn" style="display: none;">提交答案 (Enter)</button>
+        <div id="result-panel"></div>
+    </div>
+
+    <script>
+        class QuizSystem {
+            constructor() {
+                this.questions = [];
+                this.currentIndex = 0;
+                this.results = [];
+                this.initEventListeners();
+            }
+
+            initEventListeners() {
+                document.getElementById('import-btn').addEventListener('change', this.handleFileImport.bind(this));
+                document.addEventListener('keydown', this.handleShortcuts.bind(this));
+                document.getElementById('submit-btn').addEventListener('click', this.submitAnswer.bind(this));
+            }
+
+            handleFileImport(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (!this.validateQuestions(data)) {
+                            this.showFeedback('题库格式错误，请检查JSON结构', 'error');
+                            return;
+                        }
+                        this.questions = data;
+                        this.initQuiz();
+                    } catch (error) {
+                        this.showFeedback('文件解析失败，请检查文件格式', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            validateQuestions(questions) {
+                return questions.every(q => 
+                    q.hasOwnProperty('id') &&
+                    q.hasOwnProperty('content') &&
+                    q.hasOwnProperty('answer') &&
+                    typeof q.answer === 'boolean'
+                );
+            }
+
+            initQuiz() {
+                this.results = [];
+                this.currentIndex = 0;
+                document.getElementById('submit-btn').style.display = 'block';
+                this.renderQuestion();
+                this.updateProgress();
+            }
+
+            renderQuestion() {
+                const container = document.getElementById('question-container');
+                const question = this.questions[this.currentIndex];
+                
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <h3>题目 ${question.id}</h3>
+                    <p>${question.content}</p>
+                    <button class="option-btn" data-value="true">✓ 正确</button>
+                    <button class="option-btn" data-value="false">✗ 错误</button>
+                `;
+
+                card.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.selectAnswer(btn));
+                });
+
+                container.replaceChildren(card);
+            }
+
+            selectAnswer(selectedBtn) {
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                selectedBtn.classList.add('selected');
+            }
+
+            handleShortcuts(e) {
+                if (e.key === 'a' || e.key === 'A') {
+                    this.selectAnswer(document.querySelector('[data-value="true"]'));
+                }
+                if (e.key === 'b' || e.key === 'B') {
+                    this.selectAnswer(document.querySelector('[data-value="false"]'));
+                }
+                if (e.key === 'Enter') {
+                    this.submitAnswer();
+                }
+            }
+
+            submitAnswer() {
+                const selected = document.querySelector('.option-btn.selected');
+                if (!selected) {
+                    this.showFeedback('请先选择答案', 'error');
+                    return;
+                }
+
+                const isCorrect = selected.dataset.value === 
+                    this.questions[this.currentIndex].answer.toString();
+                
+                this.results.push({
+                    id: this.questions[this.currentIndex].id,
+                    correct: isCorrect
+                });
+
+                this.showFeedback(isCorrect ? '回答正确！' : '回答错误！', 
+                               isCorrect ? 'success' : 'error');
+
+                setTimeout(() => {
+                    this.currentIndex++;
+                    if (this.currentIndex < this.questions.length) {
+                        this.renderQuestion();
+                        this.updateProgress();
+                    } else {
+                        this.showFinalResults();
+                    }
+                }, 1500);
+            }
+
+            updateProgress() {
+                const progress = (this.currentIndex / this.questions.length) * 100;
+                document.querySelector('.progress').style.width = `${progress}%`;
+            }
+
+            showFeedback(message, type) {
+                const feedback = document.createElement('div');
+                feedback.className = `feedback ${type === 'success' ? 'correct' : 'wrong'}`;
+                feedback.textContent = message;
+                document.getElementById('result-panel').appendChild(feedback);
+                
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 2000);
+            }
+
+            showFinalResults() {
+                const resultHTML = `
+                    <div class="stats-panel">
+                        <h3>答题统计</h3>
+                        <p>正确率：${this.calculateAccuracy()}%</p>
+                        <p>错误题目：${this.getWrongQuestions().join(', ')}</p>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', resultHTML);
+                document.getElementById('submit-btn').style.display = 'none';
+            }
+
+            calculateAccuracy() {
+                const correctCount = this.results.filter(r => r.correct).length;
+                return ((correctCount / this.results.length) * 100).toFixed(1);
+            }
+
+            getWrongQuestions() {
+                return this.results.filter(r => !r.correct).map(r => r.id);
+            }
+        }
+
+        // 初始化系统
+        new QuizSystem();
+    </script>
+</body>
+</html>

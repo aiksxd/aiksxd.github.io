@@ -1,0 +1,36 @@
+<style>
+body {
+    background-color: aqua;
+    max-width: 1000px;
+    height: 500px;
+    margin: 0 auto;
+    margin-top: 40px;
+    overflow: auto;
+  }
+  .main-container *+* {
+    margin-top: 20px;
+  }
+  .main-header {
+    background-color: #F00;
+    height: 50px;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+  }
+  .main-content {
+    min-height: 600px;
+  }
+  .main-header {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+}
+</style>
+<html>
+    <main class="main-container">
+        <header class="main-header">HEADER</header>
+        <div class="main-content">MAIN CONTENT</div>
+        <footer class="main-footer" style="height: 500px;">FOOTER</footer>
+      </main>
+</html>
+  

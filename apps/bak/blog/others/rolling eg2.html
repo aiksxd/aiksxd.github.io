@@ -1,0 +1,96 @@
+<style>
+    * {
+    box-sizing: border-box;
+}
+
+body {
+    line-height: 1.5;
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-content: center;
+    timeline-scope: --scale-progress;
+    animation: colorChange auto linear forwards;
+    animation-timeline: --scale-progress;
+}
+
+.scroller {
+    position: relative;
+    max-width: 300px;
+    max-height: 300px;
+    overflow: scroll;
+    border: 1px solid;
+    padding: 1rem;
+    scroll-timeline: --scale-progress;
+}
+
+.progress {
+    width: 5rem;
+    background: deeppink;
+    transform-origin: center 100%;
+    animation: scaleProgress auto linear forwards;
+    animation-timeline: --scale-progress;
+}
+
+@keyframes colorChange {
+    0% {
+        background-color: deeppink;
+    }
+    100% {
+        background-color: turquoise;
+    }
+}
+
+@keyframes scaleProgress {
+    0% {
+        scale: 1 0;
+    }
+
+    100% {
+        scale: 1 1;
+    }
+}
+
+</style>
+
+<div class="wrapper">
+    <div class="scroller">
+        <h1>Scroll this</h1>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic vitae
+            voluptatem, in ipsa, magnam explicabo vero modi fuga recusandae voluptate
+            reprehenderit neque sequi labore delectus odio consequuntur illo cum
+            minus.
+        </p>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic vitae
+            voluptatem, in ipsa, magnam explicabo vero modi fuga recusandae voluptate
+            reprehenderit neque sequi labore delectus odio consequuntur illo cum
+            minus.
+        </p>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic vitae
+            voluptatem, in ipsa, magnam explicabo vero modi fuga recusandae voluptate
+            reprehenderit neque sequi labore delectus odio consequuntur illo cum
+            minus.
+        </p>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reprehenderit
+            porro at officiis, voluptas delectus ratione vitae natus cum excepturi
+            eaque. Culpa ut cupiditate aspernatur expedita minima suscipit et quis
+            illo.
+        </p>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reprehenderit
+            porro at officiis, voluptas delectus ratione vitae natus cum excepturi
+            eaque. Culpa ut cupiditate aspernatur expedita minima suscipit et quis
+            illo.
+        </p>
+    </div>
+    <div class="progress"></div>
+</div>

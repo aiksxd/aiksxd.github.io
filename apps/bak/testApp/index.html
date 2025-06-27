@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绿色主题应用管理平台</title>
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --hover-green: #45a049;
+            --light-green: #DFF0D8;
+            --dark-green: #3D8B3D;
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            display: flex;
+            background: var(--primary-green);
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            color: white;
+            padding: 0.8rem 1.5rem;
+            margin: 0 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--hover-green);
+            transform: translateY(-2px);
+        }
+
+        /* 应用信息列表 */
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .app-card:hover {
+            transform: scale(1.02);
+        }
+
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--light-green);
+            border-radius: 15px;
+            margin: 0.3rem;
+            font-size: 0.9em;
+        }
+
+        /* 权限管理 */
+        .permission-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .permission-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-green);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* 右下角提示 */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-green);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-item" onclick="switchPage('home')">首页</div>
+        <div class="nav-item" onclick="switchPage('apps')">应用列表</div>
+        <div class="nav-item" onclick="switchPage('permissions')">权限管理</div>
+    </nav>
+
+    <!-- 应用列表 -->
+    <div class="app-list">
+        <div class="app-card" onclick="showReadme('app1')">
+            <h3>应用名称</h3>
+            <div class="tag">生产工具</div>
+            <div class="tag">v1.2.3</div>
+            <div class="readme-content" style="display: none;">...</div>
+        </div>
+    </div>
+
+    <!-- 权限管理 -->
+    <div class="permission-panel" style="display: none;">
+        <label class="permission-switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- 提示框 -->
+    <div class="toast" id="toast">操作成功！</div>
+
+    
+
+    <script>
+        // 页面切换
+        function switchPage(page) {
+            document.querySelectorAll('.app-list, .permission-panel').forEach(el => {
+                el.style.display = 'none';
+            });
+            if(page === 'apps') document.querySelector('.app-list').style.display = 'grid';
+            if(page === 'permissions') document.querySelector('.permission-panel').style.display = 'block';
+        }
+
+        // 显示README
+        function showReadme(appId) {
+            const content = document.querySelector(`#${appId} .readme-content`);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            showToast('内容已更新');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
+        }
+
+    </script>
+</body>
+</html>

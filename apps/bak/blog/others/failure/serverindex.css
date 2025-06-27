@@ -1,0 +1,155 @@
+.bar {
+	   position: fixed;
+    height: 120px;
+    width: 100%;
+    float: left;
+    font-size: 40px;
+    font-weight: bold;
+    text-shadow: 5px 5px 1px #9d9d9d;
+    font-color: #e7e7e7;
+    text-align: center;
+    color:white;
+    //background: url('../image/top.png');
+    background-color: #3b3b3b;
+    z-index:100;
+}
+.meun{
+	   margin:0;
+	   padding:0;
+				margin-top: 10px;
+				float: right;
+				height: 110px;
+ 				width: 360px;
+ 				z-index: 101;
+}	
+ul.bars
+{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	text-align:center;
+	border: 1px solid #555;
+	list-style-type: none;
+ background-color: #3b3b3b;
+ overflow: auto; /* 如果导航栏选项多，允许滚动*/
+}
+a.bara:link,a.bara:visited
+{
+	display:block;
+ 	font-weight:bold;
+	color:#FFFFFF;
+	background-color:#3b3b3b;
+	height:90px;
+	width:80px;
+	text-align:center;
+	text-decoration:none;;
+}
+a.bara:hover,a.bara:active
+{
+	background-color:#3b3b3b;
+}
+li.barl{
+	display:inline;
+ float:right;
+}
+li.barl a.active { 
+  background-color: #3b3b3b;
+  color: white;
+  text-align: right;
+  border-bottom: 1px solid #555;
+ }
+ li:last-child {
+ 	 border-bottom: none; 
+ 	 }
+ 
+.subtitle{
+    color: #000000;
+    font-weight: bold;
+    font-size: larger;
+    margin-top: 100px;
+    text-align: center;
+}
+.trademark {
+				margin-top: 10px;
+				float: left;
+				height: 90px;
+				width: 20%; 
+}
+body {
+    margin: 0;
+    background-color: #e7e7e7;
+}
+.outboxs {
+    background: url('../image/body.png');
+    border: 15px solid rgb(62, 201, 20);
+    border-style:outset;
+    height:auto;
+    margin-right: 50px;
+    margin-left: 50px;
+    padding:1px 40px
+}
+table {
+    border-collapse: separate;
+    border-spacing: 20px 1px;
+}
+.inbox {
+    height: 110px;
+    width: 1200px;
+    border: 5px solid rgb(120, 248, 0);
+    border-style:outset;
+    text-align:left;
+}
+img{
+    vertical-align: text-top;
+}
+.headicon{
+    width:90px;
+    height:100px;
+    object-fit: fill;
+    float:left;
+    border:1px solid #ccc
+}
+.intro{
+    float:left;
+    width:100px;
+    margin-left: 20px;
+    margin-right: 20px;
+    line-height: 30px;
+}
+.intext{
+    float:left;
+    width:300px;
+    margin-left: 20px;
+    margin-right: 20px;
+    line-height: 30px;
+}
+.titletext{
+    color: #ffffff;
+    font-weight: bold;
+    font-size: larger;
+    font-weight: bolder;
+}
+.onlinefalse{
+    font-size: large;
+    font-weight: bolder;
+    color:red;
+}
+.onlinetrue{
+    font-size: large;
+    font-weight: bolder;
+    text-shadow: 1px 1px 2px white;
+    color:rgb(0, 255, 0);
+}
+.go{
+    color: rgb(59, 147, 248);
+    text-shadow: 1px 1px 2px white;
+}
+.divcart{ 
+    position:relative;
+}
+.cartoon{
+    background-attachment:fixed;
+    position:absolute;
+    left:0px;
+    top:0px;
+}

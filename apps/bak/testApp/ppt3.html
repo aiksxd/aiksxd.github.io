@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <!-- 触发器元素 -->
+        <button class="ppt-trigger-area">播放动画1</button>
+        
+        <!-- 动画目标元素 -->
+        <div class="ppt-animation-target fade">渐隐元素</div>
+        <div class="ppt-animation-target move">移动元素</div>
+      </div>
+      
+      <div class="slide">
+        <button class="ppt-trigger-area">播放动画2</button>
+        <div class="ppt-animation-target fade move">组合动画元素</div>
+      </div>
+      
+    <script>
+      document.querySelectorAll('.ppt-trigger-area').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          const slide = e.currentTarget.closest('.slide');
+          if (!slide) return;
+      
+          // 获取所有目标元素
+          const targets = slide.querySelectorAll('.ppt-animation-target');
+          
+          targets.forEach(target => {
+            // 重置动画状态
+            target.classList.remove('active');
+            
+            // 强制重绘
+            void target.offsetWidth;
+            
+            // 处理组合动画
+            const hasFade = target.classList.contains('fade');
+            const hasMove = target.classList.contains('move');
+            
+            // 添加激活状态
+            if (hasFade || hasMove) {
+              target.classList.add('active');
+            }
+      
+            // // 自动重置非持续动画
+            // target.addEventListener('transitionend', () => {
+            //   if (!target.dataset.keepState) {
+            //     target.classList.remove('active');
+            //   }
+            // }, { once: true });
+          });
+        });
+      });
+      
+      // 初始化时禁用过渡防止首次渲染动画
+      document.querySelectorAll('.ppt-animation-target').forEach(target => {
+        target.classList.add('no-transition');
+        setTimeout(() => {
+          target.classList.remove('no-transition');
+        }, 50);
+      });
+      
+    </script>
+</body>
+</html>

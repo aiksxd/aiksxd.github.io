@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* 定义基础动画效果 */
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+            opacity: 0;
+        }
+
+        .slide-right {
+            animation: slideRight 0.5s forwards;
+        }
+
+        /* 渐显动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 右移动画 */
+        @keyframes slideRight {
+            from { transform: translateX(0); }
+            to { transform: translateX(100px); }
+        }
+
+        .trigger-area {
+            padding: 20px;
+            background: #f0f0f0;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .target-element {
+            width: 100px;
+            height: 100px;
+            background: #2196F3;
+            margin: 10px;
+            opacity: 0; /* 初始状态 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 触发器元素 -->
+    <div class="trigger-area" onclick="handleTriggerClick(this)">
+        Area 1
+        <!-- 目标元素 -->
+        <div class="target-element fade-in"></div>
+    </div>
+
+    <div class="trigger-area" onclick="handleTriggerClick(this)">
+        Area 2
+        <div class="target-element slide-right"></div>
+    </div>
+
+    <script>
+        function handleTriggerClick(trigger) {
+            // 查找触发区域下的第一个目标元素
+            const target = trigger.querySelector('.target-element:first-child');
+            
+            if (!target) return;
+
+            // 获取元素的所有动画类
+            const animationClasses = Array.from(target.classList)
+                .filter(className => className !== 'target-element');
+
+            // 重置动画
+            target.style.animation = 'none';
+            void target.offsetWidth; // 触发重绘
+
+            // 重新添加动画类
+            target.classList.remove(...animationClasses);
+            setTimeout(() => {
+                target.classList.add(...animationClasses);
+            }, 10);
+        }
+    </script>
+</body>
+</html>

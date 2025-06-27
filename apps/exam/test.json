@@ -1,0 +1,36 @@
+[
+    {
+        "category": "基础知识",
+        "type": "选择",
+        "score": 5,
+        "questions": [
+            {
+                "number": 1,
+                "content": "HTML的全称是什么？",
+                "options": ["Hyper Text Markup Language", "High Text Markup Language", "Home Text Markup Language"],
+                "answer": "Hyper Text Markup Language",
+                "explanation": "HTML代表超文本标记语言，用于创建网页结构。"
+            },
+            {
+                "number": 2,
+                "content": "CSS的全称是什么？",
+                "options": ["Cascading Style Sheets", "Central Style Sheets", "Common Style Sheets"],
+                "answer": "Cascading Style Sheets",
+                "explanation": "CSS代表层叠样式表，用于控制网页外观。"
+            }
+        ]
+    },
+    {
+        "category": "编程",
+        "type": "填空",
+        "score": 3,
+        "questions": [
+            {
+                "number": 1,
+                "content": "JavaScript中用于输出信息的函数是______。",
+                "answer": "console.log",
+                "explanation": "console.log用于在控制台输出信息。"
+            }
+        ]
+    }
+]

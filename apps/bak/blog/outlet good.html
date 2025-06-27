@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --hover-green: #45a049;
+            --light-green: #DFF0D8;
+            --dark-green: #3D8B3D;
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #8bc34a;
+            --accent: #ffeb3b;
+            --light: #f5f9f5;
+            --dark: #263238;
+        }
+        .navbar {
+            width: 100%;
+            background: linear-gradient(160deg, rgba(21, 101, 92, 0.9), rgba(13, 71, 64, 0.95));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            box-shadow: 0 10px 30px rgba(0, 40, 30, 0.5),
+                        0 0 0 1px rgba(100, 255, 200, 0.1);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            overflow: hidden;
+            top: 0;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(100, 255, 200, 0.2) 0%, transparent 70%);
+            opacity: 0.5;
+            pointer-events: none;
+            animation: rotate 15s linear infinite;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e0f7fa;
+            text-decoration: none;
+            z-index: 2;
+        }
+
+        .logo-icon {
+            color: #64ffda;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-links li {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #e0f7fa;
+            text-decoration: none;
+            padding: 0 25px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #64ffda, #a8ff78);
+            border-radius: 4px 4px 0 0;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, rgba(100, 255, 200, 0.4) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(168, 255, 120, 0.7);
+        }
+
+        .nav-links a:hover::before {
+            width: 70%;
+        }
+
+        .nav-links a:hover::after {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 1;
+        }
+
+        .nav-links a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-signin {
+            background: transparent;
+            color: #64ffda;
+            border: 2px solid rgba(100, 255, 218, 0.4);
+        }
+
+        .btn-signin:hover {
+            background: rgba(100, 255, 218, 0.15);
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-signup {
+            background: linear-gradient(90deg, #64ffda, #a8ff78);
+            color: #0d1b2a;
+            box-shadow: 0 4px 20px rgba(100, 255, 218, 0.4);
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(168, 255, 120, 0.6);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a onclick="switchPage(0)"><i class="fas fa-home"></i>首页</a></li>
+            <li><a onclick="switchPage(1)"><i class="fas fa-tree"></i>产品</a></li>
+        </ul>
+        
+        <div class="nav-actions">
+            <button class="btn btn-signin">
+                <i class="fas fa-sign-in-alt"></i>登录
+            </button>
+            <button class="btn btn-signup">
+                <i class="fas fa-user-plus"></i>注册
+            </button>
+        </div>
+    </nav>
+</body>
+</html>

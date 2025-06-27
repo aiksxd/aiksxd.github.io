@@ -1,0 +1,94 @@
+        .sidebar {
+            height: 100%;
+            width: 55px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #d4fc79;
+            background-image: linear-gradient(to top, #96CA00,#d4fc79);
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 80px;
+            white-space: nowrap;
+        }
+        
+        .sidebar a {
+            padding: 8px 8px 2px 12px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+        
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+        
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            left: 25px;
+            font-size: 36px;
+            margin-right: 50px;
+        }
+        
+        .material-icons,
+        .icon-text {
+            vertical-align: middle;
+        }
+        
+        .material-icons {
+            padding-bottom: 3px;
+        }
+        
+        #main {
+            transition: margin-left .5s;
+            padding: 16px;
+            margin-right: 60px;
+            margin-top: 40px;
+        }
+        /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+        
+        @media screen and (max-height: 450px) {
+            .sidebar {
+                padding-top: 15px;
+            }
+            .sidebar a {
+                font-size: 18px;
+            }
+        }
+
+.tbutton{
+    border-radius: 100%;
+    background-color: #4CAF50;
+    background-image: linear-gradient(to bottom left, #96CA00,#4CAF50);
+    border: none;
+    display: inline-block;
+    cursor: pointer;
+    position: fixed;
+    text-align: center;
+    width:100px;
+    height:100px;
+    bottom: -15px;
+    right: -15px;
+    z-index: 9999;
+}
+
+.inbimg{
+    width:70px;
+    height:70px;
+}
+
+@keyframes rotate{
+	0%{
+		transform: rotateZ(0deg);/*从0度开始*/
+	}
+	100%{
+		transform: rotateZ(360deg);/*360度结束*/
+	}
+}
+.inbimg:hover{
+    animation: rotate 2s linear infinite;
+}

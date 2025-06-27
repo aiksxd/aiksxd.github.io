@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+        let m = [1,2,3,4];
+        let n = [2,1]
+
+        function add(a,b) {
+            let c,d;
+            if (a.lenth > b.lenth) {
+                c = a;
+                d = b.lenth;
+            } else {
+                c = b;
+                d = a.lenth;
+            }
+            let i = 0;
+            while (i < d) {
+                if (c[i] != 0 || b[i] != 0) {
+                    c[i]= c[i] + b[i];
+                }
+                i++;
+            }
+            return c;
+        }
+
+        function multi(a,b,p) {
+            
+        }
+        function match(p,q) {
+            switch (p) {
+                case 2,8:
+                    switch (q) {
+                        case 2,8:
+                            return
+                            break;
+                        case 3,7:
+                            break;
+                        case 4,6:
+                            break;
+                        case 5:
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3,7:
+                    break;
+                case 4,6:
+                    break;
+                case 5:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        console.log(add(m,n));
+        let i = 0;
+        while (i<1){
+            i++;
+        }
+    </script>
+</body>
+</html>

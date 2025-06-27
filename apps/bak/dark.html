@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片灰度到绿色渐变效果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+            color: #ecf0f1;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #2ecc71;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .image-section {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0c1a25;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: filter 0.5s ease;
+        }
+        
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 i {
+            margin-right: 10px;
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ecf0f1;
+        }
+        
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2ecc71;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #27ae60;
+        }
+        
+        .value-display {
+            width: 60px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .preset-btn {
+            background: rgba(52, 152, 219, 0.2);
+            border: none;
+            color: #ecf0f1;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(52, 152, 219, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn.active {
+            background: #2ecc71;
+            color: #1a2a3a;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .explanation h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .code-block {
+            background: #0c1a25;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+        
+        .filter-property {
+            color: #3498db;
+        }
+        
+        .filter-value {
+            color: #2ecc71;
+        }
+        
+        .filter-comment {
+            color: #95a5a6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CSS滤镜：灰度到绿色渐变效果</h1>
+            <p class="subtitle">使用CSS filter属性将图片从灰度平滑过渡到绿色色调。通过调整下方参数实时查看效果。</p>
+        </header>
+        
+        <div class="content">
+            <div class="image-section">
+                <h2>效果展示</h2>
+                <div class="image-container">
+                    <img id="filtered-image" src="https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="自然风景">
+                </div>
+            </div>
+            
+            <div class="controls">
+                <h2>滤镜参数控制</h2>
+                
+                <div class="control-group">
+                    <div class="slider-container">
+                        <label for="grayscale">灰度 (grayscale)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="grayscale" min="0" max="100" value="100">
+                            <div class="value-display">100%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="sepia">深褐色 (sepia)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="sepia" min="0" max="100" value="80">
+                            <div class="value-display">80%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="hue-rotate">色相旋转 (hue-rotate)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="hue-rotate" min="0" max="360" value="90">
+                            <div class="value-display">90deg</div>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="saturate">饱和度 (saturate)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="saturate" min="0" max="300" value="200">
+                            <div class="value-display">200%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2>预设效果</h2>
+                <div class="presets">
+                    <button class="preset-btn active" data-preset="green">绿色森林</button>
+                    <button class="preset-btn" data-preset="mint">薄荷绿</button>
+                    <button class="preset-btn" data-preset="emerald">翡翠绿</button>
+                    <button class="preset-btn" data-preset="teal">青绿色</button>
+                    <button class="preset-btn" data-preset="original">原始图片</button>
+                    <button class="preset-btn" data-preset="grayscale">完全灰度</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h2>实现原理</h2>
+            <p>通过组合多个CSS滤镜属性实现从灰度到绿色的过渡效果：</p>
+            
+            <div class="code-block">
+                <span class="filter-property">filter</span>: <br>
+                &nbsp;&nbsp;<span class="filter-value">grayscale(100%)</span> <span class="filter-comment">/* 完全去除颜色 */</span><br>
+                &nbsp;&nbsp;<span class="filter-value">sepia(80%)</span> <span class="filter-comment">/* 添加基础棕色调 */</span><br>
+                &nbsp;&nbsp;<span class="filter-value">hue-rotate(90deg)</span> <span class="filter-comment">/* 将棕色调转为绿色 */</span><br>
+                &nbsp;&nbsp;<span class="filter-value">saturate(200%)</span>; <span class="filter-comment">/* 增强颜色饱和度 */</span>
+            </div>
+            
+            <p><strong>工作原理：</strong></p>
+            <ul>
+                <li><strong>grayscale(100%)</strong>：首先将图片完全转换为灰度</li>
+                <li><strong>sepia(80%)</strong>：添加棕褐色调，作为基础颜色</li>
+                <li><strong>hue-rotate(90deg)</strong>：在色相环上旋转90度，将棕色调转变为绿色</li>
+                <li><strong>saturate(200%)</strong>：增强颜色的饱和度，使绿色更鲜艳</li>
+            </ul>
+            
+            <p>通过调整这些参数，您可以创建从微妙到强烈的各种绿色效果。</p>
+        </div>
+        
+        <div class="footer">
+            <p>CSS滤镜效果展示 | 使用hue-rotate创建绿色渐变 | 调整参数查看实时变化</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const image = document.getElementById('filtered-image');
+            const grayscaleSlider = document.getElementById('grayscale');
+            const sepiaSlider = document.getElementById('sepia');
+            const hueRotateSlider = document.getElementById('hue-rotate');
+            const saturateSlider = document.getElementById('saturate');
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            
+            // 更新滤镜显示值
+            function updateValueDisplay(slider, suffix = '') {
+                const display = slider.nextElementSibling;
+                display.textContent = slider.value + suffix;
+            }
+            
+            // 应用滤镜
+            function applyFilters() {
+                const grayscaleValue = grayscaleSlider.value;
+                const sepiaValue = sepiaSlider.value;
+                const hueRotateValue = hueRotateSlider.value;
+                const saturateValue = saturateSlider.value;
+                
+                image.style.filter = `
+                    grayscale(${grayscaleValue}%)
+                    sepia(${sepiaValue}%)
+                    hue-rotate(${hueRotateValue}deg)
+                    saturate(${saturateValue}%)
+                `;
+                
+                updateValueDisplay(grayscaleSlider, '%');
+                updateValueDisplay(sepiaSlider, '%');
+                updateValueDisplay(hueRotateSlider, 'deg');
+                updateValueDisplay(saturateSlider, '%');
+            }
+            
+            // 初始化显示值
+            updateValueDisplay(grayscaleSlider, '%');
+            updateValueDisplay(sepiaSlider, '%');
+            updateValueDisplay(hueRotateSlider, 'deg');
+            updateValueDisplay(saturateSlider, '%');
+            
+            // 添加事件监听器
+            grayscaleSlider.addEventListener('input', applyFilters);
+            sepiaSlider.addEventListener('input', applyFilters);
+            hueRotateSlider.addEventListener('input', applyFilters);
+            saturateSlider.addEventListener('input', applyFilters);
+            
+            // 预设效果
+            presetButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有active类
+                    presetButtons.forEach(btn => btn.classList.remove('active'));
+                    // 添加active类到当前按钮
+                    this.classList.add('active');
+                    
+                    const preset = this.dataset.preset;
+                    
+                    switch(preset) {
+                        case 'green':
+                            grayscaleSlider.value = 100;
+                            sepiaSlider.value = 80;
+                            hueRotateSlider.value = 90;
+                            saturateSlider.value = 200;
+                            break;
+                        case 'mint':
+                            grayscaleSlider.value = 100;
+                            sepiaSlider.value = 70;
+                            hueRotateSlider.value = 110;
+                            saturateSlider.value = 180;
+                            break;
+                        case 'emerald':
+                            grayscaleSlider.value = 100;
+                            sepiaSlider.value = 90;
+                            hueRotateSlider.value = 75;
+                            saturateSlider.value = 250;
+                            break;
+                        case 'teal':
+                            grayscaleSlider.value = 100;
+                            sepiaSlider.value = 60;
+                            hueRotateSlider.value = 170;
+                            saturateSlider.value = 220;
+                            break;
+                        case 'original':
+                            grayscaleSlider.value = 0;
+                            sepiaSlider.value = 0;
+                            hueRotateSlider.value = 0;
+                            saturateSlider.value = 100;
+                            break;
+                        case 'grayscale':
+                            grayscaleSlider.value = 100;
+                            sepiaSlider.value = 0;
+                            hueRotateSlider.value = 0;
+                            saturateSlider.value = 100;
+                            break;
+                    }
+                    
+                    applyFilters();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

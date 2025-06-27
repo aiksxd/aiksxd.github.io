@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../../css/appUI.css">
+    <title>图像合成编辑器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--active-alpha1-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow);
+        }
+        
+        .header h1 {
+            color: var(--title);
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 2px var(--text-shadow);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .editor-section {
+            flex: 1;
+            min-width: 500px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .preview-section {
+            flex: 1;
+            min-width: 500px;
+        }
+        
+        .panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            color: var(--title);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .canvas-container {
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        #canvas {
+            border: 1px solid var(--border);
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADBJREFUOE9jZGBgEAFifOANPkkmfJqU4WAUjHrBqBeMesGoF1DXCwAgSYUGJzCT7m0AAAAASUVORK5CYII=');
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .controls button {
+            width: auto;
+        }
+        
+        .control-group {
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .control-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .control-row label {
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        input[type="number"], 
+        input[type="file"],
+        select,
+        
+        button i {
+            font-size: 1.1rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .theme-custom-fields {
+            background: var(--active-alpha1-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .instructions {
+            background: var(--card-bg);
+            border-left: 4px solid var(--active-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instructions h3 {
+            color: var(--title);
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .status-bar {
+            margin-top: 15px;
+            padding: 10px;
+            background: var(--input-bg);
+            border-radius: 5px;
+            text-align: center;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .export-btn {
+            background-color: #2196F3;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .editor-section, .preview-section {
+                min-width: 100%;
+            }
+            
+            .canvas-container {
+                width: 100%;
+            }
+            
+            #canvas {
+                width: 100%;
+                max-width: 700px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图像合成编辑器</h1>
+        <p>上传自定义图像，选择主题模板，调整大小和位置</p>
+    </div>
+    
+    <div class="container">
+        <div class="preview-section">
+            <div class="panel">
+                <h2 class="panel-title">预览区域</h2>
+                <div class="canvas-container">
+                    <canvas id="canvas" width="500" height="500"></canvas>
+                </div>
+                <div class="status-bar" id="statusBar">
+                    准备就绪 - 请上传中间层图像开始编辑
+                </div>
+            </div>
+        </div>
+        <div class="editor-section">
+            <div class="panel">
+                <div class="control-group">
+                    <div class="control-row">
+                        <label for="themeSelect">主题模板:</label>
+                        <select id="themeSelect">
+                            <option value="1" data-width="700" data-height="500">狗头 (默认)</option>
+                            <option value="2" data-width="700" data-height="699">安全出口</option>
+                            <option value="custom">自定义主题</option>
+                        </select>
+                    </div>
+                    
+                    <div id="themeCustomFields" class="theme-custom-fields hidden">
+                        <div class="control-row">
+                            <label for="customLayer1">底层图像:</label>
+                            <input type="file" id="customLayer1" accept="image/*">
+                        </div>
+                        <div class="control-row">
+                            <label for="customLayer3">顶层图像:</label>
+                            <input type="file" id="customLayer3" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <div class="control-row">
+                            <label for="fileInput">中间层图像:</label>
+                            <input type="file" id="fileInput" accept="image/*">
+                        </div>
+                        <button class="green-button" id="zoomInBtn"><i>+</i> 放大</button>
+                        <button class="green-button" id="zoomOutBtn"><i>-</i> 缩小</button>
+                        <button class="green-button" id="zoomResetBtn"><i>↺</i> 重置缩放</button>
+                        <button class="export-btn green-button" id="exportBtn"><i>↓</i> 导出GIF</button>
+                    </div>
+                    
+                    <h2 class="panel-title">画布设置</h2>
+                    <div class="control-group">
+                        <div class="control-row">
+                            <label for="canvasWidth">画布宽度:</label>
+                            <input type="number" id="canvasWidth" min="100" max="2000" value="500">
+                        </div>
+                        <div class="control-row">
+                            <label for="canvasHeight">画布高度:</label>
+                            <input type="number" id="canvasHeight" min="100" max="2000" value="500">
+                        </div>
+                        <button class="green-button" id="updateCanvasBtn">应用画布尺寸</button><br><br>
+                    </div>
+                </div>
+            
+            <div class="instructions">
+                <h3>使用说明：</h3>
+                <ul>
+                    <li>设置画布尺寸后点击"应用画布尺寸"按钮更新</li>
+                    <li>从下拉菜单中选择主题模板（默认提供2种主题）</li>
+                    <li>选择"自定义主题"可上传自己的底层/顶层图像</li>
+                    <li>中间层图像为必选内容，用于主体内容展示</li>
+                    <li>在预览区域拖动图像调整位置，滚轮缩放图像</li>
+                    <li>点击"导出GIF"保存合成结果</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/api.js"></script>
+    <script>
+        class ImageCompositor {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.statusBar = document.getElementById('statusBar');
+                this.layers = {
+                    layer1: null,  // 底层
+                    layer2: null,  // 中间层（用户上传）
+                    layer3: null   // 顶层
+                };
+                this.dragging = false;
+                this.transform = {
+                    x: 0,
+                    y: 0,
+                    scale: 1
+                };
+                this.currentTheme = '1';
+                this.init();
+            }
+
+            async init() {
+                // 初始加载默认主题
+                await this.loadTheme('1');
+                this.setupEventListeners();
+                this.updateStatus('默认主题已加载，请上传中间层图像');
+            }
+
+            async loadTheme(themeId) {
+                this.currentTheme = themeId;
+                const themeSelect = document.getElementById('themeSelect');
+                const selectedOption = themeSelect.options[themeSelect.selectedIndex];
+                            
+                if (themeId === 'custom') {
+                    this.updateStatus('已选择自定义主题，请上传底层和顶层图像');
+                    return;
+                }
+                
+                try {
+                    // 加载主题对应的图层
+                    const prefix = themeId === '2' ? '2' : '';
+                    this.layers.layer1 = await this.loadImage(`${prefix}layer1.png`);
+                    this.layers.layer3 = await this.loadImage(`${prefix}layer3.png`);
+                    
+                    // 从选项获取主题对应的画布尺寸
+                    const width = parseInt(selectedOption.dataset.width);
+                    const height = parseInt(selectedOption.dataset.height);
+                    
+                    // 更新画布尺寸
+                    this.canvas.width = width;
+                    this.canvas.height = height;
+                    
+                    // 更新尺寸输入框的值
+                    document.getElementById('canvasWidth').value = width;
+                    document.getElementById('canvasHeight').value = height;
+
+                    this.redraw();
+                    this.updateStatus(`主题${themeId}加载成功`);
+                } catch (error) {
+                    console.error('主题加载失败:', error);
+                    this.updateStatus('主题加载失败，请检查资源文件', 'error');
+                }
+            }
+            
+            async loadCustomTheme(layer1File, layer3File) {
+                try {
+                    if (layer1File) {
+                        this.layers.layer1 = await this.createImageFromFile(layer1File);
+                    }
+                    if (layer3File) {
+                        this.layers.layer3 = await this.createImageFromFile(layer3File);
+                    }
+                    this.redraw();
+                    this.updateStatus('自定义主题已应用');
+                } catch (error) {
+                    console.error('自定义主题加载失败:', error);
+                    this.updateStatus('自定义主题加载失败', 'error');
+                }
+            }
+
+            loadImage(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => resolve(img);
+                    img.onerror = (e) => {
+                        console.error(`图片加载失败: ${src}`, e);
+                        reject(`图片加载失败: ${src}`);
+                    };
+                    img.src = src;
+                });
+            }
+
+            setupEventListeners() {
+                // 主题选择
+                document.getElementById('themeSelect').addEventListener('change', (e) => {
+                    const themeId = e.target.value;
+                    const customFields = document.getElementById('themeCustomFields');
+                    
+                    if (themeId === 'custom') {
+                        customFields.classList.remove('hidden');
+                        this.loadTheme('custom');
+                    } else {
+                        customFields.classList.add('hidden');
+                        this.loadTheme(themeId);
+                    }
+                });
+                
+                // 自定义主题文件上传
+                document.getElementById('customLayer1').addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const layer3File = document.getElementById('customLayer3').files[0];
+                        await this.loadCustomTheme(file, layer3File);
+                    }
+                });
+                
+                document.getElementById('customLayer3').addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const layer1File = document.getElementById('customLayer1').files[0];
+                        await this.loadCustomTheme(layer1File, file);
+                    }
+                });
+                
+                // 中间层文件上传
+                document.getElementById('fileInput').addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.layers.layer2 = await this.createImageFromFile(file);
+                        this.redraw();
+                        this.updateStatus('中间层图像已加载，可在预览区域拖动和缩放');
+                    }
+                });
+                
+                // 画布尺寸更新
+                document.getElementById('updateCanvasBtn').addEventListener('click', () => {
+                    const width = parseInt(document.getElementById('canvasWidth').value) || 700;
+                    const height = parseInt(document.getElementById('canvasHeight').value) || 500;
+                    
+                    if (width < 100 || width > 2000 || height < 100 || height > 2000) {
+                        this.updateStatus('画布尺寸必须在100-2000像素之间', 'error');
+                        return;
+                    }
+                    
+                    this.canvas.width = width;
+                    this.canvas.height = height;
+                    this.redraw();
+                    this.updateStatus(`画布尺寸已更新: ${width} × ${height} 像素`);
+                });
+                
+                // 画布交互事件
+                this.canvas.addEventListener('mousedown', this.startDragging.bind(this));
+                this.canvas.addEventListener('mousemove', this.handleDrag.bind(this));
+                this.canvas.addEventListener('mouseup', this.stopDragging.bind(this));
+                this.canvas.addEventListener('wheel', this.handleZoom.bind(this));
+                this.canvas.addEventListener('mouseleave', this.stopDragging.bind(this));
+
+                // 导出按钮
+                document.getElementById('exportBtn').addEventListener('click', () => {
+                    this.exportAsGif();
+                });
+                
+                // 缩放按钮
+                document.getElementById('zoomInBtn').addEventListener('click', () => {
+                    this.keyHandleZoom(1.1);
+                });
+                document.getElementById('zoomOutBtn').addEventListener('click', () => {
+                    this.keyHandleZoom(0.9);
+                });
+                document.getElementById('zoomResetBtn').addEventListener('click', () => {
+                    this.transform = { x: 0, y: 0, scale: 1 };
+                    this.redraw();
+                    this.updateStatus('缩放和位置已重置');
+                });
+            }
+            
+            updateStatus(message, type = 'info') {
+                this.statusBar.textContent = message;
+                this.statusBar.style.color = type === 'error' ? '#d32f2f' : '#555';
+            }
+
+            async createImageFromFile(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            this.updateStatus('图像加载成功');
+                            resolve(img);
+                        };
+                        img.onerror = () => {
+                            this.updateStatus('图像加载失败', 'error');
+                            resolve(null);
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // 交互处理逻辑
+            startDragging(e) {
+                if (!this.layers.layer2) return;
+                
+                this.dragging = true;
+                this.lastX = e.clientX;
+                this.lastY = e.clientY;
+                this.canvas.style.cursor = 'grabbing';
+            }
+
+            handleDrag(e) {
+                if (!this.dragging || !this.layers.layer2) return;
+                
+                const dx = e.clientX - this.lastX;
+                const dy = e.clientY - this.lastY;
+                
+                this.transform.x += dx;
+                this.transform.y += dy;
+                
+                this.lastX = e.clientX;
+                this.lastY = e.clientY;
+                this.redraw();
+            }
+
+            stopDragging() {
+                this.dragging = false;
+                this.canvas.style.cursor = 'default';
+            }
+
+            handleZoom(e) {
+                if (!this.layers.layer2) return;
+                
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                this.transform.scale = this.transform.scale * delta;
+                this.redraw();
+                
+                // 更新状态
+                const percent = Math.round(this.transform.scale * 100);
+                this.updateStatus(`缩放级别: ${percent}%`);
+            }
+
+            keyHandleZoom(delta) {
+                if (!this.layers.layer2) return;
+                
+                this.transform.scale = this.transform.scale * delta;
+                this.redraw();
+                
+                // 更新状态
+                const percent = Math.round(this.transform.scale * 100);
+                this.updateStatus(`缩放级别: ${percent}%`);
+            }
+
+            redraw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 绘制图层1（底层）
+                if (this.layers.layer1) {
+                    this.ctx.drawImage(this.layers.layer1, 0, 0);
+                }
+
+                // 绘制图层2（用户层）
+                if (this.layers.layer2) {
+                    this.ctx.save();
+                    const img = this.layers.layer2;
+                    const centerX = this.transform.x + this.canvas.width/2;
+                    const centerY = this.transform.y + this.canvas.height/2;
+                    
+                    // 应用变换
+                    this.ctx.translate(centerX, centerY);
+                    this.ctx.scale(this.transform.scale, this.transform.scale);
+                    this.ctx.drawImage(
+                        img,
+                        -img.width/2,
+                        -img.height/2
+                    );
+                    this.ctx.restore();
+                }
+
+                // 绘制图层3（顶层）
+                if (this.layers.layer3) {
+                    this.ctx.drawImage(this.layers.layer3, 0, 0);
+                }
+            }
+            
+            exportAsGif() {
+                if (!this.layers.layer2) {
+                    this.updateStatus('请先上传中间层图像', 'error');
+                    return;
+                }
+                
+                try {
+                    const link = document.createElement('a');
+                    link.download = 'composition.gif';
+                    link.href = this.canvas.toDataURL('image/gif');
+                    link.click();
+                    
+                    this.updateStatus('图像已导出为GIF格式');
+                } catch (error) {
+                    console.error('导出失败:', error);
+                    this.updateStatus('导出失败，请重试', 'error');
+                }
+            }
+        }
+
+        // 初始化合成器
+        window.onload = () => {
+            const compositor = new ImageCompositor();
+        };
+    </script>
+</body>
+</html>

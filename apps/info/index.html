@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绿意生态 - 关于我们</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #8bc34a;
+            --accent: #ffeb3b;
+            --light: #f5f9f5;
+            --dark: #263238;
+            --primary-green: #4CAF50;
+            --hover-green: #45a049;
+            --light-green: #DFF0D8;
+            --dark-green: #3D8B3D;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            width: 100%;
+            background: linear-gradient(160deg, rgba(21, 101, 92, 0.9), rgba(13, 71, 64, 0.95));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            box-shadow: 0 10px 30px rgba(0, 40, 30, 0.5),
+                        0 0 0 1px rgba(100, 255, 200, 0.1);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            overflow: hidden;
+            top: 0;
+            margin: 0;
+            padding: 0;
+            z-index: 2;
+        }
+        .navbar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(100, 255, 200, 0.2) 0%, transparent 70%);
+            opacity: 0.5;
+            pointer-events: none;
+            animation: rotate 15s linear infinite;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e0f7fa;
+            text-decoration: none;
+            z-index: 2;
+        }
+
+        .logo-icon {
+            color: #64ffda;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .nav-links {
+            padding: 0;
+            display: flex;
+            list-style: none;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-links li {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #e0f7fa;
+            text-decoration: none;
+            padding: 0 25px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #64ffda, #a8ff78);
+            border-radius: 4px 4px 0 0;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, rgba(100, 255, 200, 0.4) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(168, 255, 120, 0.7);
+        }
+
+        .nav-links a:hover::before {
+            width: 70%;
+        }
+
+        .nav-links a:hover::after {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 1;
+        }
+
+        .nav-links a.active::before {
+            width: 70%;
+        }
+
+        .nav-links a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-signin {
+            background: transparent;
+            color: #64ffda;
+            border: 2px solid rgba(100, 255, 218, 0.4);
+        }
+
+        .btn-signin:hover {
+            background: rgba(100, 255, 218, 0.15);
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-signup {
+            background: linear-gradient(90deg, #64ffda, #a8ff78);
+            color: #0d1b2a;
+            box-shadow: 0 4px 20px rgba(100, 255, 218, 0.4);
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(168, 255, 120, 0.6);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 树叶飘落动画 */
+        .leaves-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232e7d32"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17 1.02.3 1.59.36L8 23l1.94-1.94c.5.1 1.03.14 1.56.14C17 21 22 14 22 8c0-3-2-5-5-5-3 0-5 2-5 5 0 1.78 1 3 2 3s2-1.22 2-3c0-1.65-1.35-3-3-3-1.66 0-3 1.34-3 3 0 1.09.59 2.04 1.47 2.55C14.11 9.28 13.5 8 12 8c-1.66 0-3 1.34-3 3 0 1.09.59 2.04 1.47 2.55C9.61 12.28 9 11 9 9.5c0-3.87 3.13-7 7-7s7 3.13 7 7c0 8-8 12-16 9z"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: fall linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10%) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(142, 218, 146, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            transform: rotate(180deg);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%232e7d32"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="%232e7d32"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%232e7d32"/></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 20px;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .btn2 {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            animation: fadeInUp 1s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .btn2:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 关于我们部分 */
+        .about {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--secondary);
+            border-radius: 2px;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-text h3 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .about-text p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .about-image {
+            flex: 1;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            height: 400px;
+            background: linear-gradient(45deg, var(--primary-light), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eco-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .eco-icon {
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.3);
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* 使命部分 */
+        .mission {
+            padding: 100px 0;
+            background: linear-gradient(to bottom, #e8f5e9, #f1f8e9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mission::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%232e7d32"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="%232e7d32"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%232e7d32"/></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            transform: rotate(180deg);
+        }
+
+        .mission-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .mission-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+
+        .mission-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .mission-card h3 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        /* 团队部分 */
+        .team {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background-color: #f9fdf9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .member-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: linear-gradient(45deg, var(--primary-light), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+            font-weight: bold;
+        }
+
+        .team-member h3 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .team-member p {
+            color: var(--primary);
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 70px 0 20px;
+            position: relative;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--secondary);
+        }
+
+        .footer-column p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .footer-links a i {
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 飘落的树叶 -->
+    <div class="leaves-container" id="leaves"></div>
+
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a class="active"><i class="fas fa-info"></i>关于</a></li>
+            <li><a><i class="fas fa-blog"></i>博客</a></li>
+        </ul>
+        
+        <div class="nav-actions">
+            <button class="btn btn-signin">
+                <i class="fas fa-sign-in-alt"></i>登录
+            </button>
+            <button class="btn btn-signup">
+                <i class="fas fa-user-plus"></i>注册
+            </button>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>为地球播种绿色未来</h1>
+            <p>我们致力于创造可持续的生态解决方案，让世界更美好</p>
+            <a href="#" class="btn2">加入我们的使命</a>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section class="about">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">关于我们</h2>
+            <div class="about-content">
+                <div class="about-text animate-on-scroll">
+                    <h3>我们的故事</h3>
+                    <p>绿意生态成立于2010年，由一群热衷于环境保护的专家和志愿者共同创立。我们坚信，通过科技创新和社区参与，可以找到人与自然和谐共生的解决方案。</p>
+                    <p>十多年来，我们在全球30多个国家开展了200多个环保项目，从森林保护到海洋清洁，从可持续农业到城市绿化，我们的足迹遍布世界各地。</p>
+                    <p>我们的团队由环境科学家、生态工程师、社区组织专家和热情的志愿者组成，共同致力于创造一个更绿色、更可持续的未来。</p>
+                    <a href="#" class="btn2">了解更多</a>
+                </div>
+                <div class="about-image animate-on-scroll">
+                    <div class="eco-icons">
+                        <div class="eco-icon" style="top: 10%; left: 15%;"><i class="fas fa-tree"></i></div>
+                        <div class="eco-icon" style="top: 30%; left: 70%;"><i class="fas fa-recycle"></i></div>
+                        <div class="eco-icon" style="top: 60%; left: 25%;"><i class="fas fa-seedling"></i></div>
+                        <div class="eco-icon" style="top: 80%; left: 65%;"><i class="fas fa-solar-panel"></i></div>
+                        <div class="eco-icon" style="top: 40%; left: 45%;"><i class="fas fa-wind"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使命 -->
+    <section class="mission">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">我们的使命</h2>
+            <div class="mission-content">
+                <div class="mission-card animate-on-scroll">
+                    <div class="mission-icon">
+                        <i class="fas fa-globe-americas"></i>
+                    </div>
+                    <h3>保护自然</h3>
+                    <p>通过恢复生态系统和保护濒危物种，维护地球生物多样性，为子孙后代保留丰富的自然资源。</p>
+                </div>
+                <div class="mission-card animate-on-scroll">
+                    <div class="mission-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3>赋能社区</h3>
+                    <p>教育并赋能当地社区，提供可持续生计方案，使环境保护与经济发展和谐共存。</p>
+                </div>
+                <div class="mission-card animate-on-scroll">
+                    <div class="mission-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>创新方案</h3>
+                    <p>研发和推广创新环保技术，解决紧迫的环境问题，创造可持续的未来解决方案。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 团队 -->
+    <section class="team">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">核心团队</h2>
+            <div class="team-grid">
+                <div class="team-member animate-on-scroll">
+                    <div class="member-image">L</div>
+                    <h3></h3>
+                    <p>创始人 & CEO</p>
+                    <p>环境科学博士，拥有20年环保领域经验</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-member animate-on-scroll">
+                    <div class="member-image">Z</div>
+                    <h3></h3>
+                    <p>技术总监</p>
+                    <p>生态工程专家，可持续技术研发负责人</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-member animate-on-scroll">
+                    <div class="member-image">W</div>
+                    <h3></h3>
+                    <p>项目总监</p>
+                    <p>管理全球环保项目，社区发展专家</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-member animate-on-scroll">
+                    <div class="member-image">C</div>
+                    <h3></h3>
+                    <p>教育主管</p>
+                    <p>环境教育专家，可持续发展倡导者</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>绿意生态</h3>
+                    <p>我们致力于通过创新和合作，为地球创造一个更绿色、更可持续的未来。加入我们，一起改变世界。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 首页</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 关于我们</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 项目</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 解决方案</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 联系我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>我们的项目</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 城市森林计划</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 海洋清洁行动</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 可持续农业</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 可再生能源</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> 环境教育</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>联系我们</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> 北京市朝阳区环保科技园</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +86 10 8888 7777</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> contact@greeneco.org</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> 周一至周五: 9:00 - 18:00</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 绿意生态环保组织. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="../../js/api.js"></script>
+    <script>
+        // 创建飘落的树叶
+        function createLeaves() {
+            const leavesContainer = document.getElementById('leaves');
+            const leafCount = 20;
+            
+            for (let i = 0; i < leafCount; i++) {
+                const leaf = document.createElement('div');
+                leaf.classList.add('leaf');
+                
+                // 随机位置
+                const leftPos = Math.random() * 100;
+                leaf.style.left = `${leftPos}%`;
+                
+                // 随机大小
+                const size = 15 + Math.random() * 20;
+                leaf.style.width = `${size}px`;
+                leaf.style.height = `${size}px`;
+                
+                // 随机动画时长和延迟
+                const duration = 10 + Math.random() * 20;
+                const delay = Math.random() * 15;
+                leaf.style.animationDuration = `${duration}s`;
+                leaf.style.animationDelay = `${delay}s`;
+                
+                leavesContainer.appendChild(leaf);
+            }
+        }
+        
+        // 滚动动画
+        function initScrollAnimation() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            elements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            createLeaves();
+            initScrollAnimation();
+        });
+    </script>
+</body>
+</html>

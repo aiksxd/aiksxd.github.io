@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绿意盎然 - 个人博客</title>
+    <style>
+        :root {
+            --primary-color: #2d5d4a;
+            --secondary-color: #5c8970;
+            --accent-color: #9bc4a3;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #f8fff9 0%, #e6f5e9 100%);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* 云朵动画样式 */
+        .clouds-container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            filter: blur(15px);
+            opacity: 0.8;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20px, 10px) scale(0.98); }
+            50% { transform: translate(-15px, 5px) scale(1.02); }
+            75% { transform: translate(10px, -5px) scale(0.99); }
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 文章卡片布局 */
+        .container {
+            position: relative;
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+            z-index: 1;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        /* 卡片设计 */
+        .article-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+            box-shadow: 0 8px 30px rgba(44, 93, 74, 0.1);
+        }
+
+        .article-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(44, 93, 74, 0.15);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态云朵 -->
+    <div class="clouds-container" id="clouds"></div>
+
+    <!-- 导航栏 -->
+    <nav>
+        <div class="nav-container">
+            <h1 style="color: var(--primary-color);">绿意博客</h1>
+            <div>
+                <a href="#" style="color: var(--secondary-color); margin-left: 2rem;">首页</a>
+                <a href="#" style="color: var(--secondary-color); margin-left: 2rem;">归档</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 内容容器 -->
+    <div class="container">
+        <div class="card-grid">
+            <!-- 示例卡片（实际使用时应动态生成） -->
+            <article class="article-card">
+                <img src="https://picsum.photos/400/300?nature" class="card-image" alt="文章配图">
+                <h3>自然与科技的和谐共生</h3>
+                <p>探索绿色技术在可持续发展中的创新应用...</p>
+            </article>
+            <!-- 更多卡片... -->
+        </div>
+    </div>
+
+    <script>
+        // 云朵生成器
+        function createClouds() {
+            const container = document.getElementById('clouds');
+            const cloudCount = 6;
+            
+            for (let i = 0; i < cloudCount; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                
+                // 随机生成云朵属性
+                const size = Math.random() * 120 + 50;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const delay = Math.random() * 8;
+                
+                cloud.style.cssText = `
+                    width: ${size}px;
+                    height: ${size/2}px;
+                    left: ${left}%;
+                    top: ${top}%;
+                    animation-delay: -${delay}s;
+                `;
+                
+                container.appendChild(cloud);
+            }
+        }
+
+        // 滚动视差效果
+        window.addEventListener('scroll', () => {
+            const clouds = document.querySelectorAll('.cloud');
+            const scrollY = window.pageYOffset;
+            
+            clouds.forEach(cloud => {
+                const speed = 0.3;
+                cloud.style.transform = `translateY(${scrollY * speed}px)`;
+            });
+        });
+
+        // 卡片淡入效果
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.article-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // 初始化
+        window.onload = () => {
+            createClouds();
+            document.documentElement.style.setProperty('--scroll', window.pageYOffset);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="http://www.softwhy.com/" />
+<title>xxxx</title>
+<style>
+div{
+  margin:200px;
+  width:150px;
+  height:100px;
+  background:green;
+  animation: bounceInLeft 1s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000)
+}
+@keyframes bounceInLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-3000px, 0, 0);
+  }
+  60% {
+    opacity: 1;
+    transform: translate3d(25px, 0, 0);
+  }
+  75% {
+    transform: translate3d(-10px, 0, 0);
+  }
+  90% {
+    transform: translate3d(5px, 0, 0);
+  }
+  100% {
+    transform: none;
+  }
+}
+</style>
+</head>
+<body>
+  <div></div>
+</body>
+</html>

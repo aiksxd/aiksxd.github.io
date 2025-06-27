@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生态视觉博客</title>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --bg-day: #ecf0f1;
+            --bg-night: #2c3e50;
+            --text-day: #2c3e50;
+            --text-night: #ecf0f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: var(--bg-day);
+            transition: background 0.5s;
+            overflow-x: hidden;
+        }
+
+        /* 昼夜切换背景 */
+        .background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            z-index: -2;
+        }
+
+        /* 云雾效果 */
+        .clouds {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1000px;
+            animation: float 20s infinite linear;
+        }
+
+        /* 卡片容器 */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            padding: 100px 20px;
+            perspective: 1000px;
+        }
+
+        .card-wrapper {
+            display: flex;
+            gap: 30px;
+            padding: 50px 0;
+            transform-style: preserve-3d;
+        }
+
+        /* 博客卡片 */
+        .blog-card {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.5s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        /* 动态布局效果 */
+        .blog-card:nth-child(odd) {
+            transform: scale(0.9);
+        }
+
+        .blog-card:nth-child(even) {
+            transform: scale(1.1);
+        }
+
+        .card-wrapper:hover .blog-card {
+            transform: scale(1) !important;
+        }
+
+        /* 动画定义 */
+        @keyframes float {
+            0% { transform: translateX(-100%) translateY(-10%); }
+            100% { transform: translateX(100%) translateY(10%); }
+        }
+
+        /* 昼夜模式切换 */
+        .night-mode {
+            background: var(--bg-night);
+            color: var(--text-night);
+        }
+
+        /* 主题切换按钮 */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .theme-switch:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="clouds">
+        <div class="cloud" style="width: 200px; height: 60px; top: 20%; left: -10%"></div>
+        <div class="cloud" style="width: 150px; height: 40px; top: 40%; left: -20%"></div>
+        <div class="cloud" style="width: 180px; height: 50px; top: 60%; left: -15%"></div>
+    </div>
+    
+    <div class="theme-switch"></div>
+
+    <div class="card-container">
+        <div class="card-wrapper">
+            <div class="blog-card">
+                <h2>森林的呼吸</h2>
+                <p>探索绿色生态系统的奥秘，了解植物如何维持地球的生命循环...</p>
+            </div>
+            <div class="blog-card">
+                <h2>可持续未来</h2>
+                <p>绿色科技如何改变我们的生活，构建可持续发展的城市蓝图...</p>
+            </div>
+            <div class="blog-card">
+                <h2>自然美学</h2>
+                <p>从建筑设计到生活美学，自然元素如何塑造现代设计语言...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 主题切换功能
+        const themeSwitch = document.querySelector('.theme-switch');
+        const body = document.body;
+
+        themeSwitch.addEventListener('click', () => {
+            body.classList.toggle('night-mode');
+            themeSwitch.style.backgroundColor = body.classList.contains('night-mode') 
+                // ? var(--secondary-color) 
+                // : var(--primary-color);
+        });
+
+        // 视差滚动效果
+        window.addEventListener('scroll', () => {
+            document.querySelector('.background').style.transform = 
+                `translateY(${window.scrollY * 0.5}px)`;
+        });
+
+        // 卡片3D效果
+        const cardWrapper = document.querySelector('.card-wrapper');
+        cardWrapper.addEventListener('mousemove', (e) => {
+            const rect = cardWrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            cardWrapper.style.transform = `
+                rotateY(${(x - rect.width/2) * 0.1}deg)
+                rotateX(${-(y - rect.height/2) * 0.1}deg)
+            `;
+        });
+
+        // 重置卡片位置
+        cardWrapper.addEventListener('mouseleave', () => {
+            cardWrapper.style.transform = 'none';
+        });
+
+        // 自动生成云雾
+        function createClouds() {
+            const cloudsContainer = document.querySelector('.clouds');
+            for(let i = 0; i < 5; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.cssText = `
+                    width: ${Math.random() * 100 + 150}px;
+                    height: ${Math.random() * 30 + 30}px;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100 - 20}%;
+                    animation-duration: ${Math.random() * 20 + 20}s;
+                    opacity: ${Math.random() * 0.3 + 0.2};
+                `;
+                cloudsContainer.appendChild(cloud);
+            }
+        }
+        createClouds();
+    </script>
+</body>
+</html>

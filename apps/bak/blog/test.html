@@ -1,0 +1,157 @@
+<style>
+  *{
+      padding: 0;
+      margin: 0;
+    }
+    body {
+      height: 1200px;
+      border-radius: 60px;
+      background-color: #0068de;
+      margin: 50vh auto;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 0 15px;
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+      transition: 0.8s all ease 0s;
+      transform: translate(0,-50%);
+    }
+    .waiBianKuang-YinYing {
+      width: 314px;
+      height: 120px;
+      border-radius: 60px;
+      left: 0px;
+      position: absolute;
+      z-index: 200;
+      box-shadow: 3px 3px 6px #ffffff00 inset;
+      opacity: 1;
+    }
+    .ri-Guang {
+      width: 90px;
+      height: 90px;
+      position: relative;
+      left: 0;
+      transition: all 0.8s cubic-bezier(.39,.91,.49,1.23) 0s;
+    }
+    .guang {
+      width: 196px;
+      height: 196px;
+      background-color: rgba(218, 218, 218, 0.25);
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      border-radius: 50%;
+      position: absolute;
+    }
+    .g {
+      z-index: 20;
+    }
+    .g1 {
+      width: 296px;
+      height: 296px;
+      background-color: rgba(218, 218, 218, 0.2);
+      z-index: 10;
+    }
+    .g2 {
+      width: 396px;
+      height: 396px;
+      background-color: rgba(218, 218, 218, 0.15);
+    }
+    .taiYang {
+      width: 90px;
+      height: 90px;
+      background-color: #ffc300;
+      border-radius: 45px;
+      box-shadow: 7px 7px 15px #00000093 ;
+      position: relative;
+      z-index: 120;
+      overflow: hidden;
+    }
+    .taiYang-YinYing {
+      width: 90px;
+      height: 90px;
+      border-radius: 45px;
+      box-shadow: -3px -3px 6px #00000093 inset;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .taiYang-GaoGuang {
+      width: 90px;
+      height: 90px;
+      border-radius: 45px;
+      box-shadow: 3px 3px 6px #ffffff inset;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .yue {
+      width: 90px;
+      height: 90px;
+      border-radius: 45px;
+      background-color: #cccccc;
+      box-shadow: 3px 3px 6px #fff inset;
+      position: relative;
+      top: 0;
+      left: 90px;
+      transition: all 0.6s ease 0s;
+    }
+    .yue1 {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: #a8a8a8;
+      position: absolute;
+      top: 40px;
+      left: 16px;
+    }
+    .yue2 {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #a8a8a8;
+      position: absolute;
+      top: 51px;
+      left: 55px;
+    }
+    .yue3 {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: #a8a8a8;
+      position: absolute;
+      top: 20px;
+      left: 37px;
+    }
+    body .yue{
+      box-shadow: 3px 3px 6px #ffffff00 inset;
+      opacity: 1;
+      left: 0;
+    }
+    body .ri-Guang {
+      left: 194px;
+    }
+    body {
+      background-color: #171e33;
+    }
+    </style>
+  <body>
+        <div class="ri-Guang">
+          <div class="guang g"></div>
+          <div class="guang g1"></div>
+          <div class="guang g2"></div>
+          <div class="taiYang">
+            <div class="yue">
+              <div class="yue1"></div>
+              <div class="yue2"></div>
+              <div class="yue3"></div>
+            </div>
+            <div class="taiYang-YinYing"></div>
+            <div class="taiYang-GaoGuang"></div>
+          </div>
+        </div>
+    </body>

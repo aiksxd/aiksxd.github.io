@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
+    <link rel="stylesheet" type="text/css" href="css/tools.css">
+    <link rel="stylesheet" type="text/css" href="alpha.css">
+    <!--script type="text/javascript" src="js/nav.js"-->
+	  
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="black" name="apple-mobile-web-app-status-bar-style">
+  <meta content="320" name="MobileOptimized">
+
+</head>
+
+<body>
+<!--导航栏--
+<ul class="menu">
+<li class="menu" style="font-size=40px"> </li>
+<li class="menu active">主页</li>
+<li class="menu"><a href="#news">直播</a></li>
+<li class="menu"><a href="#contact">云盘</a></li>
+<li class="menu"><a href="#about">关于</a></li>
+</ul-->
+<div id="myTopbar" class="topbar" onmouseover="toggleTopbar()" onmouseout="toggleTopbar()">
+        <a href="#"><i class="material-icons">info</i><span class="icon-text">about</span></a>
+        <a href="#"><i class="material-icons">spa</i><span class="icon-text"></span>services</a>
+        <a href="#"><i class="material-icons">monetization_on</i><span class="icon-text"></span>clients</a>
+        <a href="#"><i class="material-icons">email</i><span class="icon-text"></span>contact</a>
+    </div>
+<!--工具栏-->
+<button class="tbutton" onclick="openNav()">
+    <img class="inbimg" src="img/tools.png">
+</button>
+<div id="mySidebar" class="sidebar" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
+        <a href="#"><i class="material-icons">info</i><span class="icon-text">&nbsp;&nbsp;&nbsp;&nbsp;about</span></a><br>
+        <a href="#"><i class="material-icons">spa</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;services</a><br>
+        <a href="#"><i class="material-icons">monetization_on</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;clients</a><br>
+        <a href="#"><i class="material-icons">email</i><span class="icon-text"></span>&nbsp;&nbsp;&nbsp;&nbsp;contact</a>
+    </div>
+<!--作者信息栏-->
+    <div class="infointro info" id="infobar">
+        <img class="infoicon info">
+	    <p class="infobody info">
+		  复活吧，我的爱人~！
+		</p>
+        <a class="jump info" href="">Create mine</a><br/>
+        <a class="jump info" href="">Join others</a>
+    </div>
+    <button id="infobutton" onclick="openInfo()">《</button>
+<!--正文-->
+    <div id="main" class="alpha">
+    a<br/>a<br/>
+    </div>
+
+<!--ul id="toold" class="toold">
+    <li class="tooli"><a>alpha<a/></li>
+</ul>
+<!--正文开始--
+<div class="include">
+		<div class="onwericon"	>
+			<img src="" alt="">
+		</div>
+</div>
+<!--功能控件--
+<div class="apps">
+	
+</div>
+<div class="alpha">
+  a<br/>a<br/>a<br/>a<br/>a
+</div-->
+</body>
+</html>
+
+<script>
+//展开收缩
+var mini = true;
+
+function toggleSidebar() {
+     if (mini) {
+          document.getElementById("mySidebar").style.width = "250px";
+          document.getElementById("main").style.marginRight = "250px";
+                this.mini = false;
+            } else {
+          document.getElementById("mySidebar").style.width = "55px";
+          document.getElementById("main").style.marginRight = "85px";
+          this.mini = true;
+          }
+     }
+//右下角打开关闭
+var S = document.getElementById('mySidebar');
+var T = document.getElementById('myTopbar');
+var I = document.getElementById('infobar');
+var Ii = document.getElementByClassName('infobar');
+var Ij = document.getElementByClassName('jump');
+var Ib = document.getElementByClassName('infobody');
+var Io = document.getElementByClassName('info');
+var a = 0;var aa = 0;
+function openNav() {
+  if(a==0)
+  {a++;
+    S.style.width = "0px";
+  }else if(a==1){a++;
+    T.style.height = "0px";
+  }else if(a==2){a++;
+    T.style.height = "40px";
+  }else{
+    a=0;
+    S.style.width = "55px";
+  }
+}
+function openInfo() {
+  if(I.style.width == "0px"){
+     I.style.width = "200px";
+	 Ii.style.width = "128px";
+	 Ij.style.width = "128px";
+	 lb.style.width = "128px";
+  }else{
+    I.style.width = "0px";
+	Ii.style.width = "0px";
+    Ij.style.width = "0px";
+    lb.style.width = "0px";
+  }
+}
+</script>

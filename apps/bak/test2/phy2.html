@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+</head>
+<body>
+    <script>
+        // 初始化引擎和渲染器
+        const Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Constraint = Matter.Constraint,
+            Events = Matter.Events;
+
+        const engine = Engine.create();
+        const render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: { width: 800, height: 600, wireframes: false }
+        });
+
+        // 创建上下两个钉子
+        const topNail = Bodies.circle(400, 100, 10, { isStatic: true, render: { fillStyle: 'gray' } });
+        const bottomNail = Bodies.circle(400, 300, 10, { isStatic: true, render: { fillStyle: 'gray' } });
+
+        // 创建物块并赋予初速度
+        const block = Bodies.circle(400, 500, 20, { 
+            restitution: 0.5,
+            render: { fillStyle: 'orange' },
+            velocity: { x: 50, y: 0 } // 水平初速度
+        });
+
+        // 初始约束（绳子）
+        let rope = Constraint.create({
+            pointA: { x: bottomNail.position.x, y: bottomNail.position.y },
+            bodyB: block,
+            length: 200, // 初始绳长大于钉子间距
+            stiffness: 1,
+            render: { lineWidth: 2, strokeStyle: 'black' }
+        });
+
+        // 添加所有物体到世界
+        Composite.add(engine.world, [topNail, bottomNail, block, rope]);
+
+        // 检测物块与上钉子的碰撞（模拟缠绕）
+        Events.on(engine, 'collisionStart', (event) => {
+            event.pairs.forEach((pair) => {
+                if ((pair.bodyA === block && pair.bodyB === topNail) || 
+                    (pair.bodyB === block && pair.bodyA === topNail)) {
+                    
+                    // 缩短绳子长度（模拟缠绕）
+                    rope.length *= 0.8; // 每次碰撞后绳长减少20%
+                    
+                    // 如果绳长过短，断开绳子并滑入斜面
+                    if (rope.length < 50) {
+                        Composite.remove(engine.world, rope);
+                        createSlope(); // 创建斜面
+                        block.restitution = 0.2; // 减少弹性模拟摩擦力
+                    }
+                }
+            });
+        });
+
+        // 创建斜面函数
+        function createSlope() {
+            const slope = Bodies.rectangle(600, 500, 200, 20, {
+                isStatic: true,
+                angle: -0.3,
+                render: { fillStyle: 'green' }
+            });
+            Composite.add(engine.world, slope);
+        }
+
+        // 运行引擎和渲染器
+        Engine.run(engine);
+        Render.run(render);
+    </script>
+</body>
+</html>

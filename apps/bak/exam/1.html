@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>判断题答题界面</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>判断题答题界面</h1>
+        <div id="question-container">
+            <p id="question-text"></p>
+            <div class="options">
+                <button id="true-btn">正确</button>
+                <button id="false-btn">错误</button>
+            </div>
+            <p id="feedback"></p>
+            <p id="explanation"></p>
+        </div>
+        <div id="score-container">
+            <p>总积分: <span id="score">0</span></p>
+        </div>
+        <div id="result-container" style="display:none;">
+            <h2>答题结果</h2>
+            <ul id="result-list"></ul>
+        </div>
+    </div>
+    <script src="js/scrpit.js"></script>
+</body>
+</html>

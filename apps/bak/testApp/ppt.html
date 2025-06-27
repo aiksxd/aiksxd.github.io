@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT式点击触发动画</title>
+    <style>
+        /* 基础样式 */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        /* A类元素样式 - 可点击区域 */
+        .trigger-area {
+            width: 200px;
+            height: 150px;
+            background-color: #f0f0f0;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .trigger-area:hover {
+            transform: scale(1.05);
+        }
+        
+        /* B类元素样式 - 动画目标 */
+        .animation-target {
+            width: 180px;
+            height: 100px;
+            background-color: #4CAF50;
+            border-radius: 4px;
+            opacity: 0; /* 初始不可见 */
+            transition: opacity 0.5s ease-in-out;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* 动画激活状态 */
+        .animation-target.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 第一个触发区域 -->
+        <div class="trigger-area" onclick="triggerAnimation(this)">
+            <p>点击区域1</p>
+            <div class="animation-target">目标元素1</div>
+        </div>
+        
+        <!-- 第二个触发区域 -->
+        <div class="trigger-area" onclick="triggerAnimation(this)">
+            <p>点击区域2</p>
+            <div class="animation-target">目标元素2</div>
+        </div>
+        
+        <!-- 第三个触发区域 -->
+        <div class="trigger-area" onclick="triggerAnimation(this)">
+            <p>点击区域3</p>
+            <div class="animation-target">目标元素3</div>
+        </div>
+    </div>
+
+    <script>
+        function triggerAnimation(triggerElement) {
+            // 在触发元素下查找第一个B类元素
+            const targetElement = triggerElement.querySelector('.animation-target');
+            
+            if (targetElement) {
+                // 切换active类来触发动画
+                targetElement.classList.toggle('active');
+                
+                // 如果需要每次点击都重新播放动画（而不是切换）
+                // 可以先移除类，然后短暂延迟后重新添加
+                /*
+                targetElement.classList.remove('active');
+                setTimeout(() => {
+                    targetElement.classList.add('active');
+                }, 10);
+                */
+            }
+
+            // 应的效果，js检查并执行对应效果，提供扩展支持，比如移动动画，生成一个示例示例：区域A类点击时，执行其下第一个B类元素的动画：渐显
+        }
+    </script>
+</body>
+</html>

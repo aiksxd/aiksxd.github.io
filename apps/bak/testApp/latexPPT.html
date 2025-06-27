@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>/* 基本样式 */
+        .ppt-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .ppt-slide {
+            position: relative;
+            border: 1px solid #ccc;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 300px; /* 设置父元素的最大高度 */
+        }
+        
+        .nav-button {
+            position: sticky;
+            top: 10px;
+            right: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* 上一页按钮样式 */
+        .prev {
+            position: sticky;
+            top: 10px;
+            left: 10px;
+        }
+        
+        /* 下一页按钮样式 */
+        .next {
+            position: sticky;
+            top: 10px;
+            right: 10px;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="ppt-container">
+        <div class="ppt-slide">
+            <button class="nav-button prev">上一页</button>
+            <button class="nav-button next">下一页</button>
+            <div class="content">
+                <!-- 这里是PPT内容 -->
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+                <p>PPT内容1</p>
+            </div>
+        </div>
+        <div class="ppt-slide">
+            <button class="nav-button prev">上一页</button>
+            <button class="nav-button next">下一页</button>
+            <div class="content">
+                <!-- 这里是PPT内容 -->
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+                <p>PPT内容2</p>
+            </div>
+        </div>
+        <!-- 可以添加更多的ppt-slide -->
+    </div>
+    
+    <script>
+        // 获取所有 A 类元素
+        const as = document.querySelectorAll('.A');
+
+        as.forEach(a => {
+            const bs = a.querySelectorAll('.B');
+            const addButton = a.querySelector('.add');
+            const removeButton = a.querySelector('.remove');
+
+            addButton.addEventListener('click', () => {
+                const unactiveBs = Array.from(bs).filter(b =>!b.classList.contains('active'));
+                if (unactiveBs.length > 0) {
+                    unactiveBs[0].classList.add('active');
+                }
+            });
+
+            removeButton.addEventListener('click', () => {
+                const activeBs = Array.from(bs).filter(b => b.classList.contains('active'));
+                if (activeBs.length > 0) {
+                    activeBs[activeBs.length - 1].classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

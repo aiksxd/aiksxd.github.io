@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载动画集成示例</title>
+    <style>
+        /* 加载动画样式 */
+        @keyframes draw-path {
+            80% {
+                opacity: 0.8;
+            }
+            to {
+                stroke-dashoffset: 0;
+                opacity: 0;
+            }
+        }
+
+        .H {
+            stroke-dasharray: 540px;
+            stroke-dashoffset: 540px;
+            animation: draw-path 2s ease-out forwards;
+            animation-iteration-count: infinite;
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #46af4b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* 主界面样式 */
+        body {
+            overflow: hidden;
+            background-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .sidebar {
+            width: 80px;
+            background-color: #1a1f25;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            background-color: #2a3139;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon:hover {
+            background-color: #46af4b;
+            transform: translateY(-5px);
+        }
+
+        .icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 100px;
+            z-index: 101;
+            background-color: #46af4b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            height: 60px;
+            background-color: #2a3139;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .toolbar h1 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .main-content {
+            flex: 1;
+            background-color: #f0f2f5;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #2a3139;
+        }
+
+        .floating-ball {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #46af4b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+        }
+
+        .ball-main {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .loading-text {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div id="loader" class="active">
+        <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
+            <defs>
+                <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blurred"/>
+                <feMerge>
+                    <feMergeNode in="blurred"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+                </filter>
+            </defs>
+            <g>
+                <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0 150 150"
+                    to="360 150 150"
+                    dur="10s"
+                    repeatCount="indefinite"/>
+            </g>
+
+            <g transform="translate(85,90)scale(0.8,0.8)">
+                <path class="H" stroke="white" stroke-width="10" stroke-linecap="square" stroke-linejoin="bevel" filter="url(#glow)"
+                    d="M34.5 17.5s-4.5-3-3-3c25 11.5 40 121-5.5 121-6.5 0-11.5-2.5-14.5-6.5-32-53.3 109.2-69.2 128-82.5 20-10.7 17.3-41.334-8-40-36 8-18.7 65.3-13.3 90.7 2.7 10.7 6.7 21.334 11.333 32 1.2 2.6 5 12 4 9.5"
+                />
+            </g>
+        </svg>
+        <div class="loading-text">加载中，请稍候...</div>
+    </div>
+
+    <!-- 主界面 -->
+    <aside class="sidebar">
+        <div class="icon">
+            <svg viewBox="0 0 48 48">
+                <path d="M9.585 40.41q0-16.92-.045-17.19.09-1.351.945-1.396t1.08 1.17l-.135 16.56 5.4.09-.045-6.93q.75-6.255 7.215-5.4t5.88 8.235v4.14l5.49-.36.045-16.425q-.09-.9.945-1.215t1.125 1.26l-.09 16.65q-.225 2.16-3.6 2.07t-20.925-.18q-2.97.27-3.285-1.08" fill="white"/>
+                <path d="M21.6 5.445 4.725 22.86q-1.305 1.305-.63 1.845t1.8-.705l16.74-17.52q.66-.72 1.365.045T42.705 24q.675.78 1.485 0t-3.825-4.56L24 4.59q-1.29-1.23-2.4.855" fill="white"/>
+            </svg>
+        </div>
+        <div class="icon">
+            <svg viewBox="0 0 1024 1024" width="200" height="200">
+                <path d="M870.4 401.067c-8.533-21.334-17.067-42.667-27.733-64v-2.134c21.333-25.6 17.066-64-6.4-87.466l-64-64c-23.467-23.467-61.867-25.6-87.467-6.4q-32-16-64-25.6v-2.134c-4.267-32-32-57.6-66.133-57.6h-89.6c-34.134 0-61.867 25.6-66.134 57.6v2.134q-32 9.6-64 25.6c-25.6-21.334-64-17.067-87.466 6.4l-64 64c-23.467 23.466-25.6 61.866-6.4 87.466q-16 32-25.6 64h-2.134c-32 4.267-57.6 32-57.6 66.134v89.6c0 34.133 25.6 61.866 57.6 66.133h2.134q9.6 32 25.6 64c-21.334 25.6-17.067 64 6.4 87.467l64 64c23.466 23.466 61.866 25.6 87.466 6.4q32 16 64 25.6v2.133c4.267 32 32 57.6 66.134 57.6h89.6c34.133 0 61.866-25.6 66.133-57.6v-2.133q32-9.6 64-25.6c25.6 21.333 64 17.066 87.467-6.4l64-64c23.466-23.467 25.6-61.867 6.4-87.467q16-32 25.6-64h2.133c32-4.267 57.6-32 57.6-66.133v-89.6c0-29.867-25.6-59.734-57.6-64M864 556.8s0 2.133 0 0l-46.933 8.533-4.267 21.334c-6.4 29.866-19.2 59.733-36.267 87.466l-10.666 19.2L793.6 729.6v2.133l-64 64h-2.133L691.2 768 672 778.667c-27.733 17.066-55.467 27.733-87.467 36.266L563.2 819.2l-6.4 44.8s0 2.133-2.133 2.133h-89.6c-2.134 0-2.134 0-2.134-2.133l-6.4-44.8-21.333-4.267c-29.867-8.533-59.733-19.2-87.467-36.266L328.533 768l-36.266 27.733h-2.134l-64-64V729.6l27.734-36.267-10.667-19.2c-17.067-27.733-27.733-55.466-36.267-87.466l-4.266-21.334-44.8-6.4s-2.134 0-2.134-2.133v-89.6c0-2.133 0-2.133 2.134-2.133l44.8-6.4 4.266-21.334c8.534-29.866 19.2-59.733 36.267-87.466l10.667-19.2-27.734-36.267v-2.133l64-64h2.134L328.533 256l19.2-10.667c27.734-17.066 55.467-27.733 87.467-36.266l21.333-4.267 6.4-44.8c0-2.133 0-2.133 2.134-2.133h89.6s2.133 0 2.133 2.133l6.4 44.8 21.333 4.267c29.867 8.533 59.734 19.2 87.467 36.266L691.2 256l36.267-27.733h2.133l64 64v2.133l-27.733 36.267 10.666 19.2c17.067 27.733 27.734 55.466 36.267 87.466l4.267 21.334 44.8 6.4c2.133 0 2.133 0 2.133 2.133zM512 373.333c-76.8 0-138.667 61.867-138.667 138.667S435.2 650.667 512 650.667 650.667 588.8 650.667 512 588.8 373.333 512 373.333m0 213.334c-40.533 0-74.667-34.134-74.667-74.667s34.134-74.667 74.667-74.667 74.667 34.134 74.667 74.667-34.134 74.667-74.667 74.667" fill="white"/>
+            </svg>
+        </div>
+        <div class="icon">
+            <svg class="peerLive" width="150" height="150" viewBox="66 100 55 55">
+                <path d="m87 146 3-16q2-1 2.5 1L90 148q-2 1-2 0Z" fill="white"/>
+                <circle cx="92" cy="125" r="3" fill="white"/>
+                <path d="M85 120q9-6 15 2 5 0-1-5-7-6-15.5 1-1 2 1.5 2" fill="white"/>
+                <path d="M80 115q16-11 26 4 2 1 1-3-11-15-29-4 0 3 2 3" fill="white"/>
+            </svg>
+        </div>
+        <div class="icon">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="40" height="40">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="white"/>
+            </svg>
+        </div>
+        <div class="icon">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="40" height="40">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="white"/>
+            </svg>
+        </div>
+    </aside>
+
+    <label class="sidebar-toggle-btn">
+        <span class="icon-arrow">≡</span>
+    </label>
+
+    <div class="content">
+        <div class="toolbar">
+            <h1>绿色生态应用平台</h1>
+        </div>
+        <div class="main-content">
+            <div class="card-container">
+                <div class="card">
+                    <h3>环境监测</h3>
+                    <p>实时监测空气质量、水质、土壤状况等环境数据，提供全面的环境健康报告。</p>
+                </div>
+                <div class="card">
+                    <h3>生态保护</h3>
+                    <p>了解生态保护项目，参与志愿者活动，共同守护我们的绿色家园。</p>
+                </div>
+                <div class="card">
+                    <h3>资源回收</h3>
+                    <p>智能垃圾分类与回收指南，让资源得到最大化利用。</p>
+                </div>
+                <div class="card">
+                    <h3>绿色出行</h3>
+                    <p>计算您的碳足迹，获取绿色出行建议，减少环境负担。</p>
+                </div>
+                <div class="card">
+                    <h3>环保教育</h3>
+                    <p>丰富的环保教育资源，培养下一代环保意识。</p>
+                </div>
+                <div class="card">
+                    <h3>社区活动</h3>
+                    <p>加入本地环保社区，参与植树、清洁等环保活动。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-ball">
+        <div class="ball-main"></div>
+    </div>
+
+    <script>
+        // 模拟资源加载
+        function simulateResourceLoading() {
+            return new Promise(resolve => {
+                // 模拟加载时间（3-5秒）
+                const loadTime = 3000 + Math.random() * 2000;
+                setTimeout(resolve, loadTime);
+            });
+        }
+
+        // 初始化加载动画
+        function initLoader() {
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const loader = document.getElementById('loader');
+            const svg = document.querySelector('#loader svg');
+            const g = svg.querySelector('g');
+            
+            // 创建动态线条
+            const createLines = () => {
+                const numLines = 60;
+                const cx = 150;
+                const cy = 150;
+                const radius = 130;
+
+                for (let i = 0; i < numLines; i++) {
+                    const angle = (i / numLines) * 2 * Math.PI;
+                    const x1 = cx + radius * Math.cos(angle);
+                    const y1 = cy + radius * Math.sin(angle);
+                    const x2 = cx + (radius - 15) * Math.cos(angle);
+                    const y2 = cy + (radius - 15) * Math.sin(angle);
+
+                    const line = document.createElementNS(svgNS, 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', 'rgba(255, 255, 255, 0.5)');
+                    line.setAttribute('stroke-width', '3');
+                    
+                    g.appendChild(line);
+                }
+            };
+
+            createLines();
+        }
+
+        // 隐藏加载动画并显示主界面
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化加载动画
+            initLoader();
+            
+            // 模拟资源加载
+            simulateResourceLoading().then(() => {
+                // 所有资源加载完成后隐藏加载动画
+                hideLoader();
+            });
+            
+            // 在实际应用中，您应该监听所有资源的加载状态
+            // 以下是实际项目中可用的代码：
+            /*
+            window.addEventListener('load', function() {
+                // 等待所有资源加载完成
+                hideLoader();
+            });
+            
+            // 设置超时作为后备方案
+            setTimeout(hideLoader, 10000); // 10秒后无论如何都隐藏
+            */
+        });
+    </script>
+</body>
+</html>

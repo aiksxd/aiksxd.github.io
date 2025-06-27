@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智能判断题练习系统</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --error-color: #f44336;
+            --background: linear-gradient(135deg, #f5fdf4 0%, #e8f5e9 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui;
+            background: var(--background);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score-board {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            font-size: 16px;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .selected {
+            border-color: var(--primary-color);
+            background: #e8f5e9;
+        }
+
+        .correct {
+            border-color: var(--primary-color);
+            background: #e8f5e9 !important;
+            animation: pulse 1s;
+        }
+
+        .wrong {
+            border-color: var(--error-color);
+            background: #ffebee !important;
+        }
+
+        .analysis {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0 15px;
+            margin-top: 15px;
+        }
+
+        .show-analysis {
+            max-height: 200px;
+            padding: 15px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--primary-color);
+            transition: width 3s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="score-board">
+            <div>当前积分：<span id="score">0</span></div>
+            <div>剩余题目：<span id="remaining">0</span></div>
+        </div>
+        <div id="questionContainer"></div>
+        <input type="file" id="upload" accept=".json" style="display: none;">
+        <button onclick="document.getElementById('upload').click()">导入题库</button>
+    </div>
+    
+    <script src="../../js/language.js"></script>
+    <script src="config.js"></script>
+    <script src="../../js/api.js"></script>
+    <script>
+
+        // post_Msg([ 'web', app_Info['app_Url'], app_Info['app_Name'], app_Info['app_Id'], app_Info['app_Icon']])
+        console.log(app_Info['app_Id']);
+
+    //     window.addEventListener('message', function(event) {
+    //     console.log('received'+event.data);
+    // // let currentUrl = window.location.origin;
+    // // let urlIndex = currentUrl.indexOf(language);
+    // // if (urlIndex !== -1) {
+    // //     currentUrl = currentUrl.sutargetstring(0, urlIndex - 1);
+    // // }
+    // // console.log(event.origin+"=\n"+window.location.origin +"=\n" + event.data);  // debug
+    //     switch (event.data[0]) {
+    //         case 0:
+    //             switch (event.data[1]) {
+    //                 case 0:
+    //                     config['use_Local_Storage'] = event.data[2];
+                        
+    //                     break;
+    //                 case 1:     // switch config['app_Mode'] (msg from window.parent)
+    //                     if(event.data[2]){
+    //                         config['app_Mode'] = true;
+    //                         if (document.getElementById("onlineButton")) {
+    //                             document.getElementById("onlineButton").classList.remove("covert");
+    //                         }
+    //                         if (document.getElementById("themeController")) {
+    //                             document.getElementById("themeController").classList.add("covert");
+    //                         }
+    //                     } else {
+    //                         config['app_Mode'] = false;
+    //                         if (document.getElementById("onlineButton")) {
+    //                             document.getElementById("onlineButton").classList.add("covert");
+    //                         }
+    //                         if (document.getElementById("themeController")) {
+    //                             document.getElementById("themeController").classList.remove("covert");
+    //                         }
+    //                     }
+    //                     break;
+    //                 default:
+    //                     break;
+    //             }
+    //             break;
+    //         case 1:
+    //             config['theme_Index'] = event.data[1];
+    //             change_Theme(config['theme_Index']);
+    //             document.getElementById('themeController').value = config['theme_Index'];
+    //             break;
+    //         case 'id':
+    //             app_Info['app_Id'] = event.data[1];
+    //             console.log('id changed' + app_Info['app_Id'])
+    //             switch (app_Info['run_fn']) {
+    //                 case 'tab':
+    //                     console.log(app_Info['app_Icon']);
+    //                     post_Msg(['web', app_Info['app_Url'], app_Info['app_Name'], app_Info['app_Id'], app_Info['app_Icon']])
+    //                     break;
+    //                 case 'background':
+                    
+    //                     break;
+    //                 case 'fullscreen':
+                    
+    //                     break;
+                
+    //                 default:
+    //                     break;
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+// });
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let selectedAnswer = null;
+        let isLocked = false;
+
+        document.getElementById('upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                try {
+                    questions = JSON.parse(event.target.result);
+                    initializeQuiz();
+                } catch (error) {
+                    alert('题库解析失败，请检查文件格式');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        function initializeQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            updateScore();
+            document.getElementById('remaining').textContent = questions.length;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isLocked = false;
+            const container = document.getElementById('questionContainer');
+            const q = questions[currentQuestion];
+            
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="countdown" style="width: ${q.userAnswer ? '100%' : '0'}"></div>
+                    <h3>第 ${q.id} 题 (${q.score}分)</h3>
+                    <p>${q.content}</p>
+                    <div class="options">
+                        <button class="option-btn" onclick="selectAnswer(true)" 
+                                data-key="1">正确</button>
+                        <button class="option-btn" onclick="selectAnswer(false)"
+                                data-key="2">错误</button>
+                    </div>
+                    <div class="analysis ${q.userAnswer ? 'show-analysis' : ''}">
+                        ${q.analysis ? `<p><strong>解析：</strong>${q.analysis}</p>` : ''}
+                    </div>
+                    <div class="controls">
+                        <button onclick="submitAnswer()" ${q.userAnswer ? 'disabled' : ''}>
+                            ${q.userAnswer ? '已提交' : '提交 (Enter)'}
+                        </button>
+                        <button onclick="nextQuestion()" 
+                                ${!q.userAnswer || (q.isCorrect === false && !isLocked) ? 'disabled' : ''}>
+                            下一题 (→)
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // 初始化快捷键
+            document.addEventListener('keydown', handleShortcut);
+        }
+
+        function selectAnswer(answer) {
+            if (isLocked) return;
+            selectedAnswer = answer;
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.textContent === (answer ? '正确' : '错误'));
+            });
+        }
+
+        function submitAnswer() {
+            if (isLocked || selectedAnswer === null) return;
+
+            const q = questions[currentQuestion];
+            q.userAnswer = selectedAnswer;
+            q.isCorrect = q.answer === selectedAnswer;
+            
+
+            // 显示解析
+            document.querySelector('.analysis').classList.add('show-analysis');
+            
+            // 高亮正确答案
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.toggle('correct', btn.textContent === (q.answer ? '正确' : '错误'));
+                if (btn.textContent === (q.userAnswer ? '正确' : '错误')) {
+                    btn.classList.add(q.isCorrect ? 'correct' : 'wrong');
+                }
+            });
+
+            // 禁用选项
+            isLocked = true;
+            document.querySelector('button[onclick="submitAnswer()"]').disabled = true;
+            
+            if (q.isCorrect) {
+                score += q.score;
+                updateScore();
+                const nextBtn = document.querySelector('button[onclick="nextQuestion()"]');
+                nextBtn.disabled = false;
+                isLocked = false;
+            }
+            
+            // 处理答错冷却
+            if (!q.isCorrect) {
+                const nextBtn = document.querySelector('button[onclick="nextQuestion()"]');
+                nextBtn.disabled = true;
+                setTimeout(() => {
+                    nextBtn.disabled = false;
+                    isLocked = false;
+                }, 3000);
+            }
+        }
+
+        function nextQuestion() {
+            if (isLocked) return;
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                showResult();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('remaining').textContent = questions.length - currentQuestion - 1;
+        }
+
+        function handleShortcut(e) {
+            if (e.key === '1') selectAnswer(true);
+            if (e.key === '2') selectAnswer(false);
+            if (e.key === 'Enter') submitAnswer();
+            if (e.key === 'ArrowRight') nextQuestion();
+        }
+
+        function showResult() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = `
+                <div class="question-container" style="text-align: center;">
+                    <h2>答题完成！</h2>
+                    <p>最终得分：${score} 分</p>
+                    <h3>答题记录：</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        ${questions.map(q => `
+                            <li style="color: ${q.isCorrect ? 'var(--primary-color)' : 'var(--error-color)'}">
+                                第 ${q.id} 题：${q.isCorrect ? '✓' : '✗'}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="location.reload()">重新开始</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

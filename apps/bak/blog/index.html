@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AX Blogs</title>
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+<body>
+  <svg id="more-tools" onclick="openNav()"></svg>
+  <div id="mySidebar" class="sidebar"></div> 
+  <div class="introduction">
+    <div id="moon">
+      <div class="shadow" style="background-color: #cccccc; --i:rgb(0,0,0);--t:-8px;"></div>
+      <div class="shadow" style="--i:rgb(255,255,255);--t:8px;"><svg width="500" height="500" fill="#a8a8a8" style="border-radius: 50%; box-shadow: 7px 7px 15px #000000;"><circle cx="150" cy="350" r="60"/><circle cx="200" cy="150" r="50"/><circle cx="325" cy="275" r="75"/></svg></div>
+      <div class="light" style="--i:800px;--t:0.05;"></div>
+      <div class="light" style="--i:1000px;--t:0.10;"></div>
+      <div class="light" style="--i:1200px;--t:0.15;"></div>
+    </div>
+    <!-- <svg id="blogTitle" width="200" height="100" fill="#fff" stroke="#abc"><path d="m10 80 16-40s6-20 16 0l10 20s11 18-7 24c0 0-21 6-15-14 0 0 8-22 38-40 0 0 22-10 52 50 0 0 4 6-6 0 0 0-19-40-42-46 0 0-32 16-39 41 0 0 0 7 7 6 0 0 8-1 10-6 0 0 2-5 0-10L38 40s-5-10-8 0L15 80s-5 5-5 0Z"/><path d="M110 30c-10-10 50-10-50 55 0 0 40-15 58-40 0 0 12-15 2-23 0 0-8-7-15 3 0 0-3 5 3 6Z"/></svg> -->
+    <div id="profile">
+        <img id="avatar" src="img/avatar.png">
+        <span id="name">AIKSXD</span><br/>
+        <span id="saying">少当自诩凌云志，梅花香自苦寒来</span>
+    </div>
+  
+    <img class="clouds" src="img/cloud3.png" style="">
+    <img class="clouds" src="img/cloud3.png" style="transform: rotate(180deg); float:right;">
+  </div>
+  <div id="overview">
+      <div class="list">
+          <div class="posts" style="bottom: 0px;"></div>
+          <div class="posts" style="bottom: 150px;"></div>
+          <div class="posts" style="bottom: 300px;"></div>
+          <div class="posts" style="bottom: 450px;">
+              <img id="postName" class="postCover"><!-- search for: css直接操作子元素 -->
+              <span>post title</span><br/>
+              <span>post overview</span>
+          </div>
+      </div>
+  </div>
+    <script src="js/blog.js"></script>
+</body>
+</html>
