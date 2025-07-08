@@ -117,6 +117,9 @@ let res_Strings = {
         {
             "en": "mdbook",
         },
+        {
+            "en": "online PVP",
+        },
     ],
     'tag-messages': [
         {
