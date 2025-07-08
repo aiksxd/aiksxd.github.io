@@ -139,6 +139,10 @@ let res_Strings = {
             "en": "open blog project",
             "zh": "开源博客项目"
         },
+        {
+            "en": "play with others online",
+            "zh": "与其他人在线竞技"
+        },
     ],
     'apps': {
         'name': [
@@ -174,6 +178,10 @@ let res_Strings = {
                 "en": "demo",
                 "zh": "演示",
             },
+            {
+                "en": "Card2024",
+                "zh": "猜卡2024",
+            },
         ],
         'description': [
             {
@@ -208,6 +216,10 @@ let res_Strings = {
                 "en": "test",
                 "zh": "测试",
             },
+            {
+                "en": "card game based on 2024 exam",
+                "zh": "基于2024新Ⅰ卷改编的数学游戏",
+            },
         ],
         'keywords': [
             ["live", "contact", "stream"],
@@ -216,7 +228,8 @@ let res_Strings = {
             ["info", "about"],
             ["exam", "test"],
             ["ppt", "slide", "presentation"],
-            ["demo", "test"]
+            ["demo", "test"],
+            ["card", "card2024", "2024"]
         ],
     }
 };

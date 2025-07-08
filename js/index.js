@@ -364,19 +364,19 @@ function handleWake() {
 }
 
 function createMessageElement(text) {
-  const msg = document.createElement('div');
-  msg.className = 'message';
-  msg.innerHTML = text;
-  
-  // 自动移除动画
+    const msg = document.createElement('div');
+    msg.className = 'message';
+    msg.innerHTML = text;
+    
+    // 自动移除动画
     setInterval(() => {
-        if (!isIdle) {
+        // if (!isIdle) {   // msg dispear only when user active(old design)
             clearInterval(this);
             msg.classList.add('hide');
             msg.addEventListener('transitionend', () => msg.remove());
-        }
-    }, 5000);
-  return msg;
+        // }
+    }, 4000);
+    return msg;
 }
 
 function showMessage(text) {

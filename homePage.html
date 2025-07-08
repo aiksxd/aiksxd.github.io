@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/appUI.css">
+    <link rel="stylesheet" type="text/css" href="css/icon.css">
 </head>
 <body>
     <div class="feature-group">
@@ -164,6 +165,38 @@
                     </label>
                 </div>
             </label>
+
+            <label data-app-id="card2024" data-index="8">
+                <input class="toggleApps" type="checkbox" hidden>
+                <div class="app-card">
+                    <section class="app-overview">
+                        <button class="star-button">☆</button>
+                        <div class="card2024 app-icon">
+                            <div class="card2024 cards-container">
+                                <div class="card2024 card blue-card">-1</div>
+                                <div class="card2024 card red-card">+1</div>
+                            </div>
+                            <div class="card2024 app-name">Card-2024</div>
+                            
+                            <div class="card2024 decoration">
+                                <div class="card2024 corner tl"></div>
+                                <div class="card2024 corner tr"></div>
+                                <div class="card2024 corner bl"></div>
+                                <div class="card2024 corner br"></div>
+                            </div>
+                        </div>
+                        <h3 class="app-lan">Card2024</h3>
+                        <p class="app-description">card game based on 2024 exam</p>
+                    </section>
+                    <label for="" class="app-more">
+                        <section>
+                            <button onclick="pop_Msg(res_Strings['tag-messages'][5][config['language']])" class="tag blue">online PVP</button>
+                        </section>
+                        <button onclick="launch_Web_App('ppt-showcase', 'apps/card2024/index.html')" class="green-button">Run</button>
+                    </label>
+                </div>
+            </label>
+
         </div>
 
         <div class="feature-group news-section">

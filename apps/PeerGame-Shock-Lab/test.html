@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多人游戏对战平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, #ff8a00, #e52e71, #00b4db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .panels-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .panel {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            min-width: 320px;
+            max-width: 500px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        .panel-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(100, 120, 255, 0.3);
+            color: #aaccff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title i {
+            font-size: 1.4rem;
+            color: #64b5f6;
+        }
+        
+        .form-group {
+            margin-bottom: 22px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: #aaccff;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(20, 20, 40, 0.7);
+            color: white;
+            font-size: 1.1rem;
+            border: 1px solid rgba(100, 120, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.3);
+        }
+        
+        .input-field::placeholder {
+            color: rgba(200, 200, 255, 0.4);
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .range-value {
+            background: rgba(100, 120, 255, 0.2);
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .mode-option {
+            flex: 1;
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mode-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .mode-option.selected {
+            border-color: #64b5f6;
+            background: rgba(30, 50, 80, 0.5);
+            box-shadow: 0 0 15px rgba(100, 181, 246, 0.4);
+        }
+        
+        .mode-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #64b5f6;
+            text-align: center;
+        }
+        
+        .mode-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+            color: #aaccff;
+        }
+        
+        .mode-desc {
+            font-size: 0.9rem;
+            color: rgba(200, 200, 255, 0.8);
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #21cbf3, #1976D2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(33, 150, 243, 0.6);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff5252, #b71c1c);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff6b6b, #c62828);
+            box-shadow: 0 7px 20px rgba(244, 67, 54, 0.4);
+        }
+        
+        .btn-block {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00c853, #1b5e20);
+        }
+        
+        .info-display {
+            background: rgba(20, 20, 40, 0.7);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(100, 120, 255, 0.2);
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #aaccff;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #64b5f6;
+        }
+        
+        .ready-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .ready-container.show {
+            opacity: 1;
+            max-height: 200px;
+        }
+        
+        .ready-label {
+            font-size: 1.2rem;
+            color: #aaccff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ready-checkbox {
+            display: none;
+        }
+        
+        .ready-checkbox:checked + .ready-visual svg circle {
+            stroke: #68E534;
+        }
+        
+        .ready-checkbox:checked + .ready-visual svg .readyTick {
+            stroke-dashoffset: 0;
+        }
+        
+        .ready-visual {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .ready-visual svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .ready-visual svg circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 4;
+            transition: stroke 0.3s ease;
+        }
+        
+        .ready-visual svg .readyTick {
+            fill: none;
+            stroke: #68E534;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 0.4s ease;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ff5252;
+            margin-left: 8px;
+            box-shadow: 0 0 8px #ff5252;
+        }
+        
+        .status-indicator.active {
+            background-color: #68E534;
+            box-shadow: 0 0 8px #68E534;
+        }
+        
+        .status-indicator.waiting {
+            background-color: #ffc107;
+            box-shadow: 0 0 8px #ffc107;
+        }
+        
+        /* 在线房间列表样式 */
+        .online-rooms {
+            margin-top: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .online-rooms::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            background-color: rgba(20, 20, 40, 0.3);
+            border-radius: 10px;
+        }
+
+        .online-rooms::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #64b5f6, #2196F3);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+
+        .online-rooms::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #21cbf3, #1976D2);
+        }
+
+        .online-rooms::-webkit-scrollbar-track {
+            background: rgba(20, 20, 40, 0.2);
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+
+        .online-rooms::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        /* Firefox滚动条样式 */
+        .online-rooms {
+            scrollbar-width: thin;
+            scrollbar-color: #64b5f6 rgba(20, 20, 40, 0.2);
+        }
+        .rooms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .rooms-title {
+            font-size: 1.3rem;
+            color: #aaccff;
+        }
+        
+        .refresh-btn {
+            background: rgba(100, 120, 255, 0.2);
+            border: none;
+            color: #64b5f6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(100, 120, 255, 0.3);
+        }
+        
+        .room-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .room-item {
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(100, 120, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .room-item:hover {
+            border-color: rgba(100, 181, 246, 0.5);
+        }
+        
+        .room-info {
+            flex: 1;
+        }
+        
+        .room-id {
+            font-weight: 600;
+            color: #64b5f6;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .room-details {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: rgba(200, 200, 255, 0.8);
+        }
+        
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .room-status .status {
+            font-size: 0.85rem;
+            padding: 3px 8px;
+            border-radius: 30px;
+        }
+        
+        .status-waiting {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        .status-playing {
+            background: rgba(104, 229, 52, 0.15);
+            color: #68E534;
+        }
+        
+        .room-players {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .room-players i {
+            color: #e52e71;
+        }
+        
+        .room-range {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .room-range i {
+            color: #00b4db;
+        }
+        
+        /* 新增：游戏模式标签 */
+        .room-mode {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .room-mode i {
+            color: #ff8a00;
+        }
+        
+        .mode-asymmetric {
+            background: rgba(33, 150, 243, 0.15);
+            color: #21cbf3;
+        }
+        
+        .mode-symmetric {
+            background: rgba(104, 229, 52, 0.15);
+            color: #68E534;
+        }
+        
+        .no-rooms {
+            text-align: center;
+            padding: 20px;
+            color: rgba(200, 200, 255, 0.6);
+            font-style: italic;
+        }
+        
+        .room-info-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .room-info-section.show {
+            display: block;
+        }
+        
+        .create-room-section {
+            display: block;
+        }
+        
+        .create-room-section.hide {
+            display: none;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: rgba(200, 200, 255, 0.6);
+        }
+        
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 8px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+        
+        .player-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .player-ready {
+            color: #68E534;
+            font-size: 0.9rem;
+        }
+        
+        .player-not-ready {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .panels-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .panel {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .room-details {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .mode-option {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>多人游戏对战平台</h1>
+            <p>创建或加入游戏房间，与好友一起享受精彩的对战体验</p>
+        </div>
+        
+        <div class="panels-container">
+            <div class="panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-door-open"></i>
+                    加入房间
+                </h2>
+                
+                <div class="form-group">
+                    <label for="roomId">房间 ID</label>
+                    <input type="text" id="roomId" class="input-field" placeholder="输入房间ID...">
+                </div>
+                
+                <button id="joinRoom" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i>
+                    加入游戏
+                </button>
+                
+                <!-- 在线房间列表 -->
+                <div class="online-rooms">
+                    <div class="rooms-header">
+                        <div class="rooms-title">当前在线房间</div>
+                        <button class="refresh-btn" id="refreshRooms">
+                            <i class="fas fa-sync-alt"></i> 刷新列表
+                        </button>
+                    </div>
+                    
+                    <div class="room-list" id="roomList">
+                        <!-- 房间列表会通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <!-- 创建房间部分（初始显示） -->
+                <div class="create-room-section" id="createRoomSection">
+                    <h2 class="panel-title">
+                        <i class="fas fa-plus-circle"></i>
+                        创建房间
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label>数字范围设置</label>
+                        <div class="range-container">
+                            <span>[0 -</span>
+                            <input type="number" id="cardRange" class="input-field" value="4" min="3" max="18" style="width: 80px;">
+                            <span>]</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 新增：游戏模式选择 -->
+                    <div class="form-group">
+                        <label>游戏模式</label>
+                        <div class="mode-selector">
+                            <div class="mode-option" data-mode="asymmetric">
+                                <div class="mode-icon">
+                                    <i class="fas fa-balance-scale-right"></i>
+                                </div>
+                                <div class="mode-title">非对称式公平</div>
+                                <div class="mode-desc">玩家拥有不同的初始资源和能力，但整体游戏平衡</div>
+                            </div>
+                            <div class="mode-option" data-mode="symmetric">
+                                <div class="mode-icon">
+                                    <i class="fas fa-equals"></i>
+                                </div>
+                                <div class="mode-title">完全对称式</div>
+                                <div class="mode-desc">所有玩家拥有完全相同的初始条件和资源</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-display">
+                        <div class="info-item">
+                            <span class="info-label">房间状态:</span>
+                            <span class="info-value">待创建 <span class="status-indicator"></span></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">房间 ID:</span>
+                            <span class="info-value" id="roomIdDisplay">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">玩家数量:</span>
+                            <span class="info-value">0/4</span>
+                        </div>
+                        <!-- 新增：显示选择的游戏模式 -->
+                        <div class="info-item">
+                            <span class="info-label">游戏模式:</span>
+                            <span class="info-value" id="gameModeDisplay">未选择</span>
+                        </div>
+                    </div>
+                    
+                    <button id="createRoom" class="btn btn-primary btn-block">
+                        <i class="fas fa-plus"></i>
+                        创建房间
+                    </button>
+                </div>
+                
+                <!-- 房间信息部分（初始隐藏） -->
+                <div class="room-info-section" id="roomInfoSection">
+                    <h2 class="panel-title">
+                        <i class="fas fa-users"></i>
+                        房间信息
+                    </h2>
+                    
+                    <div class="info-display">
+                        <div class="info-item">
+                            <span class="info-label">房间ID:</span>
+                            <span class="info-value" id="currentRoomId">#5832</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">房间状态:</span>
+                            <span class="info-value">等待中 <span class="status-indicator waiting"></span></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">数字范围:</span>
+                            <span class="info-value">0 - 6</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">玩家:</span>
+                            <span class="info-value">2/4</span>
+                        </div>
+                        <!-- 新增：显示游戏模式 -->
+                        <div class="info-item">
+                            <span class="info-label">游戏模式:</span>
+                            <span class="info-value" id="roomModeDisplay">非对称式公平</span>
+                        </div>
+                    </div>
+                    
+                    <div class="player-list">
+                        <div class="player-item">
+                            <div class="player-avatar">A</div>
+                            <div class="player-name">玩家Alpha</div>
+                            <div class="player-ready">已准备</div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-avatar">B</div>
+                            <div class="player-name">玩家Beta</div>
+                            <div class="player-not-ready">未准备</div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-avatar">C</div>
+                            <div class="player-name">玩家Charlie</div>
+                            <div class="player-not-ready">未准备</div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-avatar">D</div>
+                            <div class="player-name">空位</div>
+                            <div class="player-not-ready">等待玩家</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ready-container" id="readyContainer">
+                        <label class="ready-label">
+                            <input type="checkbox" id="ready" class="ready-checkbox">
+                            <div class="ready-visual">
+                                <svg viewBox="0 0 80 80">
+                                    <circle r="35" cx="40" cy="40"/>
+                                    <path class="readyTick" d="m18 33 19 18 38-33"/>
+                                </svg>
+                            </div>
+                            <span>准备状态</span>
+                        </label>
+                    </div>
+                    
+                    <button id="leaveRoom" class="btn btn-danger btn-block">
+                        <i class="fas fa-sign-out-alt"></i>
+                        退出房间
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 多人游戏对战平台 | 设计用于最佳游戏体验</p>
+        </div>
+    </div>
+
+    <script>
+        // 更新数字范围显示
+        const cardRangeInput = document.getElementById('cardRange');
+        const rangeValueDisplay = document.querySelector('.range-value');
+        
+        // 游戏模式选择功能
+        const modeOptions = document.querySelectorAll('.mode-option');
+        let selectedMode = null;
+        
+        modeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除之前的选择
+                modeOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // 设置当前选择
+                this.classList.add('selected');
+                selectedMode = this.getAttribute('data-mode');
+                
+                // 更新显示
+                const modeDisplay = document.getElementById('gameModeDisplay');
+                if (selectedMode === 'asymmetric') {
+                    modeDisplay.textContent = '非对称式公平';
+                } else {
+                    modeDisplay.textContent = '完全对称式';
+                }
+            });
+        });
+        
+        // 默认选择非对称模式
+        document.querySelector('.mode-option[data-mode="asymmetric"]').classList.add('selected');
+        selectedMode = 'asymmetric';
+        document.getElementById('gameModeDisplay').textContent = '非对称式公平';
+        
+        // 更新房间ID显示（模拟）
+        const createRoomBtn = document.getElementById('createRoom');
+        const roomIdDisplay = document.getElementById('roomIdDisplay');
+        const statusIndicator = document.querySelector('.info-value .status-indicator');
+        
+        createRoomBtn.addEventListener('click', function() {
+            // 检查是否选择了游戏模式
+            if (!selectedMode) {
+                alert('请选择游戏模式！');
+                return;
+            }
+            
+            // 生成随机房间ID
+            const roomId = Math.floor(1000 + Math.random() * 9000);
+            roomIdDisplay.textContent = `#${roomId}`;
+            
+            // 更新状态
+            statusIndicator.classList.add('active');
+            
+            // // 添加动画效果
+            // this.innerHTML = '<i class="fas fa-check"></i> 房间已创建 ✓';
+            // this.style.background = 'linear-gradient(135deg, #00c853, #1b5e20)';
+            // this.classList.remove('pulse');
+            
+            // 更新房间模式显示
+            document.getElementById('roomModeDisplay').textContent = 
+                selectedMode === 'asymmetric' ? '非对称式公平' : '完全对称式';
+            
+            setTimeout(() => {
+                // 将新创建的房间添加到列表
+                addRoomToList({
+                    id: roomId,
+                    players: 1,
+                    maxPlayers: 4,
+                    range: cardRangeInput.value,
+                    status: 'waiting',
+                    mode: selectedMode
+                });
+            }, 800);
+
+                // 更新房间信息
+            updateRoomInfo(roomId);
+            
+            // 显示房间信息面板
+            document.getElementById('createRoomSection').classList.add('hide');
+            document.getElementById('roomInfoSection').classList.add('show');
+            
+            // 显示准备状态区域
+            document.getElementById('readyContainer').classList.add('show');
+
+            // updateRoomInfo
+        });
+        
+        // 准备状态切换
+        const readyCheckbox = document.getElementById('ready');
+        readyCheckbox.addEventListener('change', function() {
+            const readyLabel = document.querySelector('.ready-label span');
+            if(this.checked) {
+                readyLabel.innerHTML = '已准备 <span class="status-indicator active"></span>';
+            } else {
+                readyLabel.innerHTML = '准备状态 <span class="status-indicator"></span>';
+            }
+        });
+        
+        // 加入房间按钮效果
+        const joinRoomBtn = document.getElementById('joinRoom');
+        joinRoomBtn.addEventListener('click', function() {
+            const roomId = document.getElementById('roomId').value;
+            if(!roomId) {
+                this.innerHTML = '<i class="fas fa-exclamation-circle"></i> 请输入房间ID!';
+                this.style.background = 'linear-gradient(135deg, #ff5252, #b71c1c)';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-sign-in-alt"></i> 加入游戏';
+                    this.style.background = 'linear-gradient(135deg, #21cbf3, #1976D2)';
+                }, 1500);
+                return;
+            }
+            
+            // 加入房间逻辑
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加入中...';
+            
+            // 模拟加入房间延迟 todo
+            setTimeout(() => {
+                // 加入房间成功
+                this.innerHTML = '<i class="fas fa-check"></i> 加入成功!';
+                this.style.background = 'linear-gradient(135deg, #00c853, #1b5e20)';
+                
+                // 更新房间信息
+                updateRoomInfo(roomId);
+                
+                // 显示房间信息面板
+                document.getElementById('createRoomSection').classList.add('hide');
+                document.getElementById('roomInfoSection').classList.add('show');
+                
+                // 显示准备状态区域
+                document.getElementById('readyContainer').classList.add('show');
+                
+            }, 1500);
+        });
+        
+        // 退出房间按钮
+        const leaveRoomBtn = document.getElementById('leaveRoom');
+        leaveRoomBtn.addEventListener('click', function() {
+            // 恢复初始状态
+            document.getElementById('createRoomSection').classList.remove('hide');
+            document.getElementById('roomInfoSection').classList.remove('show');
+            document.getElementById('readyContainer').classList.remove('show');
+            
+            // 重置加入按钮
+            joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> 加入游戏';
+            joinRoomBtn.style.background = 'linear-gradient(135deg, #21cbf3, #1976D2)';
+            
+            // 清空房间ID输入
+            document.getElementById('roomId').value = '';
+        });
+        
+        // 更新房间信息
+        function updateRoomInfo(roomId) {
+            // 模拟从服务器获取房间信息
+            const roomInfo = {
+                id: roomId,
+                status: 'waiting',
+                range: 6,
+                mode: 'asymmetric', // 默认模式
+                players: [
+                    { name: "玩家Alpha", status: "ready" },
+                    { name: "玩家Beta", status: "not-ready" },
+                    { name: "玩家Charlie", status: "not-ready" },
+                    { name: "空位", status: "empty" }
+                ]
+            };
+            
+            // 尝试从房间列表中获取实际模式
+            const room = sampleRooms.find(r => r.id == roomId);
+            if (room) {
+                roomInfo.mode = room.mode;
+            }
+            
+            // 更新房间信息显示
+            document.getElementById('currentRoomId').textContent = `#${roomId}`;
+            document.getElementById('roomModeDisplay').textContent = 
+                roomInfo.mode === 'asymmetric' ? '非对称式公平' : '完全对称式';
+            
+            // 更新玩家列表
+            const playerList = document.querySelector('.player-list');
+            playerList.innerHTML = '';
+            
+            roomInfo.players.forEach((player, index) => {
+                const playerItem = document.createElement('div');
+                playerItem.className = 'player-item';
+                
+                let statusHtml;
+                if (player.status === 'ready') {
+                    statusHtml = '<div class="player-ready">已准备</div>';
+                } else if (player.status === 'not-ready') {
+                    statusHtml = '<div class="player-not-ready">未准备</div>';
+                } else {
+                    statusHtml = '<div class="player-not-ready">等待玩家</div>';
+                }
+                
+                playerItem.innerHTML = `
+                    <div class="player-avatar">${String.fromCharCode(65 + index)}</div>
+                    <div class="player-name">${player.name}</div>
+                    ${statusHtml}
+                `;
+                
+                playerList.appendChild(playerItem);
+            });
+        }
+        
+        // 在线房间列表功能
+        const roomList = document.getElementById('roomList');
+        const refreshBtn = document.getElementById('refreshRooms');
+        
+        // 模拟房间数据（添加了模式字段）
+        const sampleRooms = [
+            { id: 5832, players: 2, maxPlayers: 4, range: 6, status: 'waiting', mode: 'asymmetric' },
+            { id: 9247, players: 4, maxPlayers: 4, range: 8, status: 'playing', mode: 'symmetric' },
+            { id: 1365, players: 1, maxPlayers: 4, range: 5, status: 'waiting', mode: 'asymmetric' },
+            { id: 4781, players: 3, maxPlayers: 4, range: 7, status: 'waiting', mode: 'symmetric' }
+        ];
+        
+        // 添加房间到列表
+        function addRoomToList(room) {
+            const roomItem = document.createElement('div');
+            roomItem.className = 'room-item';
+            
+            const statusClass = room.status === 'waiting' ? 'status-waiting' : 'status-playing';
+            const statusText = room.status === 'waiting' ? '等待中' : '游戏中';
+            const modeClass = room.mode === 'asymmetric' ? 'mode-asymmetric' : 'mode-symmetric';
+            const modeText = room.mode === 'asymmetric' ? '非对称' : '对称';
+            
+            roomItem.innerHTML = `
+                <div class="room-info">
+                    <div class="room-id">房间 #${room.id}</div>
+                    <div class="room-details">
+                        <div class="room-status">
+                            <span class="status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="room-players">
+                            <i class="fas fa-users"></i>
+                            <span>${room.players}/${room.maxPlayers}人</span>
+                        </div>
+                        <div class="room-range">
+                            <i class="fas fa-hashtag"></i>
+                            <span>范围: 0-${room.range}</span>
+                        </div>
+                        <!-- 新增：显示游戏模式 -->
+                        <div class="room-mode">
+                            <i class="fas fa-chess"></i>
+                            <span class="status ${modeClass}">${modeText}</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm join-room-btn" data-room="${room.id}">
+                    <i class="fas fa-sign-in-alt"></i> 加入
+                </button>
+            `;
+            
+            roomList.prepend(roomItem);
+            
+            // 添加加入按钮事件
+            roomItem.querySelector('.join-room-btn').addEventListener('click', function() {
+                const roomId = this.getAttribute('data-room');
+                document.getElementById('roomId').value = roomId;
+                
+                // 高亮显示输入框
+                const input = document.getElementById('roomId');
+                input.focus();
+                input.style.borderColor = '#68E534';
+                input.style.boxShadow = '0 0 0 3px rgba(104, 229, 52, 0.3)';
+                
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                }, 2000);
+            });
+        }
+        
+        // 初始化房间列表
+        function initRoomList() {
+            roomList.innerHTML = '';
+            
+            if (sampleRooms.length === 0) {
+                roomList.innerHTML = '<div class="no-rooms">暂无在线房间，请创建一个新房间</div>';
+                return;
+            }
+            
+            sampleRooms.forEach(room => {
+                addRoomToList(room);
+            });
+        }
+        
+        // 刷新房间列表
+        refreshBtn.addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刷新中';
+            // todo
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新列表';
+                initRoomList();
+            }, 800);
+        });
+        
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            initRoomList();
+            
+            // 添加一些动画延迟
+            document.querySelectorAll('.panel').forEach((panel, index) => {
+                panel.style.animation = `fadeInDown 0.5s ease ${index * 0.2}s forwards`;
+                panel.style.opacity = 0;
+            });
+        });
+    </script>
+</body>
+</html>

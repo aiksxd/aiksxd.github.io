@@ -1509,7 +1509,7 @@ window.addEventListener('message', function(event) {
     }
 });
 
-if (config['use_Local_Storage']) {
+if (config['use_Local_Storage'] && localStorage) {
     if(localStorage.themeIndex !== undefined){
         change_Page_Theme(localStorage.themeIndex);
         document.getElementById('themeController').value = localStorage.themeIndex;

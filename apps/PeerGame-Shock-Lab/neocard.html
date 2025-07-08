@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片拖拽与放置功能</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #ffcc00;
+        }
+        .container {
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            height: 20%;
+            width: 70%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #oppositeContainer {
+            top: 0;
+            transform: rotate(180deg);
+        }
+        .container .card {
+            position: absolute;
+            width: 18%;
+            aspect-ratio: 1/1.6;
+            background: linear-gradient(135deg, #5e5cfc, #3a3af0);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 3.5em;
+            font-weight: 700;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            transform-origin: 50% 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform: rotate(calc(var(--i) * 4deg)) translate(calc(var(--i) * 60px), -30px);
+            cursor: grab;
+            user-select: none;
+            /* z-index: calc(var(--i) + 5); */
+        }
+        .container .card:hover {
+            transform: rotate(calc(var(--i) * 2deg)) translate(calc(var(--i) * 60px), -50px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+            background: linear-gradient(135deg, #6e6eff, #4a4aff);
+        }
+        .container .card.dragging {
+            opacity: 0.9;
+            z-index: 100;
+            transform: rotate(calc(var(--i) * 2deg)) translate(calc(var(--i) * 60px), -50px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            cursor: grabbing;
+        }
+        #gameField {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 40%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            z-index: 5;
+        }
+        #gameField .card {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: 700;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        #gameField .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        .field-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.5em;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .counter {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>卡片拖拽与放置功能</h1>
+        <div class="subtitle">拖拽卡片到游戏区域或重新排序</div>
+    </div>
+
+    <div class="container">
+        <div class="card" style="--i:-4;" data-index="0" data-name="A">A</div>
+        <div class="card" style="--i:-3;" data-index="1" data-name="K">K</div>
+        <div class="card" style="--i:-2;" data-index="2" data-name="Q">Q</div>
+        <div class="card" style="--i:-1;" data-index="3" data-name="J">J</div>
+        <div class="card" style="--i:0;" data-index="4" data-name="10">10</div>
+        <div class="card" style="--i:1;" data-index="5" data-name="9">9</div>
+        <div class="card" style="--i:2;" data-index="6" data-name="8">8</div>
+        <div class="card" style="--i:3;" data-index="7" data-name="7">7</div>
+        <div class="card" style="--i:4;" data-index="8" data-name="6">6</div>
+    </div>
+        <div class="container" id="oppositeContainer">
+        <div class="card" style="--i:-4;" data-index="10" data-name="2">2</div>
+        <div class="card" style="--i:-3;" data-index="11" data-name="3">3</div>
+        <div class="card" style="--i:-2;" data-index="12" data-name="4">4</div>
+        <div class="card" style="--i:-1;" data-index="13" data-name="5">5</div>
+        <div class="card" style="--i:0;" data-index="14" data-name="6">6</div>
+        <div class="card" style="--i:1;" data-index="15" data-name="7">7</div>
+        <div class="card" style="--i:2;" data-index="16" data-name="8">8</div>
+        <div class="card" style="--i:3;" data-index="17" data-name="9">9</div>
+        <div class="card" style="--i:4;" data-index="18" data-name="10">10</div>
+    </div>
+    
+    <div id="gameField">
+        <div class="field-label">游戏区域 - 拖拽卡片到这里</div>
+    </div>
+    
+    <div class="counter">已放置卡片: <span id="cardCount">0</span></div>
+<!-- 在文件底部添加JavaScript代码 -->
+<script>
+    // 卡片对象类
+    class Card {
+        constructor(element) {
+            this.element = element;
+            this.index = element.dataset.index;
+            this.name = element.dataset.name;
+            this.value = element.textContent;
+            this.isOnField = false;
+        }
+        
+        // 执行函数的方法
+        executeFunction(fnName) {
+            if (this[fnName] && typeof this[fnName] === 'function') {
+                this[fnName]();
+            }
+        }
+        
+        // 示例函数
+        showInfo() {
+            alert(`卡片信息: ${this.name} (ID: ${this.index})`);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const containers = document.querySelectorAll('.container');
+        const gameField = document.getElementById('gameField');
+        let draggedCard = null;
+        let cardObject = null;
+        let offsetX, offsetY;
+        
+        // 创建卡片对象映射
+        const cardObjects = new Map();
+        
+        // 初始化卡片对象和事件
+        document.querySelectorAll('.card').forEach(card => {
+            // 添加唯一标识和数据属性
+            if (!card.dataset.id) {
+                card.dataset.id = `card-${Math.random().toString(36).substr(2, 9)}`;
+                card.dataset.name = card.textContent;
+            }
+            
+            // 创建卡片对象
+            const cardObj = new Card(card);
+            cardObjects.set(card.dataset.index, cardObj);
+            
+            // 添加拖拽事件
+            card.addEventListener('mousedown', startDrag);
+        });
+
+        // 开始拖拽
+        function startDrag(e) {
+            draggedCard = this;
+            cardObject = cardObjects.get(this.dataset.index);
+            
+            draggedCard.classList.add('dragging');
+            
+            const rect = draggedCard.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            // 移动卡片
+            function moveCard(e) {
+                if (!draggedCard) return;
+                
+                draggedCard.style.position = 'fixed';
+                draggedCard.style.zIndex = '1000';
+                draggedCard.style.left = (e.clientX - offsetX) + 'px';
+                draggedCard.style.top = (e.clientY - offsetY) + 'px';
+                draggedCard.style.transform = 'scale(1) rotate(0deg)';
+                draggedCard.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.8)';
+
+                const fieldRect = gameField.getBoundingClientRect();
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                if (
+                    mouseX >= fieldRect.left &&
+                    mouseX <= fieldRect.right &&
+                    mouseY >= fieldRect.top &&
+                    mouseY <= fieldRect.bottom
+                ) {} else {
+                    // 计算插入位置
+                    const originalContainer = draggedCard.parentElement;
+                    const cards = Array.from(originalContainer.querySelectorAll('.card:not(.dragging)'));
+                    const containerRect = originalContainer.getBoundingClientRect();
+                    const cardCount = cards.length;
+                    const relativeX = mouseX - containerRect.left;
+                    const containerWidth = containerRect.width;
+                    
+                    // 计算目标位置索引
+                    let targetIndex = Math.floor(relativeX / (containerWidth / Math.max(1, cardCount)));
+                    targetIndex = Math.min(targetIndex, cardCount);
+                    console.log(`选中索引: ${draggedCard.dataset.index}`+ `,目标索引: ${targetIndex}`);
+
+                    if (targetIndex > draggedCard.dataset.index) {
+                        cards.forEach((card, index) => {
+                            if (index > draggedCard.dataset.index && index <= targetIndex) {
+                                card.style.setProperty('--i', card.dataset.index - 5);
+                            }
+                        });
+                    } else if (targetIndex < draggedCard.dataset.index) {
+                        cards.forEach((card, index) => {
+                            if (index >= targetIndex && index < draggedCard.dataset.index) {
+                                card.style.setProperty('--i', card.dataset.index - 3);
+                            }
+                        });
+                    }
+                }
+            }
+            
+            // 停止拖拽
+            function stopDrag(e) {
+                if (!draggedCard) return;
+                
+                draggedCard.classList.remove('dragging');
+                draggedCard.style.zIndex = 'auto';
+                // 检查鼠标是否在游戏区域内
+                const fieldRect = gameField.getBoundingClientRect();
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                
+                if (
+                    mouseX >= fieldRect.left &&
+                    mouseX <= fieldRect.right &&
+                    mouseY >= fieldRect.top &&
+                    mouseY <= fieldRect.bottom
+                ) {
+                    // 放置在游戏区域
+                    placeCardOnField();
+                } else {
+                    // 放回容器
+                    returnToContainer(e);
+                }
+                
+                // 清理事件监听器
+                document.removeEventListener('mousemove', moveCard);
+                document.removeEventListener('mouseup', stopDrag);
+                draggedCard = null;
+                cardObject = null;
+            }
+            
+            document.addEventListener('mousemove', moveCard);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        // 放置在游戏区域
+        function placeCardOnField() {
+            const newCard = draggedCard.cloneNode(true);
+            newCard.style.position = 'static';
+            newCard.style.left = 'auto';
+            newCard.style.top = 'auto';
+            newCard.style.transform = 'scale(1)';
+            newCard.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+            newCard.style.width = '80px';
+            newCard.style.height = '120px';
+            newCard.style.fontSize = '2em';
+            newCard.style.cursor = 'pointer';
+            newCard.classList.remove('dragging');
+            
+            // 更新卡片对象状态
+            cardObject.isOnField = true;
+            
+            // 添加点击事件
+            newCard.addEventListener('click', () => {
+                // 执行所有游戏区域卡片的函数
+                executeFunctionOnAllFieldCards('showInfo');
+            });
+            
+            gameField.appendChild(newCard);
+            
+            // 移除原卡片
+            draggedCard.remove();
+        }
+
+        // 放回容器并重新排序
+        function returnToContainer(e) {
+            const originalContainer = draggedCard.parentElement;
+            const containerRect = originalContainer.getBoundingClientRect();
+            const mouseX = e.clientX;
+            
+            // 计算插入位置
+            const relativeX = mouseX - containerRect.left;
+            const containerWidth = containerRect.width;
+            const cards = Array.from(originalContainer.querySelectorAll('.card:not(.dragging)'));
+            const cardCount = cards.length;
+            
+            // 计算目标位置索引
+            let targetIndex = Math.floor(relativeX / (containerWidth / Math.max(1, cardCount)));
+            targetIndex = Math.min(targetIndex, cardCount);
+            
+            // 插入卡片到新位置
+            if (cardCount === 0 || targetIndex >= cardCount) {
+                originalContainer.appendChild(draggedCard);
+            } else {
+                originalContainer.insertBefore(draggedCard, cards[targetIndex]);
+            }
+            
+            // 重置样式
+            draggedCard.style.position = 'absolute';
+            draggedCard.style.left = 'auto';
+            draggedCard.style.top = 'auto';
+            draggedCard.style.zIndex = 'auto';
+            draggedCard.style.transform = '';
+            draggedCard.style.boxShadow = '';
+            
+            // 重新排序容器中的卡片
+            reorderCards(originalContainer, targetIndex);
+        }
+
+        // 重新排序容器中的卡片
+        function reorderCards(container, targetIndex) {
+            const cards = Array.from(container.querySelectorAll('.card:not(.dragging)'));
+            const cardCount = cards.length;
+            
+            cards.forEach((card, index) => {
+                // 计算新位置
+                const newIndex = index - Math.floor(cardCount / 2);
+                card.style.setProperty('--i', newIndex);
+                card.dataset.index = newIndex + 5; // 更新数据索引
+                // card.dataset.index = getComputedStyle(card).getPropertyValue('--i') + 5; ; // 更新数据索引
+                
+                // 添加动画效果
+                card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                
+                // 动画结束后移除过渡效果
+                setTimeout(() => {
+                    card.style.transition = '';
+                }, 500);
+            });
+        }
+        
+        // 执行游戏区域所有卡片的函数
+        function executeFunctionOnAllFieldCards(fnName) {
+            const fieldCards = gameField.querySelectorAll('.card');
+            fieldCards.forEach(card => {
+                const cardId = card.dataset.id;
+                const cardObj = cardObjects.get(cardId);
+                if (cardObj) {
+                    cardObj.executeFunction(fnName);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

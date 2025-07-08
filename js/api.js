@@ -120,6 +120,7 @@ window.addEventListener('message', function(event) {
             break;
         case 'id':
             app_Info['app_Id'] = event.data[1];
+            config['app_Mode'] = true;
             init_App();
             break;
         default:
