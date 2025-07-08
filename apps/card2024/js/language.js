@@ -203,11 +203,11 @@ let res_Strings = {
             "en": "Ready Status",
             "zh": "准备状态"
         },
-        {
+        {   // 18
             "en": "Opponent player lost connection",
             "zh": "对方已断线"
         },
-        {   // 18
+        {
             "en": "Exit Room",
             "zh": "退出房间"
         },

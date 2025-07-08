@@ -573,10 +573,10 @@
             }
             switch (roomInfo.status) {
                 case 'waiting':
-                    document.getElementById('roomStatus').innerHTML = res_Strings['card'][19][config.language]+'<span class="status-indicator waiting"></span>';
+                    document.getElementById('roomStatus').innerHTML = res_Strings['card'][20][config.language]+'<span class="status-indicator waiting"></span>';
                 break;
                 case 'playing':
-                    document.getElementById('roomStatus').innerHTML = res_Strings['card'][20][config.language]+'playing <span class="status-indicator"></span>';
+                    document.getElementById('roomStatus').innerHTML = res_Strings['card'][21][config.language]+'<span class="status-indicator"></span>';
                 break;
                 default:
                     document.getElementById('roomStatus').innerHTML = 'available <span class="status-indicator active"></span>';
@@ -641,7 +641,7 @@
             roomItem.className = 'room-item';
             
             const statusClass = room.status === 'waiting' ? 'status-waiting' : 'status-playing';
-            const statusText = room.status === 'waiting' ? res_Strings['card'][19][config.language] : res_Strings['card'][20][config.language];
+            const statusText = room.status === 'waiting' ? res_Strings['card'][20][config.language] : res_Strings['card'][21][config.language];
             const modeClass = room.mode === 'asymmetric' ? 'mode-asymmetric' : 'mode-symmetric';
             const modeText = room.mode === 'asymmetric' ? res_Strings['card'][1][config.language] : res_Strings['card'][2][config.language];
             
