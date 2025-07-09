@@ -250,7 +250,7 @@ function adjust_Card_Style(length, container) {
 
 // oppositeContainer.querySelectorAll('.card').forEach(card => {
 function init_Game(roomInfo, turn) {
-    let i = 0;
+    let i = 1;
     myTurn = turn;
     deck = [];
     opponentDeck = [];
@@ -269,7 +269,7 @@ function init_Game(roomInfo, turn) {
             if (turn == 1) {
                 jugde = 1;
             }
-            while (i < roomInfo.range) {
+            while (i <= roomInfo.range) {
                 let card = document.createElement('div');
                 card.className = 'card';
                 card.textContent = i;
@@ -288,7 +288,7 @@ function init_Game(roomInfo, turn) {
             }
             break;
         case "symmetric":
-            while (i < roomInfo.range) {
+            while (i <= roomInfo.range) {
                 let card = document.createElement('div');
                 card.className = 'card';
                 card.textContent = i;
