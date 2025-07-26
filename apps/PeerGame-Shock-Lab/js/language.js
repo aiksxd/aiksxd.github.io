@@ -71,6 +71,14 @@ let language_Text = {
             "zh": "卡组相同"
         },
         {
+            "en": "Random",
+            "zh": "随机"
+        },
+        {
+            "en": "New Deck",
+            "zh": "新卡组"
+        },
+        {
             "en": "Room Status:",
             "zh": "房间状态:"
         },
@@ -125,6 +133,14 @@ let language_Text = {
         {
             "en": "Exit Room",
             "zh": "退出房间"
+        },
+        {
+            "en": "1",
+            "zh": "test"
+        },
+        {
+            "en": "2",
+            "zh": "opponent"
         },
     ]
 };
@@ -218,6 +234,14 @@ let res_Strings = {
         {
             "en": "Playing",
             "zh": "游戏中"
+        },
+        {   // 22
+            "en": "Random",
+            "zh": "随机"
+        },
+        {
+            "en": "",
+            "zh": ""
         },
     ],
 };

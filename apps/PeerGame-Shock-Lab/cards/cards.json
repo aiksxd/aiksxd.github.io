@@ -1,0 +1,49 @@
+{
+  "deckClass": "economy",
+  "cards": [
+    {
+      "name": "金矿",
+      "cost": {
+        "bolt-lightning": 3,
+        "heart": 1
+      },
+      "invoke": {
+        "func": "gainResources",
+        "args": ["gold", 2]
+      },
+      "shortInfo": "每回合获得2金币",
+      "longInfo": "激活后每回合开始自动产出2枚金币，持续3回合",
+      "keywords": ["资源", "持续效果", "经济"],
+      "img": "cards/gold_mine.png"
+    },
+    {
+      "name": "治疗术",
+      "cost": {
+        "bolt-lightning": 2
+      },
+      "invoke": {
+        "func": "healTarget",
+        "args": ["player", 5]
+      },
+      "shortInfo": "恢复5点生命值",
+      "longInfo": "对目标角色恢复5点生命值，可对玩家或盟友使用",
+      "keywords": ["恢复", "生命值", "即时效果"],
+      "img": "cards/healing_spell.png"
+    },
+    {
+      "name": "冲锋战士",
+      "cost": {
+        "bolt-lightning": 1,
+        "heart": 1
+      },
+      "invoke": {
+        "func": "summonUnit",
+        "args": ["Warrior", 3, 2]
+      },
+      "shortInfo": "召唤3/2战士",
+      "longInfo": "召唤一名具有冲锋能力的战士（攻击力3，生命值2）",
+      "keywords": ["召唤", "冲锋", "战士"],
+      "img": "cards/charge_warrior.png"
+    }
+  ]
+}

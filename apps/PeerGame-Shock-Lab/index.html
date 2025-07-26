@@ -1,7 +1,7 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="css/card.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
 </head>
 <body>
     <div id="loader" class="loader">
@@ -84,6 +84,14 @@
                                 <div class="mode-title lan">Symmetry</div>
                                 <div class="mode-desc lan">Same Deck</div>
                             </div>
+                            <div class="mode-option" data-mode="random">
+                                <div class="mode-icon">
+                                    <i class="fas fa-dice"></i>
+                                </div>
+                                <div class="mode-title lan">Random</div>
+                                <div class="mode-desc lan">New Deck</div>
+                            </div>
+
                         </div>
                     </div>
                     
@@ -179,13 +187,13 @@
         <div class="card" data-index="1" style="--i:-3;">-3</div>
         <div class="card" data-index="2" style="--i:-2;">-2</div>
         <div class="card" data-index="3" style="--i:-1;">-1</div>
-        <div class="card" data-index="4" style="--i:0;">0</div>
+        <div class="card" data-index="4" style="--i:0;"><div class="cost">0</div><img src="cards/test.png"><span class="shortInfo">test</span></div>
         <div class="card" data-index="5" style="--i:1;">1</div>
         <div class="card" data-index="6" style="--i:2;">2</div>
         <div class="card" data-index="7" style="--i:3;">3</div>
         <div class="card" data-index="8" style="--i:4;">4</div>
     </div>
-    <div class="oppositeContainer">
+    <div class="opponentContainer">
         <div class="card" data-index="0" style="--i:-4;">-4</div>
         <div class="card" data-index="1" style="--i:-3;">-3</div>
         <div class="card" data-index="2" style="--i:-2;">-2</div>
@@ -197,20 +205,26 @@
         <div class="card" data-index="8" style="--i:4;">4</div>
     </div>
 
-    <div id="gameField">
-        <div class="field-label">dragging here to play cards</div>
-        <section class="opponent-zone"></section>
-        <section class="own-zone"></section>
+    <div id="myCardField" class="cardField">
+        <div class="field-label lan">1</div>
+    </div>
+    <div id="opponentCardField" class="cardField">
+        <div class="field-label lan">2</div>
     </div>
 
     <div class="cardInfo" style="opacity: 0;">
         <p>Card Name: <span class="card-name"></span></p>
         <p>Card Content: <span class="card-value"></span></p>
+        <svg class="icon" width="800" height="800" viewBox="0 0 24 24" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color"><path style="stroke-linecap:round;stroke-linejoin:round;stroke-width:1" d="m7 12 5 2-1 7 6-9-4-2 1-7z"/></svg>
+        <svg class="icon" width="800" height="800" viewBox="0 0 24 24" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color"><path d="M17.76 10.63 9 21l2.14-8H7.05a1 1 0 0 1-1-1.36l3.23-8a1.05 1.05 0 0 1 1-.64h4.34a1 1 0 0 1 1 1.36L13.7 9H17a1 1 0 0 1 .76 1.63" style="stroke-linecap:round;stroke-linejoin:round;stroke-width:2"/></svg>
     </div>
 
     <div class="gameScore">
         <h2><span class="score">0</span> : <span class="opponent-score">0</span></h2>
     </div>
+    
+    <div class="playerInfo" id="ourInfo"></div>
+    <div class="playerInfo" id="opponentInfo"></div>
     <script src="js/language.js"></script>
     <script src="config.js"></script>
     <script src="../../js/api.js"></script>
@@ -222,189 +236,10 @@
         }
     </script>
     <script src="js/peerjs.min.js"></script>
-    <script src="js/card.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/cards.js"></script>
+    <!-- <script src="js/peerCode.js"></script> -->
     <script>
-        peer = new Peer({ debug: 2});
-        peer.on('open', (id) => {
-            myId = id;
-            roomInfo.id = myId
-            document.getElementById('currentRoomId').textContent = myId;
-        });
-        
-        peer.on('connection', (conn) => {
-            connIds.push(conn.peer);
-            conns.push(conn);
-
-            conn.on('open', () => {
-                console.log('Connection established with:', conn.peer);
-            });
-            
-            // Receive the text: Host <-- Guest
-            conn.on('data', (data) => {
-                switch (data[0]) {
-                    case 'want':
-                        if (conns.length < config['max_Players']) {
-                            conns[0].send(['entry']);
-                        } else {
-                            conns[1].send(['crowded']);
-                            conns[1].close();
-                            conns.splice(1, 1);
-                            connIds.splice(1, 1);
-                        }
-                    break;
-                    case 'ready':
-                        if (data[1] === true) { // more player todo
-                            roomInfo.players[1].status = 'ready';
-                        } else {
-                            roomInfo.players[1].status = 'not-ready';
-                        }
-                        updateRoomInfo(roomInfo);
-                        
-                        if (roomInfo.players.length >= config['min_Players']) {
-                            let judgement = true;
-                            roomInfo.players.forEach(player => {
-                                if (player.status === 'ready') {
-                                } else { judgement = false}
-                            });
-                            if (judgement) {
-                                roomInfo.status = 'playing';
-                                updateRoomInfo(roomInfo);
-                                setTimeout(() => {
-                                    let turn = Math.random();
-                                    conns[0].send(['start', Math.round(1-turn)]);
-                                    init_Game(roomInfo, Math.round(turn));
-                                }, 2000);
-                            }
-                        }
-                    break;
-                    case 'info':
-                        roomInfo.players[roomInfo.players.length] = { avatar: data[1], name: data[2], status: 'not-ready' };
-                        conns[0].send(['joined']);
-                        updateRoomInfo(roomInfo);
-                    break;
-                    case 'played':
-                        opponent_Played_Card_Date_Index = data[1];
-                        let tempCard = unkonwn_Card.cloneNode(true);
-                        tempCard.id = "tempCard";
-                        document.getElementsByClassName('opponent-zone')[0].append(tempCard);
-                        if (played_Card_Date_Index) {
-                            updateGameResult(deck[played_Card_Date_Index], opponentDeck[opponent_Played_Card_Date_Index]);
-                        }
-                        adjust_Card_Style(opponentDeck.length, oppositeContainer);
-                    break;
-                    break;
-                    default:
-                        console.log("unknown data: " + data);
-                }
-            });
-
-            conn.on('close', () => {
-                if (!conns[0].open) {
-                    if (config['app_Mode']) {
-                        pop_Msg(res_Strings['card'][18][config.language]);
-                    } else {
-                        alert(res_Strings['card'][18][config.language]);
-                    }
-                }
-            });
-        });
-
-        function tryToConnect(object, id) {
-            switch (object) {
-                case 'parent':
-                    if (parent_Node) {
-                        parent_Node.close();
-                        // [ mark of sorting, myId, number of who be effected, if keep parent_Node firmly here ]
-                        // liveSend([3, peer.id, 0, false]);     // remind child node change parent_NodeNode
-                    }
-                    parent_Node = peer.connect(id);
-
-                    parent_Node.on('open', () => {
-                        parent_Node.send(['want', peer.id]);
-                    });
-            
-                    parent_Node.on('data', (data) => {
-                        switch (data[0]) {
-                            case 'entry':
-                                conns[0] = false;   // prevent other connecting player & affecting judgement
-                                parent_Node.send(['info', myAvatar, myName]);
-                            break;
-                            case 'joined':
-                                // style test
-                                if (config['app_Mode']) {
-                                    pop_Msg('Connect successfully');
-                                }
-
-                                joinRoomBtn.innerHTML = '<i class="fas fa-check"></i> '+ res_Strings['card'][12][config.language];
-                                joinRoomBtn.style.background = 'linear-gradient(135deg, #00c853, #1b5e20)';
-                                document.getElementById('createRoomSection').classList.add('hide');
-                                document.getElementById('roomInfoSection').classList.add('show');
-                                document.getElementById('readyContainer').classList.add('show');
-                            break;
-                            case 'update':
-                                roomInfo = data[1];
-                                updateRoomInfo(data[1]);
-                            break;
-                            case 'crowded':
-                                if (config['app_Mode']) {
-                                    pop_Msg(res_Strings['card'][11][config.language]);
-                                } else {
-                                    alert(res_Strings['card'][11][config.language]);
-                                }
-                                joinRoomBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> '+ res_Strings['card'][11][config.language];
-                                joinRoomBtn.style.background = 'linear-gradient(135deg, #ff5252, #b71c1c)';
-                                setTimeout(() => {
-                                    joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> '+ res_Strings['card'][8][config.language];
-                                    joinRoomBtn.style.background = 'linear-gradient(135deg, #21cbf3, #1976D2)';
-                                }, 3000);
-                            break;
-                            case 'start':
-                                init_Game(roomInfo, data[1]);
-                            break;
-                            case 'played':
-                                opponent_Played_Card_Date_Index = data[1];
-                                let tempCard = unkonwn_Card.cloneNode(true);
-                                tempCard.id = "tempCard";
-                                document.getElementsByClassName('opponent-zone')[0].append(tempCard);
-                                if (played_Card_Date_Index) {
-                                    updateGameResult(deck[played_Card_Date_Index], opponentDeck[opponent_Played_Card_Date_Index]);
-                                }
-                                adjust_Card_Style(opponentDeck.length, oppositeContainer);
-                            break;
-                            default:
-                                console.log("unknown data: " + data);
-                        }
-                    });
-
-                    parent_Node.on('close', () => {
-                        if (config['app_Mode']) {
-                            pop_Msg(res_Strings['card'][18][config.language]);
-                        } else {
-                            alert(res_Strings['card'][18][config.language]);
-                        }
-                        joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> '+ res_Strings['card'][8][config.language];
-                        joinRoomBtn.style.background = 'linear-gradient(135deg, #21cbf3, #1976D2)';
-                        document.getElementById('createRoomSection').classList.remove('hide');
-                        document.getElementById('roomInfoSection').classList.remove('show');
-                        document.getElementById('readyContainer').classList.remove('show');
-                    });
-
-                    parent_Node.on('error', (err) => {
-                        console.error('Connection error:', err);
-                        joinRoomBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> '+ res_Strings['card'][10][config.language];
-                        joinRoomBtn.style.background = 'linear-gradient(135deg, #ff5252, #b71c1c)';
-                        setTimeout(() => {
-                            joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> '+ res_Strings['card'][8][config.language];
-                            joinRoomBtn.style.background = 'linear-gradient(135deg, #21cbf3, #1976D2)';
-                        }, 3000);
-                    });
-                    break;
-                    break;
-            
-                default:
-                    break;
-            }
-        }
         const cardRangeInput = document.getElementById('cardRange');
         const rangeValueDisplay = document.querySelector('.range-value');
         const modeOptions = document.querySelectorAll('.mode-option');
@@ -417,19 +252,29 @@
                 this.classList.add('selected');
                 selectedMode = this.getAttribute('data-mode');
                 const modeDisplay = document.getElementById('gameModeDisplay');
-                if (selectedMode === 'asymmetric') {
-                    modeDisplay.textContent = res_Strings['card'][1][config.language];
-                    roomInfo.mode = 'asymmetric';
-                } else {
-                    modeDisplay.textContent = res_Strings['card'][2][config.language];
-                    roomInfo.mode = 'symmetric';
+                switch (selectedMode) {
+                    case 'asymmetric':
+                        modeDisplay.textContent = res_Strings['card'][1][config.language];
+                        roomInfo.mode = 'asymmetric';
+                    break;
+                    case 'symmetric':
+                        modeDisplay.textContent = res_Strings['card'][2][config.language];
+                        roomInfo.mode = 'symmetric';
+                    break;
+                    case 'random':
+                        modeDisplay.textContent = res_Strings['card'][19][config.language];
+                        roomInfo.mode = 'random';
+                    break;
+                    default:
+                        modeDisplay.textContent = 'Not selected';
+                        roomInfo.mode = '';
                 }
             });
         });
         
-        document.querySelector('.mode-option[data-mode="asymmetric"]').classList.add('selected');
-        selectedMode = 'asymmetric';
-        document.getElementById('gameModeDisplay').textContent = res_Strings['card'][1][config.language];
+        document.querySelector('.mode-option[data-mode="random"]').classList.add('selected');
+        selectedMode = 'random';
+        document.getElementById('gameModeDisplay').textContent = res_Strings['card'][22][config.language];
         
         // ceate room
         const createRoomBtn = document.getElementById('createRoom');
@@ -461,7 +306,7 @@
                 range: cardRangeInput.value,
                 mode: selectedMode,
                 players: [
-                    { avatar: myAvatar, name: myName, status: "ready" },
+                    { avatar: myAvatar, name: myName, status: "ready", id: myId },
                 ]
             };
             updateRoomInfo(roomInfo);
@@ -585,7 +430,19 @@
 
             // 更新房间信息显示
             document.getElementById('currentRoomId').textContent = `${roomInfo.id}`;
-            document.getElementById('roomModeDisplay').textContent = roomInfo.mode === 'asymmetric' ? res_Strings['card'][1][config.language] : res_Strings['card'][2][config.language];
+            switch (roomInfo.mode) {
+                case 'asymmetric':
+                    document.getElementById('roomModeDisplay').textContent = res_Strings['card'][1][config.language];
+                break;
+                case 'symmetric':
+                    document.getElementById('roomModeDisplay').textContent = res_Strings['card'][2][config.language];
+                break;
+                case 'random':
+                    document.getElementById('roomModeDisplay').textContent = res_Strings['card'][22][config.language];
+                break;
+                default:
+                    document.getElementById('roomModeDisplay').textContent = 'Not selected';
+            }
             document.getElementById('numberRange').textContent = '0 - '+ roomInfo.range;
             
             // 更新玩家列表
@@ -613,7 +470,7 @@
                     `;
                 } else {
                     playerItem.innerHTML = `
-                        <div class="player-avatar">${String.fromCharCode(65 + index)}</div>
+                        <div class="player-avatar">${player.name.slice(0,0)}</div>
                         <div class="player-name">${player.name}</div>
                         ${statusHtml}
                     `;
@@ -717,10 +574,11 @@
             document.getElementById("uploadAvatar").click();
         });
         function update_MyName(name) {
-            myName = document.getElementById("myName").value;
+            myName = name;
             if (config['use_Local_Storage'] && localStorage) {
                 localStorage.myName = myName;
             }
+            document.getElementById("nameInfo").textContent = myName;
         }
         function update_Card_Range(range) {
             if (config['use_Local_Storage'] && localStorage) {
@@ -738,5 +596,6 @@
             });
         });
     </script>
+
 </body>
 </html>

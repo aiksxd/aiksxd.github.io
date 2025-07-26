@@ -1,13 +1,16 @@
 
 const loader = document.getElementById('loader');
-const gameField = document.getElementById('gameField');
+const myCardField = document.getElementById('myCardField');
 const container = document.getElementsByClassName('container')[0];
-const oppositeContainer = document.getElementsByClassName('oppositeContainer')[0];
+const opponentContainer = document.getElementsByClassName('opponentContainer')[0];
 const overlay = document.getElementById('overlay');
 const setting = document.getElementById('setting');
+const cardDatabase = [];
 let conns = [];
 let connIds = [];
 let parent_Node;
+let cardField = [];
+let opponentCardField = [];
 let deck = [];
 let opponentDeck = [];
 let myId = "-";
@@ -87,7 +90,7 @@ function init_Cards() {
             const mouseX = clientX;
             const mouseY = clientY;
             const containerRect = container.getBoundingClientRect();
-            const battleField = gameField.getBoundingClientRect();
+            const battleField = myCardField.getBoundingClientRect();
             
             if (isInArea(mouseX, mouseY, containerRect)) {
                 card.classList.remove('playing');
@@ -111,7 +114,7 @@ function init_Cards() {
             }, 500);
             
             // 检查是否在游戏区域
-            const battleField = gameField.getBoundingClientRect();
+            const battleField = myCardField.getBoundingClientRect();
             if (isInArea(clientX, clientY, battleField)) {
                 handleCardPlay(card);
             } else {
@@ -194,17 +197,17 @@ function updateCardPositionInContainer(card, mouseX, containerRect) {
 
 // 辅助函数：处理卡牌出牌
 function handleCardPlay(card) {
-    if (playedCard !== null) {
-        if (opponent_Played_Card_Date_Index !== null && played_Card_Date_Index !== null) {
-            return;
-        }
-        // replace card todo(fix receiver exe repeatly)
-        card.classList.remove('playing');
-        // let mediaValue = playedCard.textContent;
-        // playedCard.textContent = card.textContent;
-        // card.textContent = mediaValue;
-        return;
-    }
+    // if (playedCard !== null) {
+    //     if (opponent_Played_Card_Date_Index !== null && played_Card_Date_Index !== null) {
+    //         return;
+    //     }
+    //     // replace card todo(fix receiver exe repeatly)
+    //     card.classList.remove('playing');
+    //     // let mediaValue = playedCard.textContent;
+    //     // playedCard.textContent = card.textContent;
+    //     // card.textContent = mediaValue;
+    //     return;
+    // }
     
     const originalContainer = card.parentElement;
     const cards = Array.from(originalContainer.querySelectorAll('.card'));
@@ -220,16 +223,20 @@ function handleCardPlay(card) {
     } else if (conns[0]) {
         conns[0].send(['played', played_Card_Date_Index]);
     }
-    
-    // 从手牌移除
-    cards[cardIndex].remove();
+    cards[cardIndex].setAttribute('style', "");
+    cards[cardIndex].classList.remove('playing');
+    cards[cardIndex].classList.remove('card');
+    cards[cardIndex].classList.add('playedCard');
+    document.getElementById('myCardField').appendChild(cards[cardIndex]);
+    // cards[cardIndex].remove();
+    remove_Card_from_Deck(deck, 'index', deck[played_Card_Date_Index].index, false);
     adjust_Card_Style(cards.length, container);
     
-    // 创建出牌区域元素
-    playedCard = document.createElement('div');
-    playedCard.className = 'card';
-    playedCard.textContent = card.textContent;
-    document.querySelector('.own-zone').appendChild(playedCard);
+    // // 创建出牌区域元素
+    // playedCard = document.createElement('div');
+    // playedCard.className = 'card';
+    // playedCard.childNodes = card.childNodes;
+    // document.querySelector('.own-zone').appendChild(playedCard);
     
     // 检查对手是否已出牌
     if (opponent_Played_Card_Date_Index) {
@@ -248,7 +255,7 @@ function adjust_Card_Style(length, container) {
     });
 }
 
-// oppositeContainer.querySelectorAll('.card').forEach(card => {
+// opponentContainer.querySelectorAll('.card').forEach(card => {
 function init_Game(roomInfo, turn) {
     let i = 1;
     myTurn = turn;
@@ -258,12 +265,84 @@ function init_Game(roomInfo, turn) {
     played_Card_Date_Index = null;
     playedCard = null;
     container.innerHTML = "";
-    oppositeContainer.innerHTML = "";
-    document.getElementsByClassName('opponent-zone')[0].innerHTML = '';
-    document.getElementsByClassName('own-zone')[0].innerHTML = '';
+    opponentContainer.innerHTML = "";
+    document.getElementById('myCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][27][config.language]+'</div>';
+    document.getElementById('opponentCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][28][config.language]+'</div>';
     document.getElementsByClassName('gameScore')[0].innerHTML = '<h2><span class="score">0</span> : <span class="opponent-score">0</span></h2>';
+
+    roomInfo.players.forEach((player, index) => {
+        // initalize basic data of player: more detail api todo
+        player.heart = 2 * roomInfo.range;
+        player.thunder = 1 * roomInfo.range;
+
+        let playerItem = document.createElement("div");
+
+        if (player.id === myId) {   // for others todo
+            if (player.avatar) {
+                playerItem.innerHTML = `
+                    <div class="player-avatar" style="background-image:url(${player.avatar})"></div>
+                    <span class="player-name">${player.name}</span>
+                    <span class="cost fas fa-heart">${player.heart}</span>
+                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
+                `;
+            } else {
+                playerItem.innerHTML = `
+                    <div class="player-avatar">${player.name.slice(0,0)}</div>
+                    <span class="player-name">${player.name}</span>
+                    <span class="cost fas fa-heart">${player.heart}</span>
+                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
+                `;
+            }
+            document.getElementById('ourInfo').append(playerItem);
+        } else {
+            if (player.avatar) {
+                playerItem.innerHTML = `
+                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
+                    <span class="cost fas fa-heart">${player.heart}</span>
+                    <span class="player-name">${player.name}</span>
+                    <div class="player-avatar" style="background-image:url(${player.avatar})"></div>
+                `;
+            } else {
+                playerItem.innerHTML = `
+                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
+                    <span class="cost fas fa-heart">${player.heart}</span>
+                    <span class="player-name">${player.name}</span>
+                    <div class="player-avatar">${player.name.slice(0,0)}</div>
+                `;
+            }
+            document.getElementById('opponentInfo').append(playerItem);
+        }
+
+    });
     closeSetting();
     switch (roomInfo.mode) {
+        case "random":
+            let randomIndices = randomInts(roomInfo.range);
+            // console.log(randomIndices);
+            for (let code of randomIndices) {
+                let card = cardDatabase[code];
+                // 构建费用显示字符串（支持多个资源）
+                let costHtml = '';
+                for (const [resource, amount] of Object.entries(card.cost)) {
+                    costHtml += `<div class="cost fas fa-${resource}">${amount}</div>`;
+                }
+
+                // 创建卡牌DOM元素
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.index = deck.length;
+
+                cardElement.innerHTML = `
+                    ${costHtml}
+                    <img src="${card.img}" alt="${card.name}">
+                    <span class="shortInfo">${card.shortInfo}</span>
+                `;
+
+                card = new Card(cardElement, code);
+                deck.push(card);
+                container.appendChild(cardElement);
+            }
+        break;
         case "asymmetric":
             let jugde = 0;
             if (turn == 1) {
@@ -280,7 +359,7 @@ function init_Game(roomInfo, turn) {
                     deck.push(card);
                 } else {
                     card.dataset.index = opponentDeck.length;
-                    oppositeContainer.appendChild(card);
+                    opponentContainer.appendChild(card);
                     card = new Card(card, 1);
                     opponentDeck.push(card);
                 }
@@ -301,7 +380,7 @@ function init_Game(roomInfo, turn) {
                 deck.push(card);
 
                 opponentCard.dataset.index = opponentDeck.length;
-                oppositeContainer.appendChild(opponentCard);
+                opponentContainer.appendChild(opponentCard);
                 opponentCard = new Card(opponentCard, 1);
                 opponentDeck.push(opponentCard);
                 i++;
@@ -311,7 +390,7 @@ function init_Game(roomInfo, turn) {
     }
     init_Cards();
     adjust_Card_Style(deck.length, container);
-    adjust_Card_Style(opponentDeck.length, oppositeContainer);
+    adjust_Card_Style(opponentDeck.length, opponentContainer);
 }
 
 function remove_Card_from_Deck(deck, referrence, value, repeatly, feedback) {
@@ -349,10 +428,10 @@ function remove_Card_from_Deck(deck, referrence, value, repeatly, feedback) {
 
 function updateGameResult(myCard, opponentCard) {
     // console.log(myCard.value +" & "+ opponentCard.value);
-    document.getElementById('tempCard').classList.add('active');
-    setTimeout(() => {
-        document.getElementById('tempCard').textContent = opponentCard.value;
-    }, 2000);
+    // document.getElementById('tempCard').classList.add('active');
+    // setTimeout(() => {
+    //     document.getElementById('tempCard').textContent = opponentCard.value;
+    // }, 2000);
     // logic of result
     let result;
     if (myCard.value === opponentCard.value) {
@@ -362,10 +441,6 @@ function updateGameResult(myCard, opponentCard) {
     } else {
         result = 'win';
     }
-    remove_Card_from_Deck(deck, 'index', myCard.index, false);
-    const opponentCards = Array.from(oppositeContainer.querySelectorAll('.card'));
-    opponentCards[remove_Card_from_Deck(opponentDeck, 'index', opponentCard.index, false, 'pos-undefined')].remove();
-    adjust_Card_Style(opponentDeck.length, oppositeContainer);
     
     // 创建新的比赛结果section
     const gameResult = document.createElement('section');
@@ -448,8 +523,8 @@ function updateGameResult(myCard, opponentCard) {
     gameResult.appendChild(svg);
     
     setTimeout(() => {
-        document.getElementsByClassName('own-zone')[0].innerHTML = '';
-        document.getElementsByClassName('opponent-zone')[0].innerHTML = '';
+        document.getElementById('myCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][27][config.language]+'</div>';
+        document.getElementById('opponentCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][28][config.language]+'</div>';
         opponent_Played_Card_Date_Index = null;
         played_Card_Date_Index = null;
         playedCard = null;
@@ -475,13 +550,6 @@ function updateGameResult(myCard, opponentCard) {
         }
     }, 4300);
 }
-
-
-
-
-
-
-
 
 if (config['use_Local_Storage'] && localStorage) {
     if (localStorage.myAvatar) {
@@ -554,6 +622,7 @@ document.getElementById('overlay').addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', function() {
     hideLoader();
     openSetting();
+    init_Cards();
 });
 
 function hideLoader() {
@@ -580,3 +649,51 @@ document.getElementById('copyURL').addEventListener('click', function() {
             console.error('ERROR:', err);
         });
 });
+
+// JSON数据解析函数
+function parseCardDeck(jsonData) {
+    
+    jsonData.cards.forEach((card, index) => {
+    // 添加到全局数据库
+    cardDatabase.push(card);
+    
+    });
+}
+
+// // 示例调用函数（需在全局实现）
+// function gainResources(resourceType, amount) {
+//   console.log(`获得资源: ${amount} ${resourceType}`);
+// }
+
+// function healTarget(target, amount) {
+//   console.log(`治疗目标: ${target}, 恢复 ${amount} 生命值`);
+// }
+
+// function summonUnit(unitType, attack, health) {
+//   console.log(`召唤单位: ${unitType} (${attack}/${health})`);
+// }
+// 初始化卡组
+fetch('cards/cards.json')
+    .then(response => response.json())
+    .then(parseCardDeck)
+    .catch(console.error);
+
+function randomInts(n) {
+    return Array.from({length: n}, () => Math.floor(Math.random() * cardDatabase.length));
+}
+
+function test(r) {
+    roomInfo = {
+        id: 'null',
+        status: 'waiting',
+        range: r,
+        mode: 'random',
+        players: [
+            { name: myName, avatar: myAvatar, status: "ready", id: myId },
+            { name: "空位", status: "empty", id: "a" },
+            { name: "空位", status: "empty", id: "b" }
+        ]
+    };
+    openSetting();
+    init_Game(roomInfo, 1);
+}

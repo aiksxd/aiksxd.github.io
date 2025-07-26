@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX数学公式速写工具 - 增强版</title>
+    <link rel="stylesheet" href="katex.min.css">
+    <script src="marked.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            flex: 1;
+            position: relative;
+        }
+        
+        .preview-section {
+            flex: 1;
+        }
+        
+        .display-section {
+            margin-top: 30px;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff7e5f;
+        }
+        
+        .section-title h2 {
+            font-size: 1.5rem;
+        }
+        
+        .status-indicator {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .latex-mode {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #000;
+        }
+        
+        .normal-mode {
+            background: #4caf50;
+        }
+        
+        .editor {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #444;
+            border-radius: 10px;
+            background: rgba(30, 30, 30, 0.8);
+            color: #fff;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        .editor:focus {
+            outline: none;
+            border-color: #ff7e5f;
+        }
+        
+        .preview {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            background: rgba(30, 30, 30, 0.8);
+            overflow: auto;
+        }
+        
+        .formula-preview {
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .instructions {
+            background: rgba(40, 40, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #ff7e5f;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .instructions li:before {
+            content: "➜";
+            position: absolute;
+            left: 0;
+            color: #ff7e5f;
+        }
+        
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .example-card {
+            background: rgba(50, 50, 50, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #ff7e5f;
+        }
+        
+        .example-card h4 {
+            margin-bottom: 8px;
+            color: #feb47b;
+        }
+        
+        .example-card p {
+            font-family: monospace;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .keyboard-shortcut {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 0 3px;
+        }
+        
+        .suggestion-box {
+            position: absolute;
+            background: rgba(50, 50, 50, 0.95);
+            border: 1px solid #ff7e5f;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            width: 100%;
+            display: none;
+        }
+        
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover, .suggestion-item.selected {
+            background: rgba(255, 126, 95, 0.3);
+        }
+        
+        .suggestion-keyword {
+            font-weight: bold;
+            color: #feb47b;
+        }
+        
+        .suggestion-latex {
+            font-family: monospace;
+            opacity: 0.8;
+        }
+        
+        .display-content {
+            padding: 20px;
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .display-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #ff7e5f;
+        }
+        
+        .display-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .display-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .display-timestamp {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .katex-display {
+            margin: 1rem 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        .empty-display {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.5;
+            font-style: italic;
+        }
+        
+        @media (min-width: 768px) {
+            .editor-container {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>LaTeX数学公式速写工具 - 增强版</h1>
+        <p class="subtitle">支持Markdown渲染，分离输入/显示区域，关键词提示与补全</p>
+    </header>
+    
+    <div class="container">
+        <div class="editor-container">
+            <div class="input-section">
+                <div class="section-title">
+                    <h2>输入区域</h2>
+                    <div id="status" class="status-indicator normal-mode">Markdown模式</div>
+                </div>
+                <textarea id="editor" class="editor" placeholder="在此输入Markdown和LaTeX... 按下Ctrl+L切换到LaTeX模式"></textarea>
+                <div id="suggestion-box" class="suggestion-box"></div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="section-title">
+                    <h2>实时预览</h2>
+                </div>
+                <div class="preview">
+                    <div id="formula-preview" class="formula-preview">内容将在这里实时预览</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="display-section">
+            <div class="section-title">
+                <h2>渲染结果展示区</h2>
+                <div>按 <span class="keyboard-shortcut">Ctrl</span> + <span class="keyboard-shortcut">Enter</span> 提交</div>
+            </div>
+            <div id="display-content" class="display-content">
+                <div class="empty-display">提交的内容将显示在这里</div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ul>
+                <li>在输入区域使用Markdown语法输入内容（支持LaTeX公式）</li>
+                <li>按下<span class="keyboard-shortcut">Ctrl</span> + <span class="keyboard-shortcut">L</span>切换到LaTeX模式（再次按下可退出）</li>
+                <li>在LaTeX模式下，输入关键词会自动显示匹配的LaTeX符号</li>
+                <li>使用<span class="keyboard-shortcut">↑</span> <span class="keyboard-shortcut">↓</span>键选择建议，<span class="keyboard-shortcut">Tab</span>键补全</li>
+                <li>按下<span class="keyboard-shortcut">Ctrl</span> + <span class="keyboard-shortcut">Enter</span>提交内容到显示区域</li>
+                <li>以下是一些可用关键词示例：</li>
+            </ul>
+            
+            <div class="examples">
+                <div class="example-card">
+                    <h4>希腊字母</h4>
+                    <p>alpha → α</p>
+                    <p>beta → β</p>
+                    <p>gamma → γ</p>
+                </div>
+                <div class="example-card">
+                    <h4>运算符</h4>
+                    <p>times → ×</p>
+                    <p>div → ÷</p>
+                    <p>pm → ±</p>
+                </div>
+                <div class="example-card">
+                    <h4>分数/积分</h4>
+                    <p>frac{a}{b} → 分数</p>
+                    <p>int → ∫</p>
+                    <p>sum → ∑</p>
+                </div>
+                <div class="example-card">
+                    <h4>其他符号</h4>
+                    <p>infty → ∞</p>
+                    <p>sqrt → √</p>
+                    <p>neq → ≠</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="katex.min.js"></script>
+    <script>
+        // LaTeX关键词映射
+        const latexMappings = {
+            // 希腊字母
+            'alpha': '\\alpha',
+            'beta': '\\beta',
+            'gamma': '\\gamma',
+            'delta': '\\delta',
+            'epsilon': '\\epsilon',
+            'zeta': '\\zeta',
+            'eta': '\\eta',
+            'theta': '\\theta',
+            'iota': '\\iota',
+            'kappa': '\\kappa',
+            'lambda': '\\lambda',
+            'mu': '\\mu',
+            'nu': '\\nu',
+            'xi': '\\xi',
+            'pi': '\\pi',
+            'rho': '\\rho',
+            'sigma': '\\sigma',
+            'tau': '\\tau',
+            'phi': '\\phi',
+            'chi': '\\chi',
+            'psi': '\\psi',
+            'omega': '\\omega',
+            
+            // 大写希腊字母
+            'Alpha': '\\Alpha',
+            'Beta': '\\Beta',
+            'Gamma': '\\Gamma',
+            'Delta': '\\Delta',
+            'Epsilon': '\\Epsilon',
+            'Zeta': '\\Zeta',
+            'Eta': '\\Eta',
+            'Theta': '\\Theta',
+            'Iota': '\\Iota',
+            'Kappa': '\\Kappa',
+            'Lambda': '\\Lambda',
+            'Mu': '\\Mu',
+            'Nu': '\\Nu',
+            'Xi': '\\Xi',
+            'Pi': '\\Pi',
+            'Rho': '\\Rho',
+            'Sigma': '\\Sigma',
+            'Tau': '\\Tau',
+            'Phi': '\\Phi',
+            'Chi': '\\Chi',
+            'Psi': '\\Psi',
+            'Omega': '\\Omega',
+            
+            // 运算符
+            'times': '\\times',
+            'div': '\\div',
+            'pm': '\\pm',
+            'mp': '\\mp',
+            'cdot': '\\cdot',
+            'ast': '\\ast',
+            'star': '\\star',
+            'dagger': '\\dagger',
+            'ddagger': '\\ddagger',
+            'amalg': '\\amalg',
+            'cap': '\\cap',
+            'cup': '\\cup',
+            'uplus': '\\uplus',
+            'sqcap': '\\sqcap',
+            'sqcup': '\\sqcup',
+            'vee': '\\vee',
+            'wedge': '\\wedge',
+            'oplus': '\\oplus',
+            'ominus': '\\ominus',
+            'otimes': '\\otimes',
+            'oslash': '\\oslash',
+            'odot': '\\odot',
+            'bigcirc': '\\bigcirc',
+            'bigtriangleup': '\\bigtriangleup',
+            'bigtriangledown': '\\bigtriangledown',
+            'triangleleft': '\\triangleleft',
+            'triangleright': '\\triangleright',
+            
+            // 关系符号
+            'leq': '\\leq',
+            'geq': '\\geq',
+            'neq': '\\neq',
+            'approx': '\\approx',
+            'equiv': '\\equiv',
+            'propto': '\\propto',
+            'sim': '\\sim',
+            'simeq': '\\simeq',
+            'cong': '\\cong',
+            'subset': '\\subset',
+            'supset': '\\supset',
+            'subseteq': '\\subseteq',
+            'supseteq': '\\supseteq',
+            'in': '\\in',
+            'ni': '\\ni',
+            'notin': '\\notin',
+            'forall': '\\forall',
+            'exists': '\\exists',
+            'perp': '\\perp',
+            'parallel': '\\parallel',
+            
+            // 箭头
+            'to': '\\to',
+            'gets': '\\gets',
+            'leftarrow': '\\leftarrow',
+            'rightarrow': '\\rightarrow',
+            'leftrightarrow': '\\leftrightarrow',
+            'uparrow': '\\uparrow',
+            'downarrow': '\\downarrow',
+            'updownarrow': '\\updownarrow',
+            'Leftarrow': '\\Leftarrow',
+            'Rightarrow': '\\Rightarrow',
+            'Leftrightarrow': '\\Leftrightarrow',
+            'Uparrow': '\\Uparrow',
+            'Downarrow': '\\Downarrow',
+            'Updownarrow': '\\Updownarrow',
+            
+            // 其他符号
+            'infty': '\\infty',
+            'nabla': '\\nabla',
+            'partial': '\\partial',
+            'ell': '\\ell',
+            'Re': '\\Re',
+            'Im': '\\Im',
+            'aleph': '\\aleph',
+            'wp': '\\wp',
+            'forall': '\\forall',
+            'exists': '\\exists',
+            'emptyset': '\\emptyset',
+            'prime': '\\prime',
+            'hbar': '\\hbar',
+            'surd': '\\surd',
+            'top': '\\top',
+            'bot': '\\bot',
+            'angle': '\\angle',
+            'triangle': '\\triangle',
+            'diamond': '\\diamond',
+            'clubsuit': '\\clubsuit',
+            'heartsuit': '\\heartsuit',
+            'spadesuit': '\\spadesuit',
+            
+            // 函数名
+            'sin': '\\sin',
+            'cos': '\\cos',
+            'tan': '\\tan',
+            'cot': '\\cot',
+            'sec': '\\sec',
+            'csc': '\\csc',
+            'arcsin': '\\arcsin',
+            'arccos': '\\arccos',
+            'arctan': '\\arctan',
+            'sinh': '\\sinh',
+            'cosh': '\\cosh',
+            'tanh': '\\tanh',
+            'coth': '\\coth',
+            'log': '\\log',
+            'ln': '\\ln',
+            'exp': '\\exp',
+            'det': '\\det',
+            'lim': '\\lim',
+            'max': '\\max',
+            'min': '\\min',
+            'sup': '\\sup',
+            'inf': '\\inf',
+            'arg': '\\arg',
+            'dim': '\\dim',
+            'deg': '\\deg',
+            'hom': '\\hom',
+            'ker': '\\ker',
+            
+            // 分数和根号
+            'frac': '\\frac{}{}',
+            'dfrac': '\\dfrac{}{}',
+            'sqrt': '\\sqrt{}',
+            'root': '\\sqrt[]{}',
+            
+            // 积分与求和
+            'int': '\\int',
+            'iint': '\\iint',
+            'iiint': '\\iiint',
+            'oint': '\\oint',
+            'sum': '\\sum',
+            'prod': '\\prod',
+            'coprod': '\\coprod',
+            
+            // 括号与定界符
+            'lbrace': '\\{',
+            'rbrace': '\\}',
+            'lbrack': '[',
+            'rbrack': ']',
+            'langle': '\\langle',
+            'rangle': '\\rangle',
+            'lfloor': '\\lfloor',
+            'rfloor': '\\rfloor',
+            'lceil': '\\lceil',
+            'rceil': '\\rceil',
+            'vert': '|',
+            'Vert': '\\|',
+            'uparrow': '\\uparrow',
+            'Uparrow': '\\Uparrow',
+            'downarrow': '\\downarrow',
+            'Downarrow': '\\Downarrow',
+            'updownarrow': '\\updownarrow',
+            'Updownarrow': '\\Updownarrow',
+            
+            // 矩阵
+            'matrix': '\\begin{matrix} \n  &  \\\\ \n  &  \n\\end{matrix}',
+            'pmatrix': '\\begin{pmatrix} \n  &  \\\\ \n  &  \n\\end{pmatrix}',
+            'bmatrix': '\\begin{bmatrix} \n  &  \\\\ \n  &  \n\\end{bmatrix}',
+            'Bmatrix': '\\begin{Bmatrix} \n  &  \\\\ \n  &  \n\\end{Bmatrix}',
+            'vmatrix': '\\begin{vmatrix} \n  &  \\\\ \n  &  \n\\end{vmatrix}',
+            'Vmatrix': '\\begin{Vmatrix} \n  &  \\\\ \n  &  \n\\end{Vmatrix}',
+            
+            // 方程
+            'equation': '\\begin{equation}\n\n\\end{equation}',
+            'align': '\\begin{align}\n  &  \\\\\n  & \n\\end{align}',
+            
+            // 特殊符号
+            'therefore': '\\therefore',
+            'because': '\\because',
+            'qed': '\\qed'
+        };
+
+        // DOM元素
+        const editor = document.getElementById('editor');
+        const formulaPreview = document.getElementById('formula-preview');
+        const statusIndicator = document.getElementById('status');
+        const suggestionBox = document.getElementById('suggestion-box');
+        const displayContent = document.getElementById('display-content');
+        
+        // 状态变量
+        let isLatexMode = false;
+        let lastWord = '';
+        let currentSuggestions = [];
+        let selectedSuggestionIndex = -1;
+        
+        // 初始化
+        function init() {
+            // 添加键盘事件监听
+            document.addEventListener('keydown', handleKeyDown);
+            editor.addEventListener('input', handleInput);
+            updateStatusIndicator();
+        }
+        
+        // 处理键盘事件
+        function handleKeyDown(e) {
+            // Ctrl+L 切换模式
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                isLatexMode = !isLatexMode;
+                updateStatusIndicator();
+                hideSuggestions();
+                
+                // 提示用户
+                const mode = isLatexMode ? 'LaTeX模式' : 'Markdown模式';
+                showNotification(`已切换到${mode}`);
+            }
+            
+            // Ctrl+Enter 提交内容
+            if (e.ctrlKey && (e.key === 'Enter' || e.key === 'm')) {
+                e.preventDefault();
+                submitContent();
+            }
+            
+            // 在建议框显示时处理上下键和Tab键
+            if (suggestionBox.style.display === 'block') {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectNextSuggestion();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectPreviousSuggestion();
+                } else if (e.key === 'Tab' && selectedSuggestionIndex !== -1) {
+                    e.preventDefault();
+                    applySuggestion();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    hideSuggestions();
+                }
+            }
+        }
+        
+        // 处理输入事件
+        function handleInput(e) {
+            // 更新预览
+            updatePreview();
+            
+            if (!isLatexMode) {
+                hideSuggestions();
+                return;
+            }
+            
+            const text = editor.value;
+            const cursorPos = editor.selectionStart;
+            
+            // 获取当前单词（从光标位置向前查找空格）
+            let startPos = cursorPos - 1;
+            while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') {
+                startPos--;
+            }
+            
+            const currentWord = text.substring(startPos + 1, cursorPos);
+            
+            // 如果检测到空格且上一个单词是关键词
+            if (currentWord === '' && lastWord !== '') {
+                if (latexMappings.hasOwnProperty(lastWord)) {
+                    replaceLastWord(latexMappings[lastWord]);
+                }
+            }
+            
+            lastWord = currentWord;
+            
+            // 显示匹配的建议
+            if (currentWord.length > 0) {
+                showSuggestions(currentWord);
+            } else {
+                hideSuggestions();
+            }
+        }
+        
+        // 显示建议
+        function showSuggestions(input) {
+            currentSuggestions = [];
+            
+            // 查找匹配的关键词
+            for (const [keyword, latex] of Object.entries(latexMappings)) {
+                if (keyword.toLowerCase().startsWith(input.toLowerCase())) {
+                    currentSuggestions.push({ keyword, latex });
+                }
+            }
+            
+            // 如果有匹配项则显示
+            if (currentSuggestions.length > 0) {
+                renderSuggestions();
+                suggestionBox.style.display = 'block';
+                selectedSuggestionIndex = 0;
+                highlightSelectedSuggestion();
+            } else {
+                hideSuggestions();
+            }
+        }
+        
+        // 渲染建议列表
+        function renderSuggestions() {
+            suggestionBox.innerHTML = '';
+            
+            currentSuggestions.forEach((suggestion, index) => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `
+                    <span class="suggestion-keyword">${suggestion.keyword}</span>
+                `;
+                let span = document.createElement("span");
+                span.classList.add('suggestion-latex');
+                katex.render(suggestion.latex, span, {displayMode: true});
+                item.append(span);
+                item.dataset.index = index;
+                
+                item.addEventListener('click', () => {
+                    selectedSuggestionIndex = index;
+                    applySuggestion();
+                });
+                
+                suggestionBox.appendChild(item);
+            });
+        }
+        
+        // 隐藏建议
+        function hideSuggestions() {
+            suggestionBox.style.display = 'none';
+            selectedSuggestionIndex = -1;
+        }
+        
+        // 选择下一个建议
+        function selectNextSuggestion() {
+            if (currentSuggestions.length === 0) return;
+            
+            selectedSuggestionIndex = (selectedSuggestionIndex + 1) % currentSuggestions.length;
+            highlightSelectedSuggestion();
+        }
+        
+        // 选择上一个建议
+        function selectPreviousSuggestion() {
+            if (currentSuggestions.length === 0) return;
+            
+            selectedSuggestionIndex = (selectedSuggestionIndex - 1 + currentSuggestions.length) % currentSuggestions.length;
+            highlightSelectedSuggestion();
+        }
+        
+        // 高亮选中的建议
+        function highlightSelectedSuggestion() {
+            const items = suggestionBox.querySelectorAll('.suggestion-item');
+            items.forEach((item, index) => {
+                if (index === selectedSuggestionIndex) {
+                    item.classList.add('selected');
+                    // 滚动到可见区域
+                    item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+        
+        // 应用选中的建议
+        function applySuggestion() {
+            if (selectedSuggestionIndex === -1 || currentSuggestions.length === 0) return;
+            
+            const suggestion = currentSuggestions[selectedSuggestionIndex];
+            replaceLastWord(suggestion.latex);
+            hideSuggestions();
+        }
+        
+        // 替换最后一个单词
+        function replaceLastWord(replacement) {
+            const text = editor.value;
+            const cursorPos = editor.selectionStart;
+            
+            // 查找最后一个单词的起始位置
+            let startPos = cursorPos - 1;
+            while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') {
+                startPos--;
+            }
+            
+            const before = text.substring(0, startPos + 1);
+            const after = text.substring(cursorPos);
+            
+            // 更新文本
+            editor.value = before + replacement + after;
+            
+            // 设置光标位置
+            const newCursorPos = before.length + replacement.length;
+            editor.setSelectionRange(newCursorPos, newCursorPos);
+            
+            // 重置最后一个单词
+            lastWord = '';
+            
+            // 触发输入事件更新预览
+            const event = new Event('input', { bubbles: true });
+            editor.dispatchEvent(event);
+        }
+        
+        // 更新预览
+        function updatePreview() {
+            try {
+                // 使用Markdown渲染
+                const markdownContent = editor.value;
+                const htmlContent = marked.parse(markdownContent);
+                
+                // 创建一个临时容器来解析HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlContent;
+                
+                // console.log(editor.value)
+                // 处理所有包含LaTeX的代码块
+                const latexBlocks = tempDiv.querySelectorAll('code.language-latex, code.language-math');
+                // console.log(latexBlocks)
+                latexBlocks.forEach(block => {
+                    const latex = block.textContent;
+                    console.log(latex)
+                    try {
+                        const span = document.createElement('span');
+                        katex.render(latex, span, {
+                            throwOnError: false,
+                            displayMode: block.classList.contains('language-math')
+                        });
+                        block.parentNode.replaceChild(span, block);
+                    } catch (e) {
+                        console.error('KaTeX渲染错误:', e);
+                    }
+                });
+                
+                // 处理行内LaTeX
+                const inlineLatex = tempDiv.querySelectorAll('p:not([class])');
+                console.log(inlineLatex)
+                inlineLatex.forEach(inline => {
+                    const text = inline.textContent;
+                    if (text.includes('$') || text.includes('\\')) {
+                        try {
+                            const span = document.createElement('span');
+                            katex.render(text, span, {
+                                throwOnError: false,
+                                displayMode: false
+                            });
+                            inline.parentNode.replaceChild(span, inline);
+                        } catch (e) {
+                            console.error('KaTeX渲染错误:', e);
+                        }
+                    }
+                });
+                
+                formulaPreview.innerHTML = tempDiv.innerHTML;
+            } catch (e) {
+                formulaPreview.textContent = '渲染错误: ' + e.message;
+            }
+        }
+        
+        // 提交内容到显示区域
+        function submitContent() {
+            const content = editor.value.trim();
+            if (!content) return;
+            
+            // 创建显示项
+            const displayItem = document.createElement('div');
+            displayItem.className = 'display-item';
+            
+            const now = new Date();
+            const timestamp = now.toLocaleString();
+            
+            displayItem.innerHTML = `
+                <div class="display-header">
+                    <div>提交内容</div>
+                    <div class="display-timestamp">${timestamp}</div>
+                </div>
+                <div class="display-content">${formulaPreview.innerHTML}</div>
+            `;
+            
+            // 移除空状态提示
+            if (displayContent.querySelector('.empty-display')) {
+                displayContent.innerHTML = '';
+            }
+            
+            // 添加到显示区域顶部
+            displayContent.insertBefore(displayItem, displayContent.firstChild);
+            
+            // 清空编辑器
+            editor.value = '';
+            
+            // 更新预览
+            formulaPreview.innerHTML = '内容已提交';
+            
+            // 显示通知
+            showNotification('内容已提交到显示区域');
+        }
+        
+        // 更新状态指示器
+        function updateStatusIndicator() {
+            if (isLatexMode) {
+                statusIndicator.textContent = 'LaTeX模式';
+                statusIndicator.className = 'status-indicator latex-mode';
+            } else {
+                statusIndicator.textContent = 'Markdown模式';
+                statusIndicator.className = 'status-indicator normal-mode';
+            }
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '10px 20px';
+            notification.style.backgroundColor = '#ff7e5f';
+            notification.style.color = '#000';
+            notification.style.borderRadius = '5px';
+            notification.style.zIndex = '1000';
+            notification.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // 3秒后移除通知
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>

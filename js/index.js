@@ -4,6 +4,8 @@ let iframeIndex = [];
 
 let sharedMousePositionMemory = {x:"0",y:"0"};
 
+let params = new URLSearchParams(document.location.search.substring(1));
+
 // ----------------------- initialize -----------------------
 if (localStorage) {
     localStorage.appMode = config['app_Mode'];
@@ -15,8 +17,21 @@ if (localStorage) {
 
     localStorage.config = config;   // provide config api
 }
-
+if (params.get('launch_App_Url')) {
+    checkFileExists(params.get('launch_App_Url'))
+    .then(exists => {
+        if (exists) {
+            launch_Web_App(params.get('launch_App_Name'), params.get('launch_App_Url'))
+        } else {
+            appearMsg('Not find entry:'+ params.get('launch_App_Url'))
+        }
+    })
+    .catch(error => {
+        console.error('fetch file error:', error);
+    });
+}
 // ----------------------- fuctions -----------------------
+
 function launch_Web_App(app_Name, app_Url, expected_App_Id) {
     
     let pages = document.getElementsByClassName('pages');
