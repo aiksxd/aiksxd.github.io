@@ -91,23 +91,19 @@ body {
 }
 .container {
     position: absolute;
-    bottom: -14vh;
-    left: 15%;
     height: 40%;
     width: 70%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+.ourContainer {
+    bottom: -14vh;
+    left: 15%;
+}
 .opponentContainer {
-    position: absolute;
     top: -14vh;
     left: 15%;
-    height: 40%;
-    width: 70%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     transform: rotate(180deg);
 }
 .opponentContainer .card {
@@ -198,19 +194,20 @@ body {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
     z-index: 5;
+    gap: 15px;
+    transition: gap 0.5s ease;
 }
-#opponentCardField {
+.opponentCardField {
     top: 35vh;
 }
-#myCardField {
+.ourCardField {
     bottom: 15vh;
 }
-#myCardField .playedCard {
+.ourCardField .playedCard {
     background: linear-gradient(135deg, #6e6eff, #4a4aff);
 }
-#opponentCardField .playedCard {
+.opponentCardField .playedCard {
     background: linear-gradient(135deg, #fc8686, #fa7b7b);
 }
 .field-label {
@@ -410,6 +407,7 @@ body {
 
 .gear-btn {
     position: absolute;
+    right: 0px;
     width: 60px;
     height: 60px;
     background: linear-gradient(135deg, #2196F3, #21cbf3);
@@ -528,6 +526,7 @@ body {
 }
 
 .setting {
+    position: relative;
     background: linear-gradient(135deg, #294ad0, #e22a2a, #294dda);
     display: flex;
     justify-content: center;
@@ -542,7 +541,6 @@ body {
     animation: settingIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     height: 95%;
     width: 98%;
-    position: relative;
     color: #2c3e50;
     line-height: 1.6;
     font-family: 'Arial', sans-serif;
@@ -1184,13 +1182,14 @@ body {
     width: auto;
     height: auto;
     min-width: 15px;
-    max-width: 20vh;
+    max-width: 30vh;
     height: 8vh;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     overflow: auto;
 }
 .playerInfo div {
+    gap: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1200,12 +1199,8 @@ body {
     bottom: 0;
 }
 #opponentInfo {
-    right: 0;
+    left: 0;
     top: 0;
-}
-#opponentInfo .player-avatar {
-    margin-left: 12px;
-    margin-right: unset;
 }
 .icon {
     width: 1em;
@@ -1214,12 +1209,147 @@ body {
     fill: none;
 }
 
-.fa-bolt-lightning {
+.fa-thunder {
     color: yellow;
 }
 .fa-heart {
     color: red;
 }
+#progress-svg {
+    position: absolute;
+    bottom: 20vh;
+}
+#progress-line {
+    opacity: 0;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: all 0.5s ease;
+    z-index: 2;
+}
+#progress-line.wait {
+    stroke: rgba(103, 103, 103, 0.6);
+    filter: drop-shadow(0 0 5px rgba(103, 103, 103, 0.7));
+}
+#progress-line:not(.wait) {
+    stroke: #4dff4d;
+    filter: drop-shadow(0 0 5px rgba(77, 255, 77, 0.7));
+}
+.display-position-card {
+    height: 20vh;
+    aspect-ratio: 1/1.6;
+    background: linear-gradient(135deg, #5e5cfc, #3a3af0);
+    border-radius: 8px;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.8s ease;
+    transform-origin: 50% 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+/* 占位预览卡牌 */
+.preview-card {
+    height: 20vh;
+    aspect-ratio: 1/1.6;
+    background: rgba(255, 255, 255, 0.3);
+    border: 3px dashed rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    z-index: 100;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.unknown-card {
+    display: flex;
+    font-size: 5em;
+    font-weight: 700;
+}
+.activated {
+    animation: cardActivate 0.6s ease-out;
+    z-index: 20;
+}
+.dash-line {
+    position: absolute;
+    bottom: 36vh;
+    width: 20%;
+    border-top: 5px dashed rgba(255, 255, 255, 0.3);
+    height: 1px;
+    overflow:hidden;
+    z-index: -2;
+}
+.dash-line.active {
+    border-top: 5px dashed rgba(247, 223, 2, 0.3);
+    transition: border-top 1s ease;
+}
+.shock-btn {
+    position: absolute;
+    bottom: 33vh;
+    left: 10vh;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #2196F3, #21cbf3);
+    border-radius: 20%;
+    font-size: 2em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 
+        0 5px 15px rgba(33, 150, 243, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.shock-btn:active {
+    transform: scale(0.92);
+    background: linear-gradient(135deg, #1976D2, #00B0FF);
+    box-shadow: 
+        0 2px 8px rgba(33, 150, 243, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.shock-btn::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(33, 150, 243, 0.6);
+    opacity: 0;
+    animation: pulse 2s infinite;
+}
+.shock-btn .fa-thunder {
+    color: rgb(255, 255, 255, 0.7);
+    transition: color 0.5s ease;
+}
+.shock-btn .fa-thunder.active {
+    color: yellow;
+}
+
+@keyframes cardActivate {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    }
+    50% {
+        transform: scale(1.15) translateY(-2vh) rotate(-10deg);
+        box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.8);
+        filter: brightness(1.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
 /* 动画效果 */
 @keyframes fadeInDown {
     from {

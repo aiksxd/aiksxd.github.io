@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡牌游戏数字动画效果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.8rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, #2a3f7f, #1a2a5c);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            box-shadow: 0 0 15px #ffd700;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .value-container {
+            position: relative;
+            display: inline-block;
+            margin: 25px 0;
+        }
+        
+        .value {
+            font-size: 6rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            min-width: 150px;
+            display: inline-block;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+            opacity: 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #ff8c00, #ffd700);
+            border: none;
+            border-radius: 50px;
+            color: #1a2a6c;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+            min-width: 150px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .animation-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .animation-selector h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ffd700;
+            font-size: 1.5rem;
+        }
+        
+        .animation-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .animation-btn {
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .animation-btn:hover, .animation-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .info-panel {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 700px;
+        }
+        
+        .info-panel h2 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #1a2a5c;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        
+        .highlight {
+            color: #ffd700;
+        }
+        
+        .instructions {
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+        
+        @keyframes scaleUp {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-30px);}
+            60% {transform: translateY(-15px);}
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-15px); }
+            50% { transform: translateX(15px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+            50% { text-shadow: 0 0 20px #ffd700, 0 0 30px #ff8c00; }
+            100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+        }
+        
+        @keyframes flip {
+            0% { transform: rotateY(0); }
+            50% { transform: rotateY(90deg); opacity: 0; }
+            51% { opacity: 0; }
+            100% { transform: rotateY(0); opacity: 1; }
+        }
+        
+        .scale-animation {
+            animation: scaleUp 0.5s ease-in-out;
+        }
+        
+        .bounce-animation {
+            animation: bounce 0.8s ease;
+        }
+        
+        .shake-animation {
+            animation: shake 0.5s ease;
+        }
+        
+        .glow-animation {
+            animation: glow 0.7s ease;
+        }
+        
+        .flip-animation {
+            animation: flip 0.6s ease;
+        }
+        
+        .increase {
+            color: #7cfc00 !important;
+        }
+        
+        .decrease {
+            color: #ff4d4d !important;
+        }
+        
+        @media (max-width: 600px) {
+            .value {
+                font-size: 4.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>卡牌游戏数字动画效果</h1>
+        
+        <div class="card">
+            <h2 class="card-title">玩家金币</h2>
+            <div class="value-container">
+                <div class="value" id="goldValue">1000</div>
+                <div class="particles" id="particles"></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="addBtn">增加金币</button>
+                <button class="btn" id="subtractBtn">减少金币</button>
+                <button class="btn" id="randomBtn">随机变化</button>
+            </div>
+        </div>
+        
+        <div class="animation-selector">
+            <h2>选择动画效果</h2>
+            <div class="animation-options">
+                <button class="animation-btn active" data-animation="scale">缩放效果</button>
+                <button class="animation-btn" data-animation="bounce">弹跳效果</button>
+                <button class="animation-btn" data-animation="shake">震动效果</button>
+                <button class="animation-btn" data-animation="glow">发光效果</button>
+                <button class="animation-btn" data-animation="flip">翻转效果</button>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h2>使用说明</h2>
+            <p class="instructions">点击按钮改变金币数值，体验不同的动画效果。每种动画都包含粒子特效，数值增加时为绿色，减少时为红色。</p>
+            
+            <div class="code-block">
+                <p><span class="highlight">// 核心动画函数</span></p>
+                <p>function animateValue(element, newValue, isIncrease) {</p>
+                <p>&nbsp;&nbsp;const oldValue = parseInt(element.textContent);</p>
+                <p>&nbsp;&nbsp;element.textContent = newValue;</p>
+                <p></p>
+                <p>&nbsp;&nbsp;<span class="highlight">// 清除之前的动画类</span></p>
+                <p>&nbsp;&nbsp;element.className = 'value';</p>
+                <p>&nbsp;&nbsp;element.classList.add(isIncrease ? 'increase' : 'decrease');</p>
+                <p>&nbsp;&nbsp;element.classList.add(currentAnimation + '-animation');</p>
+                <p></p>
+                <p>&nbsp;&nbsp;<span class="highlight">// 创建粒子效果</span></p>
+                <p>&nbsp;&nbsp;createParticles(element, isIncrease);</p>
+                <p>}</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const goldValue = document.getElementById('goldValue');
+        const addBtn = document.getElementById('addBtn');
+        const subtractBtn = document.getElementById('subtractBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const particlesContainer = document.getElementById('particles');
+        const animationButtons = document.querySelectorAll('.animation-btn');
+        
+        // 当前动画类型
+        let currentAnimation = 'scale';
+        
+        // 设置初始活动按钮
+        animationButtons[0].classList.add('active');
+        
+        // 创建粒子效果
+        function createParticles(element, isIncrease) {
+            // 清除之前的粒子
+            particlesContainer.innerHTML = '';
+            
+            // 粒子颜色
+            const color = isIncrease ? '#7cfc00' : '#ff4d4d';
+            
+            // 元素位置
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            // 创建粒子
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.background = color;
+                particle.style.boxShadow = `0 0 10px ${color}`;
+                particlesContainer.appendChild(particle);
+                
+                // 随机位置
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 100;
+                const startX = centerX;
+                const startY = centerY;
+                
+                // 随机大小
+                const size = 2 + Math.random() * 6;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 动画
+                const animation = particle.animate([
+                    { 
+                        transform: `translate(${startX}px, ${startY}px) scale(1)`,
+                        opacity: 1
+                    },
+                    { 
+                        transform: `translate(${startX + Math.cos(angle) * distance}px, 
+                                  ${startY + Math.sin(angle) * distance}px) scale(0)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: 700 + Math.random() * 600,
+                    easing: 'cubic-bezier(0.2, 0, 0.8, 1)'
+                });
+                
+                // 动画结束后移除元素
+                animation.onfinish = () => {
+                    particle.remove();
+                };
+            }
+        }
+        
+        // 动画数字变化
+        function animateValue(newValue) {
+            const oldValue = parseInt(goldValue.textContent);
+            const isIncrease = newValue > oldValue;
+            
+            // 更新数值
+            goldValue.textContent = newValue;
+            
+            // 清除之前的动画类
+            goldValue.className = 'value';
+            
+            // 添加颜色类
+            goldValue.classList.add(isIncrease ? 'increase' : 'decrease');
+            
+            // 添加动画类
+            goldValue.classList.add(currentAnimation + '-animation');
+            
+            // 创建粒子效果
+            createParticles(goldValue, isIncrease);
+        }
+        
+        // 按钮事件监听
+        addBtn.addEventListener('click', () => {
+            const current = parseInt(goldValue.textContent);
+            const newValue = current + Math.floor(Math.random() * 200) + 50;
+            animateValue(newValue);
+        });
+        
+        subtractBtn.addEventListener('click', () => {
+            const current = parseInt(goldValue.textContent);
+            const newValue = Math.max(0, current - Math.floor(Math.random() * 200) - 50);
+            animateValue(newValue);
+        });
+        
+        randomBtn.addEventListener('click', () => {
+            const current = parseInt(goldValue.textContent);
+            const change = Math.floor(Math.random() * 500) - 250;
+            const newValue = Math.max(0, current + change);
+            animateValue(newValue);
+        });
+        
+        // 动画选择器
+        animationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有按钮的活动状态
+                animationButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // 添加当前按钮的活动状态
+                button.classList.add('active');
+                
+                // 更新当前动画
+                currentAnimation = button.dataset.animation;
+            });
+        });
+        
+        // 初始粒子效果
+        setTimeout(() => {
+            createParticles(goldValue, true);
+        }, 500);
+    </script>
+</body>
+</html>

@@ -1,348 +1,145 @@
 
 const loader = document.getElementById('loader');
-const myCardField = document.getElementById('myCardField');
-const container = document.getElementsByClassName('container')[0];
-const opponentContainer = document.getElementsByClassName('opponentContainer')[0];
 const overlay = document.getElementById('overlay');
 const setting = document.getElementById('setting');
-const cardDatabase = [];
+let opponentContainer;
+let myContainer;
+let teams = {};
 let conns = [];
 let connIds = [];
 let parent_Node;
-let cardField = [];
-let opponentCardField = [];
-let deck = [];
-let opponentDeck = [];
-let myId = "-";
-let myName = "New Player";
-let myAvatar = "";
-let myTurn = null;
-let opponent_Played_Card_Date_Index = false;
+let myId = '-';
+let myTeam = 'a';
+let myName = 'New Player';
+let myAvatar = '';
+let myMove = null;
 let roomInfo = [];
-let card = null;
-let played_Card_Date_Index = null;
-let playedCard = null;
-let lastTargetIndex = null;
-let lastTargetElement = null;
-
-let unkonwn_Card = document.createElement('div');
-unkonwn_Card.className = 'card';
-unkonwn_Card.textContent = '?';
-
-class Card {
-    constructor(element, code) {
-        this.element = element;
-        this.index = element.dataset.index;
-        this.value = element.textContent;
-        this.code = code;
-        this.isOnField = false;
-    }
-    
-    // exeFn
-    executeFunction(fnName) {
-        if (this[fnName] && typeof this[fnName] === 'function') {
-            this[fnName]();
-        }
-    }
-}
-
-function init_Cards() {
-    const cards = container.querySelectorAll('.card');
-    
-    cards.forEach(card => {
-        // 初始化变量
-        let isDragging = false;
-        let startX, startY;
-        let offsetX, offsetY;
-        let lastPosition = {x: 0, y: 0};
-        
-        // 通用事件处理器
-        const handleDragStart = (clientX, clientY) => {
-            isDragging = true;
-            startX = clientX;
-            startY = clientY;
-            card.classList.add('dragging');
-            card.style.left = `${startX - card.offsetWidth}px`;
-            card.style.top = `${startY - card.offsetHeight}px`;
-            
-            // 显示卡片信息
-            document.querySelector('.cardInfo').style.opacity = '1';
-            document.querySelector('.field-label').style.opacity = '1';
-            
-            // 存储初始位置
-            lastPosition = {
-                x: card.offsetLeft,
-                y: card.offsetTop
-            };
-        };
-
-        const handleDragMove = (clientX, clientY) => {
-            if (!isDragging) return;
-            
-            // 计算新位置
-            offsetX = clientX - startX + lastPosition.x;
-            offsetY = clientY - startY + lastPosition.y;
-            
-            card.style.left = `${offsetX}px`;
-            card.style.top = `${offsetY}px`;
-            
-            // 检查是否在游戏区域
-            const mouseX = clientX;
-            const mouseY = clientY;
-            const containerRect = container.getBoundingClientRect();
-            const battleField = myCardField.getBoundingClientRect();
-            
-            if (isInArea(mouseX, mouseY, containerRect)) {
-                card.classList.remove('playing');
-                updateCardPositionInContainer(card, mouseX, containerRect);
-            } else if (isInArea(mouseX, mouseY, battleField)) {
-                card.classList.add('playing');
-            } else {
-                card.classList.remove('playing');
-            }
-        };
-
-        const handleDragEnd = (clientX, clientY) => {
-            if (!isDragging) return;
-            isDragging = false;
-            card.classList.remove('dragging');
-            
-            // 隐藏信息
-            setTimeout(() => {
-                document.querySelector('.field-label').style.opacity = '0';
-                document.querySelector('.cardInfo').style.opacity = '0';
-            }, 500);
-            
-            // 检查是否在游戏区域
-            const battleField = myCardField.getBoundingClientRect();
-            if (isInArea(clientX, clientY, battleField)) {
-                handleCardPlay(card);
-            } else {
-                // 返回原位
-                card.style.left = 'unset';
-                card.style.top = 'unset';
-            }
-            
-            lastTargetIndex = null;
-            lastTargetElement = null;
-        };
-
-        // 鼠标事件
-        card.addEventListener('mousedown', e => {
-            e.preventDefault();
-            handleDragStart(e.clientX, e.clientY);
-        });
-
-        document.addEventListener('mousemove', e => {
-            handleDragMove(e.clientX, e.clientY);
-        });
-
-        document.addEventListener('mouseup', e => {
-            handleDragEnd(e.clientX, e.clientY);
-        });
-
-        // 触摸事件
-        card.addEventListener('touchstart', e => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            handleDragStart(touch.clientX, touch.clientY);
-        }, { passive: false });
-
-        document.addEventListener('touchmove', e => {
-            const touch = e.touches[0];
-            handleDragMove(touch.clientX, touch.clientY);
-        }, { passive: false });
-
-        document.addEventListener('touchend', e => {
-            const touch = e.changedTouches[0];
-            handleDragEnd(touch.clientX, touch.clientY);
-        });
-    });
-}
-
-// 辅助函数：检查坐标是否在区域内
-function isInArea(x, y, rect) {
-    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-}
-
-// 辅助函数：更新卡牌在容器中的位置
-function updateCardPositionInContainer(card, mouseX, containerRect) {
-    const originalContainer = card.parentElement;
-    const cards = Array.from(originalContainer.querySelectorAll('.card'));
-    const cardIndex = Array.from(originalContainer.children).indexOf(card);
-    
-    if (cardIndex === -1) return;
-    
-    const cardCount = cards.length;
-    const relativeX = mouseX - containerRect.left;
-    const containerWidth = containerRect.width;
-    
-    // 计算目标位置
-    let targetIndex = Math.floor(relativeX / (containerWidth / Math.max(1, cardCount)));
-    targetIndex = Math.min(targetIndex, cardCount - 1);
-    
-    // 如果位置变化则移动卡牌
-    if (lastTargetIndex !== null && lastTargetIndex !== targetIndex) {
-        if (lastTargetIndex < targetIndex) {
-            originalContainer.insertBefore(cards[cardIndex], cards[targetIndex].nextSibling);
-        } else if (lastTargetIndex > targetIndex) {
-            originalContainer.insertBefore(cards[cardIndex], cards[targetIndex]);
-        }
-        adjust_Card_Style(cards.length, container);
-    }
-    
-    lastTargetIndex = targetIndex;
-    lastTargetElement = card;
-}
-
-// 辅助函数：处理卡牌出牌
-function handleCardPlay(card) {
-    // if (playedCard !== null) {
-    //     if (opponent_Played_Card_Date_Index !== null && played_Card_Date_Index !== null) {
-    //         return;
-    //     }
-    //     // replace card todo(fix receiver exe repeatly)
-    //     card.classList.remove('playing');
-    //     // let mediaValue = playedCard.textContent;
-    //     // playedCard.textContent = card.textContent;
-    //     // card.textContent = mediaValue;
-    //     return;
-    // }
-    
-    const originalContainer = card.parentElement;
-    const cards = Array.from(originalContainer.querySelectorAll('.card'));
-    const cardIndex = Array.from(originalContainer.children).indexOf(card);
-    
-    if (cardIndex === -1) return;
-    
-    played_Card_Date_Index = card.dataset.index;
-    
-    // 发送游戏数据
-    if (parent_Node) {
-        parent_Node.send(['played', played_Card_Date_Index]);
-    } else if (conns[0]) {
-        conns[0].send(['played', played_Card_Date_Index]);
-    }
-    cards[cardIndex].setAttribute('style', "");
-    cards[cardIndex].classList.remove('playing');
-    cards[cardIndex].classList.remove('card');
-    cards[cardIndex].classList.add('playedCard');
-    document.getElementById('myCardField').appendChild(cards[cardIndex]);
-    // cards[cardIndex].remove();
-    remove_Card_from_Deck(deck, 'index', deck[played_Card_Date_Index].index, false);
-    adjust_Card_Style(cards.length, container);
-    
-    // // 创建出牌区域元素
-    // playedCard = document.createElement('div');
-    // playedCard.className = 'card';
-    // playedCard.childNodes = card.childNodes;
-    // document.querySelector('.own-zone').appendChild(playedCard);
-    
-    // 检查对手是否已出牌
-    if (opponent_Played_Card_Date_Index) {
-        updateGameResult(deck[played_Card_Date_Index], opponentDeck[opponent_Played_Card_Date_Index]);
-    }
-}
-
-function adjust_Card_Style(length, container) {
-    container.querySelectorAll('.card').forEach((card, index) => {
-        if (length % 2 === 0) {
-            card.style.setProperty('--i', (index - (length / 2)) + 1);
-        } else {
-            card.style.setProperty('--i', index - ((length - 1) / 2));
-        }
-        document.documentElement.style.setProperty('--t', `${(36/length).toFixed(2)}deg`);
-    });
-}
+let turns = 0;
+let opponentId = '';
 
 // opponentContainer.querySelectorAll('.card').forEach(card => {
-function init_Game(roomInfo, turn) {
+function init_Game(roomInfo, move) {
     let i = 1;
-    myTurn = turn;
-    deck = [];
-    opponentDeck = [];
+    turns = 0;
+    myMove = move;
+    deck = {};
+    opponentDeck = {};
     opponent_Played_Card_Date_Index = null;
     played_Card_Date_Index = null;
     playedCard = null;
-    container.innerHTML = "";
-    opponentContainer.innerHTML = "";
-    document.getElementById('myCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][27][config.language]+'</div>';
-    document.getElementById('opponentCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][28][config.language]+'</div>';
-    document.getElementsByClassName('gameScore')[0].innerHTML = '<h2><span class="score">0</span> : <span class="opponent-score">0</span></h2>';
-
+    duration =  roomInfo.duration;
+    document.querySelectorAll('.playerInfo').forEach(dom => {
+        dom.innerHTML = '';
+    });
+    document.querySelectorAll('.cardField').forEach(dom => {
+        dom.remove();
+    });
+    document.querySelectorAll('.container').forEach(dom => {
+        dom.remove();
+    });
     roomInfo.players.forEach((player, index) => {
         // initalize basic data of player: more detail api todo
         player.heart = 2 * roomInfo.range;
         player.thunder = 1 * roomInfo.range;
 
         let playerItem = document.createElement("div");
-
-        if (player.id === myId) {   // for others todo
-            if (player.avatar) {
-                playerItem.innerHTML = `
-                    <div class="player-avatar" style="background-image:url(${player.avatar})"></div>
-                    <span class="player-name">${player.name}</span>
-                    <span class="cost fas fa-heart">${player.heart}</span>
-                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
-                `;
-            } else {
-                playerItem.innerHTML = `
-                    <div class="player-avatar">${player.name.slice(0,0)}</div>
-                    <span class="player-name">${player.name}</span>
-                    <span class="cost fas fa-heart">${player.heart}</span>
-                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
-                `;
-            }
-            document.getElementById('ourInfo').append(playerItem);
+        if (player.avatar) {
+            playerItem.innerHTML = `
+                <div class="player-avatar" style="background-image:url(${player.avatar})"></div>
+                <span class="player-name">${player.name}</span>
+                <span id="heart${player.id}" class="cost fas fa-heart">${player.heart}</span>
+                <span id="thunder${player.id}" class="cost fas fa-thunder">${player.thunder}</span>
+            `;
         } else {
-            if (player.avatar) {
-                playerItem.innerHTML = `
-                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
-                    <span class="cost fas fa-heart">${player.heart}</span>
-                    <span class="player-name">${player.name}</span>
-                    <div class="player-avatar" style="background-image:url(${player.avatar})"></div>
-                `;
-            } else {
-                playerItem.innerHTML = `
-                    <span class="cost fas fa-bolt-lightning">${player.thunder}</span>
-                    <span class="cost fas fa-heart">${player.heart}</span>
-                    <span class="player-name">${player.name}</span>
-                    <div class="player-avatar">${player.name.slice(0,0)}</div>
-                `;
-            }
-            document.getElementById('opponentInfo').append(playerItem);
+            playerItem.innerHTML = `
+                <div class="player-avatar">${player.name.slice(0,0)}</div>
+                <span class="player-name">${player.name}</span>
+                <span id="heart${player.id}" class="cost fas fa-heart">${player.heart}</span>
+                <span id="thunder${player.id}" class="cost fas fa-thunder">${player.thunder}</span>
+            `;
         }
 
+        if (player.team === myTeam) {
+            // avatar
+            document.getElementById('ourInfo').append(playerItem);
+            if (!teams[myTeam]) {
+                teams[myTeam] = [];
+            }
+            teams[myTeam].push(player.id);
+            // init deck
+            deck[player.id] = [];
+        } else {
+            document.getElementById('opponentInfo').append(playerItem);
+            if (!teams[player.team]) {
+                teams[player.team] = [];
+            }
+            teams[player.team].push(player.id);
+            // init deck
+            opponentDeck[player.id] = [];
+        }
+
+        let field = document.createElement('div');
+        field.id = "field"+player.id;
+        if (player.team === myTeam) {
+            field.className = "ourCardField cardField";
+            field.innerHTML = '<div class="field-label lan">'+language_Text['index'][28][config.language]+'</div>';
+        } else {
+            field.className = "opponentCardField cardField";
+            field.innerHTML = '<div class="field-label lan">'+language_Text['index'][29][config.language]+'</div>';
+        }
+        document.body.appendChild(field);
+        
+        let newContainer = document.createElement('div');
+        newContainer.id = "container"+player.id;
+        if (player.team === myTeam) {
+            newContainer.className = "container ourContainer";
+            document.body.appendChild(newContainer);
+        } else {
+            newContainer.className = "container opponentContainer";
+            document.body.appendChild(newContainer);
+            // opponentContainer = document.querySelector('#container'+teams[player.team][teams[myTeam].findIndex(id => id ===  myId)]);
+            opponentId = player.id;     // todo
+            opponentContainer = document.querySelector('#container'+player.id);
+        }
+        // todo
+        document.getElementsByClassName('gameScore')[0].innerHTML = '<h2><span class="score">0</span> : <span class="opponent-score">0</span></h2>';
     });
-    closeSetting();
+    myContainer = document.querySelector('#container'+myId);
     switch (roomInfo.mode) {
         case "random":
-            let randomIndices = randomInts(roomInfo.range);
-            // console.log(randomIndices);
-            for (let code of randomIndices) {
-                let card = cardDatabase[code];
-                // 构建费用显示字符串（支持多个资源）
-                let costHtml = '';
-                for (const [resource, amount] of Object.entries(card.cost)) {
-                    costHtml += `<div class="cost fas fa-${resource}">${amount}</div>`;
-                }
+            let randomIndices = randomInts(roomInfo.range, 'shock');
+            drawCard(myId, 'shock', randomIndices);
+            // for (let code of randomIndices) {
+            //     const cardData = cardDatabase.shock[code];
+            //     // 构建费用显示字符串
+            //     let costHtml = '';
+            //     for (const [resource, amount] of Object.entries(cardData.cost)) {
+            //         costHtml += `<div class="cost fas fa-${resource}">${amount}</div>`;
+            //     }
 
-                // 创建卡牌DOM元素
-                const cardElement = document.createElement('div');
-                cardElement.className = 'card';
-                cardElement.dataset.index = deck.length;
+            //     // 创建卡牌DOM元素
+            //     const cardElement = document.createElement('div');
+            //     cardElement.className = 'card';
+            //     cardElement.id = 'card' + deck[myId].length;
+            //     cardElement.dataset.index = deck[myId].length;
 
-                cardElement.innerHTML = `
-                    ${costHtml}
-                    <img src="${card.img}" alt="${card.name}">
-                    <span class="shortInfo">${card.shortInfo}</span>
-                `;
+            //     cardElement.innerHTML = `
+            //         ${costHtml}
+            //         <img src="${cardData.img}" alt="${cardData.name}">
+            //         <span class="shortInfo">${cardData.shortInfo}</span>
+            //     `;
 
-                card = new Card(cardElement, code);
-                deck.push(card);
-                container.appendChild(cardElement);
-            }
-        break;
+            //     // 复制 cardData，确保每张卡牌都是独立对象
+            //     const card = Object.assign({}, cardData);
+            //     card.domId = cardElement.id;
+            //     card.index = deck[myId].length;
+            //     deck[myId].push(card);
+            //     myContainer.appendChild(cardElement);
+                
+            //     opponentDeck.push('unknown');
+            //     opponentContainer.appendChild(unkonwn_Card.cloneNode(true));
+            // }
+            break;
         case "asymmetric":
             let jugde = 0;
             if (turn == 1) {
@@ -365,7 +162,7 @@ function init_Game(roomInfo, turn) {
                 }
                 i++;
             }
-            break;
+        break;
         case "symmetric":
             while (i <= roomInfo.range) {
                 let card = document.createElement('div');
@@ -386,43 +183,32 @@ function init_Game(roomInfo, turn) {
                 i++;
             }
         default:
-            break;
+        break;
     }
-    init_Cards();
-    adjust_Card_Style(deck.length, container);
-    adjust_Card_Style(opponentDeck.length, opponentContainer);
+    // init_Cards(myContainer.querySelectorAll('.card'));
+    adjust_Card_Style(deck[myId].length, myContainer);
+    // adjust_Card_Style(opponentDeck.length, opponentContainer);
+    startCountdown(2*duration);
+    closeSetting();
 }
 
-function remove_Card_from_Deck(deck, referrence, value, repeatly, feedback) {
-    let i = 0;
-    let t = [-1];
-    while (i < deck.length) {
-        if (deck[i] !== undefined) {
-            t[0]++;
-        } else {
-            i++;
-            continue;
+function update_Player_Data(id, resource, fn, value) {
+    const player = roomInfo.players.find(p => p.id === id);
+    if (player) {
+        switch (fn) {
+            case 'minus':
+                player[resource] -= value;
+            break;
+            case 'add':
+                player[resource] += value;
+            break;
+            default:
+            case 'modify':
+                player[resource] = value;
+            break;
         }
-        if (deck[i][referrence] == value) {
-            deck[i] = undefined;
-            if (!repeatly) {
-                switch (feedback) {
-                    case 'position':
-                        return i;   // return the position in deck
-                    case 'pos-undefined':
-                        return t[0];   // return the position in default sort of cards
-                    case 'array':
-                        t.push(i);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        i++;
-    }
-    if (feedback === 'array') {
-        return t.slice(1);
+        // console.log(resource + id)
+        document.getElementById(resource + id).textContent = player[resource];
     }
 }
 
@@ -523,8 +309,8 @@ function updateGameResult(myCard, opponentCard) {
     gameResult.appendChild(svg);
     
     setTimeout(() => {
-        document.getElementById('myCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][27][config.language]+'</div>';
-        document.getElementById('opponentCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][28][config.language]+'</div>';
+        // document.getElementById('myCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][28][config.language]+'</div>';
+        // document.getElementById('opponentCardField').innerHTML = '<div class="field-label lan">'+language_Text['index'][29][config.language]+'</div>';
         opponent_Played_Card_Date_Index = null;
         played_Card_Date_Index = null;
         playedCard = null;
@@ -622,7 +408,6 @@ document.getElementById('overlay').addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', function() {
     hideLoader();
     openSetting();
-    init_Cards();
 });
 
 function hideLoader() {
@@ -649,17 +434,6 @@ document.getElementById('copyURL').addEventListener('click', function() {
             console.error('ERROR:', err);
         });
 });
-
-// JSON数据解析函数
-function parseCardDeck(jsonData) {
-    
-    jsonData.cards.forEach((card, index) => {
-    // 添加到全局数据库
-    cardDatabase.push(card);
-    
-    });
-}
-
 // // 示例调用函数（需在全局实现）
 // function gainResources(resourceType, amount) {
 //   console.log(`获得资源: ${amount} ${resourceType}`);
@@ -672,26 +446,51 @@ function parseCardDeck(jsonData) {
 // function summonUnit(unitType, attack, health) {
 //   console.log(`召唤单位: ${unitType} (${attack}/${health})`);
 // }
-// 初始化卡组
-fetch('cards/cards.json')
-    .then(response => response.json())
-    .then(parseCardDeck)
-    .catch(console.error);
 
-function randomInts(n) {
-    return Array.from({length: n}, () => Math.floor(Math.random() * cardDatabase.length));
+function randomInts(n, className) {
+    return Array.from({length: n}, () => Math.floor(Math.random() * cardDatabase[className].length));
 }
 
+function turn_Settlement() {
+    document.querySelector('#progress-line').classList.add('wait');
+    document.querySelector('.dash-line').classList.add('active');
+    document.querySelector('.shock-btn .fa-thunder').classList.add('active');
+    document.querySelector('.shock-btn').disabled = true;
+    activateCards(myId, 0, document.querySelector('#field'+myId).children.length - 1, 'ltr');
+
+    if (parent_Node) {
+        parent_Node.send(['turn_End', myId]);
+    }
+}
+
+function turn_Start(startThunder, drawNumber) {
+    document.querySelector('#progress-line').classList.remove('wait');
+    resetCountdown();
+    document.querySelector('.dash-line').classList.remove('active');
+    document.querySelector('.shock-btn .fa-thunder').classList.remove('active');
+
+    roomInfo.players.forEach(player => {
+        player['thunder'] = startThunder;
+        animateValue(document.getElementById('thunder'+player.id), 'glow', 'modify', startThunder);
+    });
+    cardEffects['drawCard'](myId, myId, ['all', drawNumber], undefined);
+
+    startCountdown(duration);
+    document.querySelector('.shock-btn').disabled = false;
+    play_Card_Availible = true;
+}
 function test(r) {
+    myId='w';
     roomInfo = {
         id: 'null',
         status: 'waiting',
+        duration: 10000,
         range: r,
         mode: 'random',
         players: [
-            { name: myName, avatar: myAvatar, status: "ready", id: myId },
-            { name: "空位", status: "empty", id: "a" },
-            { name: "空位", status: "empty", id: "b" }
+            { name: myName, avatar: myAvatar, status: "ready", team: myTeam, id: myId },
+            { name: "空位", status: "empty", team: 'b', id: "a" }
+            // { name: "空位", status: "empty", id: "b" }
         ]
     };
     openSetting();

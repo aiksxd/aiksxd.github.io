@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/cartoon.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
 </head>
 <body>
@@ -64,6 +65,10 @@
                             <span class="lan">Card Number Range: [0 -</span>
                             <input type="number" id="cardRange" class="input-field" value="10" min="3" max="18" style="width: 80px;" onchange="update_Card_Range(this.value)">
                             <span>]</span>
+                        </div>
+                        <div class="range-container">
+                            <span class="lan">duration of each turn:</span>
+                            <input type="number" id="cardRange" class="input-field" value="30" min="5" style="width: 80px;" onchange="update_Duration(this.value * 1000)">
                         </div>
                     </div>
                     
@@ -182,16 +187,12 @@
         </svg>
     </button>
 
-    <div class="container">
+    <!-- <div class="container">
         <div class="card" data-index="0" style="--i:-4;">-4</div>
         <div class="card" data-index="1" style="--i:-3;">-3</div>
         <div class="card" data-index="2" style="--i:-2;">-2</div>
         <div class="card" data-index="3" style="--i:-1;">-1</div>
         <div class="card" data-index="4" style="--i:0;"><div class="cost">0</div><img src="cards/test.png"><span class="shortInfo">test</span></div>
-        <div class="card" data-index="5" style="--i:1;">1</div>
-        <div class="card" data-index="6" style="--i:2;">2</div>
-        <div class="card" data-index="7" style="--i:3;">3</div>
-        <div class="card" data-index="8" style="--i:4;">4</div>
     </div>
     <div class="opponentContainer">
         <div class="card" data-index="0" style="--i:-4;">-4</div>
@@ -199,18 +200,17 @@
         <div class="card" data-index="2" style="--i:-2;">-2</div>
         <div class="card" data-index="3" style="--i:-1;">-1</div>
         <div class="card" data-index="4" style="--i:0;">0</div>
-        <div class="card" data-index="5" style="--i:1;">1</div>
-        <div class="card" data-index="6" style="--i:2;">2</div>
-        <div class="card" data-index="7" style="--i:3;">3</div>
-        <div class="card" data-index="8" style="--i:4;">4</div>
-    </div>
+    </div> -->
 
-    <div id="myCardField" class="cardField">
-        <div class="field-label lan">1</div>
+    <button class="shock-btn" onclick="turn_Settlement()"><span class="fas fa-thunder"></span></button>
+    <div class="dash-line"></div>
+
+    <!-- <div class="ourCardField">
+        <div class="field-label lan"></div>
     </div>
-    <div id="opponentCardField" class="cardField">
-        <div class="field-label lan">2</div>
-    </div>
+    <div class="opponentCardField">
+        <div class="field-label lan"></div>
+    </div> -->
 
     <div class="cardInfo" style="opacity: 0;">
         <p>Card Name: <span class="card-name"></span></p>
@@ -218,6 +218,10 @@
         <svg class="icon" width="800" height="800" viewBox="0 0 24 24" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color"><path style="stroke-linecap:round;stroke-linejoin:round;stroke-width:1" d="m7 12 5 2-1 7 6-9-4-2 1-7z"/></svg>
         <svg class="icon" width="800" height="800" viewBox="0 0 24 24" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color"><path d="M17.76 10.63 9 21l2.14-8H7.05a1 1 0 0 1-1-1.36l3.23-8a1.05 1.05 0 0 1 1-.64h4.34a1 1 0 0 1 1 1.36L13.7 9H17a1 1 0 0 1 .76 1.63" style="stroke-linecap:round;stroke-linejoin:round;stroke-width:2"/></svg>
     </div>
+
+    <svg id="progress-svg" viewBox="0 0 500 20">
+        <line id="progress-line" x1="50" y1="10" x2="450" y2="10" />
+    </svg>
 
     <div class="gameScore">
         <h2><span class="score">0</span> : <span class="opponent-score">0</span></h2>
@@ -236,15 +240,71 @@
         }
     </script>
     <script src="js/peerjs.min.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/cardFns.js"></script>
     <script src="js/cards.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/cartoon.js"></script>
     <!-- <script src="js/peerCode.js"></script> -->
     <script>
+        const durationInput = document.getElementById('duration');
         const cardRangeInput = document.getElementById('cardRange');
         const rangeValueDisplay = document.querySelector('.range-value');
         const modeOptions = document.querySelectorAll('.mode-option');
+        const timerDisplay = document.getElementById('timer');
+        const progressLine = document.getElementById('progress-line');
+        let duration = 10000;
         let selectedMode = null;
-        
+        let animationLeft, animationRight;
+        let countdownInterval;
+        let isRunning = false;
+        // 开始倒计时
+        function startCountdown(time) {
+            if (isRunning) return;
+            
+            // 重置进度条位置
+            progressLine.style.opacity = 0.8;
+            progressLine.setAttribute('x1', '50');
+            progressLine.setAttribute('x2', '450');
+            
+            // 创建动画
+            const startTime = performance.now();
+            
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / time, 1);
+                
+                // 更新进度条
+                const newX1 = 50 + (200 * progress);
+                const newX2 = 450 - (200 * progress);
+                progressLine.setAttribute('x1', newX1);
+                progressLine.setAttribute('x2', newX2);
+                
+                if (progress < 1) {
+                    animationLeft = requestAnimationFrame(animate);
+                }
+            }
+            
+            // 启动动画
+            isRunning = true;
+            animationLeft = requestAnimationFrame(animate);
+        }
+        function resetCountdown() {
+            // 停止动画
+            progressLine.style.opacity = 0;
+            if (animationLeft) cancelAnimationFrame(animationLeft);
+            if (animationRight) cancelAnimationFrame(animationRight);
+            
+            // 清除倒计时
+            clearInterval(countdownInterval);
+            
+            // 重置状态
+            isRunning = false;
+            
+            // 重置进度条
+            progressLine.setAttribute('x1', '50');
+            progressLine.setAttribute('x2', '450');
+        }
+
         modeOptions.forEach(option => {
             option.addEventListener('click', function() {
                 modeOptions.forEach(opt => opt.classList.remove('selected'));
@@ -300,13 +360,15 @@
             //     status: 'waiting',
             //     mode: selectedMode
             // });
+            myTeam = 'a';
             roomInfo = {
                 id: myId,
                 status: 'waiting',
                 range: cardRangeInput.value,
+                duration: durationInput.value,
                 mode: selectedMode,
                 players: [
-                    { avatar: myAvatar, name: myName, status: "ready", id: myId },
+                    { avatar: myAvatar, name: myName, status: "ready", team: myTeam, id: myId },
                 ]
             };
             updateRoomInfo(roomInfo);
@@ -317,7 +379,6 @@
             if(document.getElementById('ready').checked == false) {
                 document.getElementById('ready').click();
             }
-            // updateRoomInfo
         });
         
         // ready change
@@ -583,6 +644,11 @@
         function update_Card_Range(range) {
             if (config['use_Local_Storage'] && localStorage) {
                 localStorage.cardRange = range;
+            }
+        }
+        function update_Duration(value) {
+            if (config['use_Local_Storage'] && localStorage) {
+                localStorage.duration = value;
             }
         }
 

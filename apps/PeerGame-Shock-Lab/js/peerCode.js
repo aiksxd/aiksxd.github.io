@@ -1,4 +1,7 @@
 peer = new Peer({ debug: 2});
+let player_Conns = [];
+let player_ConnIds = [];
+
 peer.on('open', (id) => {
     myId = id;
     roomInfo.id = myId;
@@ -18,12 +21,36 @@ peer.on('connection', (conn) => {
         switch (data[0]) {
             case 'want':
                 if (conns.length < config['max_Players']) {
-                    conns[0].send(['entry']);
+                    let source = conns.find(c => c.peer === data[1]);
+                    if (source) {
+                        source.send(['joined', minTeam]);
+                        player_Conns.push(source);
+                        player_ConnIds.push(data[1]);
+
+                        let minTeam = 'b';  // todo
+                        roomInfo.players[roomInfo.players.length] = { avatar: '', name: data[1], team: minTeam, id: data[2], status: 'not-ready' };
+                        updateRoomInfo(roomInfo);
+                    } else {
+                        console.log('unknown playerId'+data[1]);
+                        return;
+                    }
                 } else {
-                    conns[1].send(['crowded']);
-                    conns[1].close();
-                    conns.splice(1, 1);
-                    connIds.splice(1, 1);
+                    for (let i = config['max_Players'] - 1; i < conns.length; i++) {
+                        conns[i].send(['crowded']);
+                        conns[i].close();
+                        conns.splice(config['max_Players'] - 1, 1);
+                        connIds.splice(config['max_Players'] - 1, 1);
+                    }
+                }
+            break;
+            case 'avatar':
+                let source = roomInfo.players.find(p => p.id === data[1]);
+                if (source) {
+                    source.avatar = data[2];
+                    updateRoomInfo(roomInfo);
+                } else {
+                    console.log('unknown playerId'+data[1]);
+                    return;
                 }
             break;
             case 'ready':
@@ -38,7 +65,7 @@ peer.on('connection', (conn) => {
                     let judgement = true;
                     roomInfo.players.forEach(player => {
                         if (player.status === 'ready') {
-                        } else { judgement = false}
+                        } else { judgement = false; }
                     });
                     if (judgement) {
                         roomInfo.status = 'playing';
@@ -51,23 +78,34 @@ peer.on('connection', (conn) => {
                     }
                 }
             break;
-            case 'info':    // join successfully
-                roomInfo.players[roomInfo.players.length] = { avatar: data[1], name: data[2], id: data[3], status: 'not-ready' };
-                conns[0].send(['joined']);
-                updateRoomInfo(roomInfo);
-            break;
             case 'played':
-                opponent_Played_Card_Date_Index = data[1];
-                // tempCard.id = "tempCard";
-                // let tempCard = unkonwn_Card.cloneNode(true);
-                // document.getElementById('opponentCardField').append(tempCard);
+                broadcast(data[1], data);
+                opponent_Played_Card_Date_Index = data[2];
                 const opponentCards = Array.from(opponentContainer.querySelectorAll('.card'));
-                document.getElementById('opponentCardField').append(opponentCards[remove_Card_from_Deck(opponentDeck, 'index', opponentDeck[opponent_Played_Card_Date_Index].index, false, 'pos-undefined')]);
-                adjust_Card_Style(opponentDeck.length, opponentContainer);
-                // if (played_Card_Date_Index) {
-                //     updateGameResult(deck[played_Card_Date_Index], opponentDeck[opponent_Played_Card_Date_Index]);
-                // }
+                document.getElementById('field'+data[1]).append(opponentCards[operate_Card_from_Deck(opponentDeck[data[1]], 'index', opponentDeck[data[1]][opponent_Played_Card_Date_Index].index, false, 'pos-undefined')]);
+                adjust_Card_Style(opponentDeck[data[1]].length, opponentContainer);
             break;
+            case 'draw':
+                broadcast(data[1], data);
+                drawCard(data[1], data[2], data[3]);
+            break;
+            case 'turn_End':
+                let player = roomInfo.players.find(p => p.id === data[1]);
+                player.status = 'turn_End';
+                let judgement = true;
+                
+                roomInfo.players.forEach(player => {
+                    if (player.status !== 'turn_End') {
+                    } else { judgement = false; return;}
+                });
+                
+                if (judgement) {
+                    turns += 1;
+                    broadcast(myId, ['next_Turn', turns + roomInfo.range, turns]);
+                    turn_Start(turns + roomInfo.range, turns);
+                } else {
+                    return;
+                }
             break;
             default:
                 console.log("unknown data: " + data);
@@ -84,6 +122,7 @@ peer.on('connection', (conn) => {
         }
     });
 });
+
 function tryToConnect(object, id) {
     switch (object) {
         case 'parent':
@@ -95,20 +134,19 @@ function tryToConnect(object, id) {
             parent_Node = peer.connect(id);
 
             parent_Node.on('open', () => {
-                parent_Node.send(['want', peer.id]);
+                parent_Node.send(['want', myName, myId]);
             });
     
             parent_Node.on('data', (data) => {
                 switch (data[0]) {
-                    case 'entry':
-                        conns[0] = false;   // prevent other connecting player & affecting judgement
-                        parent_Node.send(['info', myAvatar, myName, myId]);
-                    break;
                     case 'joined':
+                        conns[0] = false;   // prevent other connecting player & affecting judgement
                         // style test
                         if (config['app_Mode']) {
                             pop_Msg('Connect successfully');
                         }
+                        myTeam = data[1];
+                        parent_Node.send(['avatar', myId, myAvatar]);
 
                         joinRoomBtn.innerHTML = '<i class="fas fa-check"></i> '+ res_Strings['card'][12][config.language];
                         joinRoomBtn.style.background = 'linear-gradient(135deg, #00c853, #1b5e20)';
@@ -137,13 +175,16 @@ function tryToConnect(object, id) {
                         init_Game(roomInfo, data[1]);
                     break;
                     case 'played':
-                        opponent_Played_Card_Date_Index = data[1];
-                        // tempCard.id = "tempCard";
-                        // let tempCard = unkonwn_Card.cloneNode(true);
-                        // document.getElementById('opponentCardField').append(tempCard);
+                        opponent_Played_Card_Date_Index = data[2];
                         const opponentCards = Array.from(opponentContainer.querySelectorAll('.card'));
-                        document.getElementById('opponentCardField').append(opponentCards[remove_Card_from_Deck(opponentDeck, 'index', opponentDeck[opponent_Played_Card_Date_Index].index, false, 'pos-undefined')]);
-                        adjust_Card_Style(opponentDeck.length, opponentContainer);
+                        document.getElementById('field'+data[1]).append(opponentCards[operate_Card_from_Deck(opponentDeck[data[1]], 'index', opponentDeck[data[1]][opponent_Played_Card_Date_Index].index, false, 'pos-undefined')]);
+                        adjust_Card_Style(opponentDeck[data[1]].length, opponentContainer);
+                    break;
+                    case 'draw':
+                        drawCard(data[1], data[2], data[3]);
+                    break;
+                    case 'next_Turn':
+                        turn_Start(data[1], data[2]);
                     break;
                     default:
                         console.log("unknown data: " + data);
@@ -177,4 +218,12 @@ function tryToConnect(object, id) {
         default:
             break;
     }
+}
+
+function broadcast(sourceId, msg) {
+    player_Conns.forEach(conn => {
+        if (conn.peer !== sourceId) {
+            conn.send(msg);
+        }
+    })
 }

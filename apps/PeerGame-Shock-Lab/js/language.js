@@ -51,6 +51,10 @@ let language_Text = {
             "zh": "卡牌数字范围: [0 -"
         },
         {
+            "en": "duration of each turn:",
+            "zh": "每回合持续时间"
+        },
+        {
             "en": "Game Mode:",
             "zh": "游戏模式:"
         },

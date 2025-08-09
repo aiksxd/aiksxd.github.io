@@ -1,49 +1,109 @@
 {
-  "deckClass": "economy",
-  "cards": [
-    {
-      "name": "金矿",
-      "cost": {
-        "bolt-lightning": 3,
-        "heart": 1
+  "classNames": ["shock", "once"],
+  "shock": {
+    "cards": [
+      {
+        "name": "礼物盒",
+        "cost": {
+          "thunder": 1
+        },
+        "invoke": {
+          "func": ["drawCard"],
+          "args": [["all", 1]]
+        },
+        "shortInfo": "抽1张牌",
+        "longInfo": "抽1张牌",
+        "keywords": ["抽牌"],
+        "img": "cards/gold_mine.png"
       },
-      "invoke": {
-        "func": "gainResources",
-        "args": ["gold", 2]
+      {
+        "name": "治疗术",
+        "cost": {
+          "thunder": 2
+        },
+        "invoke": {
+          "func": ["healTarget"],
+          "args": [["player", 1]]
+        },
+        "shortInfo": "恢复50%充能生命值",
+        "longInfo": "对目标角色恢复 50%充能 生命值，可对玩家或盟友使用",
+        "keywords": ["充能"],
+        "img": "cards/healing_spell.png"
       },
-      "shortInfo": "每回合获得2金币",
-      "longInfo": "激活后每回合开始自动产出2枚金币，持续3回合",
-      "keywords": ["资源", "持续效果", "经济"],
-      "img": "cards/gold_mine.png"
-    },
-    {
-      "name": "治疗术",
-      "cost": {
-        "bolt-lightning": 2
+      {
+        "name": "箭矢",
+        "cost": {
+          "thunder": 1
+        },
+        "invoke": {
+          "func": ["damageTarget", "playGifAnimation"],
+          "args": [["thunder", 1], ["cards/cartoons/thunder.gif", 1500]]
+        },
+        "shortInfo": "造成100%充能伤害",
+        "longInfo": "对目标造成 100%充能 伤害",
+        "keywords": ["充能伤害"],
+        "img": "cards/charge_warrior.png"
       },
-      "invoke": {
-        "func": "healTarget",
-        "args": ["player", 5]
+      {
+        "name": "传送门：向左",
+        "cost": {
+          "thunder": 1
+        },
+        "invoke": {
+          "func": ["bounce"],
+          "args": [["rtl"]]
+        },
+        "shortInfo": "向左激活",
+        "longInfo": "将来自左侧的充能信号反弹",
+        "keywords": ["反弹"],
+        "img": "cards/charge_warrior.png"
       },
-      "shortInfo": "恢复5点生命值",
-      "longInfo": "对目标角色恢复5点生命值，可对玩家或盟友使用",
-      "keywords": ["恢复", "生命值", "即时效果"],
-      "img": "cards/healing_spell.png"
-    },
-    {
-      "name": "冲锋战士",
-      "cost": {
-        "bolt-lightning": 1,
-        "heart": 1
+      {
+        "name": "传送门：向右",
+        "cost": {
+          "thunder": 1
+        },
+        "invoke": {
+          "func": ["bounce"],
+          "args": [["ltr"]]
+        },
+        "shortInfo": "向右激活",
+        "longInfo": "将来自右侧的充能信号反弹",
+        "keywords": ["反弹"],
+        "img": "cards/charge_warrior.png"
       },
-      "invoke": {
-        "func": "summonUnit",
-        "args": ["Warrior", 3, 2]
-      },
-      "shortInfo": "召唤3/2战士",
-      "longInfo": "召唤一名具有冲锋能力的战士（攻击力3，生命值2）",
-      "keywords": ["召唤", "冲锋", "战士"],
-      "img": "cards/charge_warrior.png"
-    }
-  ]
+      {
+        "name": "电磁炮",
+        "cost": {
+          "thunder": 2
+        },
+        "invoke": {
+          "func": ["setValue", "damageTarget", "playGifAnimation"],
+          "args": [["add", 1], ["custome", ["multiply", ["times", 1], ["thunder", 0.5]]], ["cards/cartoons/thunder.gif", 1500]]
+        },
+        "shortInfo": "对目标造成 50%充能 * 激活次数 的伤害",
+        "longInfo": "对目标造成 50%充能 * 激活次数 的伤害",
+        "keywords": ["充能伤害"],
+        "img": "cards/charge_warrior.png"
+      }
+    ]
+  },
+  "once": {
+    "cards": [
+      {
+        "name": "变压器",
+        "cost": {
+          "thunder": 1
+        },
+        "invoke": {
+          "func": ["ruleMaker"],
+          "args": ["player", "adjustChatrge"]
+        },
+        "shortInfo": "改变规则：增加充能方向并增加费用调整",
+        "longInfo": "增加从右往左的充能方向，并且该方向充能使激活后的卡费用增加1。同时使从左向右的充能费用减1再激活",
+        "keywords": ["改变规则"],
+        "img": "cards/charge_warrior.png"
+      }
+    ]
+  }
 }
