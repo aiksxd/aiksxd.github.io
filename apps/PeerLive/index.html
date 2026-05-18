@@ -52,7 +52,11 @@
         <div class="pop_Content">
             <h2><span class="lan">Create / Join a peer netWork Span</span></h2>
             <span id="remindNetworkNameText"><span class="lan">Only support ' A-z 0-9 - '</span></span><br>
-            <input type="text" name="netWorkName" id="netWorkName"><br>
+            <input type="text" name="netWorkName" id="netWorkName"><br><br>
+
+            <span class="lan">if you can't run in norm with default setting: </span><br>
+            <input type="text" onchange="remember_peer_server_ip(this.value)" name="custome_peer_server_ip" value="8.218.243.161" id="custome_peer_server_ip">
+            <button><span onclick="modify_peer_server_ip(document.getElementById('custome_peer_server_ip').value)" id="custome_peer_server_ip_span" class="lan">Use custome peer server</span></button><br>
             <button class="confirm_Button" onclick="modify_NetWork_Name()" style="top: 100%;"><span class="lan">Confirm<br>[Enter]</span></button>
         </div>
     </div>
@@ -165,7 +169,7 @@
             defaultId = document.getElementById('netWorkName').value;
             if (join && !peer_Conn_Lock) {
                 peer_Conn_Lock = true;
-                peer = new Peer({ debug: 2});
+                peer = conn_peer_Server();
                 peer.on('open', (id) => {
                     tryConnect(4, defaultId, false);
                 });
@@ -183,7 +187,7 @@
                         }
                     }e
                 }
-                peer = new Peer(defaultId, { debug: 2});
+                peer = conn_peer_Server(defaultId);
                 // Listen for the event when a Peer connection is successfully opened
                 // *Explanation: The provided code snippet is using the Peer.js library to establish a Peer connection. The peer.on('open', ...) code block is listening for the 'open' event, which is triggered when the Peer connection is successfully opened.
                 peer.on('open', (id) => {
@@ -362,17 +366,18 @@
                 switch (nodesMap[3]) {  // room type
                     case 0:
                         if (config['app_Mode']) {
-                            window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']]);
+                            window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
                         } else {
-                            window.open("./audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']);
+                            window.open("./audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]);
                         }
                         break;
                     case 1:
-                    if (config['app_Mode']) {
-                            window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']]);
-                        } else {
-                            window.open("./audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']);       
-                        }      
+                        alert(res_Strings['fn'][6][config['language']] + "p2pOnlineGame-Tic-Tac-Toe");
+                        // if (config['app_Mode']) {
+                        //     window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
+                        // } else {
+                        //     window.open("./audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]);       
+                        // }
                         break;
                     default:
                         console.log("unknown type of room: "+ nodesMap[3]);
@@ -444,14 +449,14 @@
             switch (document.getElementById("roomType").selectedIndex) {
                 case 0:
                     if (config['app_Mode']) {
-                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/host.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value +"&themeIndex="+ config['theme_Index']]);
+                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/host.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value +"&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
                     } else {
-                        window.open("./host.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value +"&themeIndex="+ config['theme_Index'], '_blank');
+                        window.open("./host.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value +"&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0], '_blank');
                     }
                     break;
                 case 1:
-                    alert("Find files of P2P Game FiveOnline in Github");
-                    // window.open("./P2PGameFiveOnLineHost.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value, '_blank');
+                    alert(res_Strings['fn'][6][config['language']] + "p2pOnlineGame-Tic-Tac-Toe");
+                    // window.open("./P2PGameFiveOnLineHost.html?rootId="+ rootId +"&title="+ document.getElementById("liveTitle").value +"&summary="+ document.getElementById("LiveSummary").value +"&coverURL="+ document.getElementById("liveCoverURL").value +"&peer_server_ip="+ peer_server_data[0], '_blank');
                     break;
                 case 2:
                     alert("undone");        // TODO
@@ -464,6 +469,11 @@
 
         if (config['app_Mode']) {     // more in fn.js
             document.getElementById("onlineButton").classList.remove("covert");
+        }
+
+        if (localStorage.remembered_peer_server_ip) {
+            peer_server_data[0] = localStorage.remembered_peer_server_ip;
+            document.getElementById('custome_peer_server_ip').value = localStorage.remembered_peer_server_ip;
         }
     </script>
 </body>

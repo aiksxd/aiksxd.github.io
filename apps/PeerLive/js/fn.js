@@ -55,10 +55,40 @@ if (config['theme_Index']) {
 } else if (config['use_Local_Storage'] && localStorage) {
     config['theme_Index'] = localStorage.themeIndex;
 }
+
+if (params.get("peer_server_ip")) {
+    peer_server_data[0] = params.get("peer_server_ip");
+}
 // let large_Nodes_Map = [];   // with img
 let myIcon = "";
 let root = null;
 let app_Name = 'PeerLive';
+
+function conn_peer_Server(expected_id) {
+    let peerObj;
+    if (peer_server_data[0]) {
+        if (expected_id) {
+            peerObj = new Peer(expected_id, {
+                host: peer_server_data[0],
+                port: peer_server_data[1],
+                path: peer_server_data[2],
+            });
+        } else {
+            peerObj = new Peer({
+                host: peer_server_data[0],
+                port: peer_server_data[1],
+                path: peer_server_data[2],
+            });
+        }
+    } else {
+        if (expected_id) {
+            peerObj = new Peer(expected_id, { debug: 2});
+        } else {
+            peerObj =  new Peer({debug: 2});
+        }
+    }
+    return peerObj;
+}
 
 function tryConnect(object, id, ifJump, ifAskForMediaStream){
     // object:
@@ -287,9 +317,9 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
                             case 0:
                                 if (ifJump === 2) {
                                     if (config['app_Mode']) {
-                                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']]);
+                                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
                                     } else {
-                                        window.open("./audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']);
+                                        window.open("./audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]);
                                     }
                                 } else {    // index entry
                                     document.location.href = "./audience.html?id="+ guest.peer +"&name="+ getMyName() + "&themeIndex="+ config['theme_Index'];
@@ -299,9 +329,9 @@ function tryConnect(object, id, ifJump, ifAskForMediaStream){
                                 alert(res_Strings['fn'][6][config['language']] + "p2pOnlineGame-Tic-Tac-Toe");
                                 // if (ifJump === 2) {
                                 //     if (config['app_Mode']) {
-                                //         window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']]);
+                                //         window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
                                 //     } else {
-                                //         window.open("./P2PGameFiveOnLinePlayer.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index']);
+                                //         window.open("./P2PGameFiveOnLinePlayer.html?id="+ guest.peer +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]);
                                 //     }
                                 // } else {
                                 //     document.location.href = "./P2PGameFiveOnLinePlayer.html?id="+ guest.peer +"&name="+ getMyName() + "&themeIndex="+ config['theme_Index'];
@@ -690,9 +720,9 @@ function echoNodesMap(arr, layerNumber, aimId, fnOfEcho){
                     document.location.href = "./audience.html?id=" + aimId +"&name="+ getMyName() + "&themeIndex="+ config['theme_Index'];
                 } else {
                     if (config['app_Mode']) {
-                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index']]);
+                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/audience.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
                     } else {
-                        window.open("./audience.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index']);
+                        window.open("./audience.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]);
                     }
                 }
                 break;
@@ -702,9 +732,9 @@ function echoNodesMap(arr, layerNumber, aimId, fnOfEcho){
                     document.location.href = "./P2PGameFiveOnLinePlayer.html?id=" + aimId +"&name="+ getMyName() + "&themeIndex="+ config['theme_Index'];
                 } else {
                     if (config['app_Mode']) {
-                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/P2PGameFiveOnLinePlayer.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index']]);
+                        window.parent.postMessage(['jump', app_Info['app_Name'], app_Info['app_Id'], "apps/PeerLive/P2PGameFiveOnLinePlayer.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]]);
                     } else {
-                        window.open("./P2PGameFiveOnLinePlayer.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index']);
+                        window.open("./P2PGameFiveOnLinePlayer.html?id=" + aimId +"&name=&themeIndex="+ config['theme_Index'] +"&peer_server_ip="+ peer_server_data[0]);
                     }
                 }
                 break;
@@ -864,6 +894,14 @@ function getMyName(){
         return peer.id;
     }
     return "undefined_Name";
+}
+
+function remember_peer_server_ip(ip) {
+    localStorage.remembered_peer_server_ip = ip;
+}
+function modify_peer_server_ip(ip) {
+    peer_server_data[0] = ip;
+    alert("Peer Server ip has changed! "+ ip);
 }
 
 function conference_Play() {

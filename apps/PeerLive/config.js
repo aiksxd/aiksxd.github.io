@@ -1,10 +1,10 @@
 
 let defaultId = 'P2P-Live-Web-Default-ID';
-
+let peer_server_data = ['', 9000, '/myapp']
 let max_Child_Nodes = 4;
 
 let config = {
-    'app_Mode': true,
+    'app_Mode': false,
     'theme_Index': "0",
     'use_Local_Storage': true,
     'use_Clone_Page': true,

@@ -175,6 +175,14 @@ let language_Text = {
             "zh": "仅支持'A-z 0-9 -'字符"
         },
         {
+            "en": "if you can't run in norm with default setting: ",
+            "zh": "如果你无法以默认设置正常运行："
+        },
+        {
+            "en": "Use custome peer server",
+            "zh": "使用自定义peer服务器"
+        },
+        {
             "en": "Confirm\n[Enter]",
             "zh": "确认\n[回车]"
         },
