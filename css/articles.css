@@ -1,0 +1,363 @@
+/* 文章层：文章流、列表卡、全屏阅读、页脚。 */
+/* ---------- 文章区 ----------
+   实底 + 更高 z-index：作为覆盖层从下方上滑，遮住固定的天空 / 日月 / 云朵。 */
+.feed {
+  position: relative; z-index: 2;
+  /* 去掉实底背景，透出固定的 .scene 天空，与 hero 共用一个背景 */
+  /* 下边距 120 → 72：下面紧跟作品集区块，那边自己还有上边距，
+     两段叠起来会留出一条 ~170px 的纯空带（区块标题上方那一块）。 */
+  padding: clamp(48px, 8vw, 88px) 24px 72px;
+}
+/* 跳转落点从 `.feed` 的顶边挪到了 `.feed__head`（#posts 也挂在它上面）：
+   `.feed` 顶上还有 clamp(48,8vw,88) 的 padding，按它算落点会白留一整段空白 ——
+   原来 76px 的 margin 落下来，标题离屏顶还有 160 上下，看着像「跳高了」。
+   现在只认标题这一段：落点 = 标题上方 `--landing`（44px），滚轮两档左右。 */
+#posts { scroll-margin-top: var(--landing); }
+.feed__inner { max-width: 980px; margin: 0 auto; }
+.feed__head { display: flex; align-items: end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 34px; }
+.eyebrow { margin: 0 0 2px; font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.feed__head h2 { margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.2rem); letter-spacing: .04em; }
+
+/* 文章区头部的出入场：和卡片、时间线同一时刻触发（.feed__inner 上挂 is-in），
+   滚出视口时同一条规则反向收回。
+   eyebrow 与大标题用 clip-path 从左到右揭示 —— 搜索栏已经搬到首屏（.hero__caption），
+   这里只剩两段文字，所以没有「clip 把命中区裁掉」的顾虑了。 */
+.feed__head .eyebrow,
+.feed__head h2 {
+  opacity: 0; clip-path: inset(0 100% 0 0); translate: -12px 0;
+  transition: opacity .32s var(--ease), clip-path .32s var(--ease), translate .32s var(--ease);
+}
+/* 入场：时长与延迟覆盖掉上面的「收回」参数，两段依次错开 */
+.feed__inner.is-in .feed__head .eyebrow,
+.feed__inner.is-in .feed__head h2 {
+  opacity: 1; clip-path: inset(0 0 0 0); translate: 0 0;
+  transition: opacity .78s cubic-bezier(.2, 1.02, .3, 1),
+              clip-path .78s cubic-bezier(.2, 1.02, .3, 1),
+              translate .78s cubic-bezier(.2, 1.02, .3, 1);
+}
+.feed__inner.is-in .feed__head .eyebrow { transition-delay: .06s; }
+.feed__inner.is-in .feed__head h2 { transition-delay: .18s; }
+/* 出场：和流星线一起退场，时长比入场长一档（is-leaving 由 initSplit 的状态机在
+   「线彻底退回 0」那一刻挂上；入场前先摘掉，所以回场仍走上面那套 .78s + 阶梯延迟）。 */
+.feed__inner.is-leaving .feed__head .eyebrow,
+.feed__inner.is-leaving .feed__head h2 {
+  transition: opacity .62s var(--ease), clip-path .62s var(--ease), translate .62s var(--ease);
+}
+
+.search {
+  display: flex; align-items: center; gap: 10px;
+  min-width: min(320px, 100%); padding: 9px 14px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--muted);
+  transition: border-color .25s, box-shadow .25s;
+}
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--surface-2); }
+/* 首屏搜索栏的外壳：脱离 .scene / .hero__caption，钉在 body 层。
+   两个理由：① 它要滚动时「钉在屏幕顶部」，留在 scene 里会被 z-index 更高的 .feed 整片压住；
+   ② 它不能跟着标题组一起淡没 —— 父级 opacity 是合成级的，子元素没有翻身余地。
+   定位不用 translate 居中（那样会跟 riseIn 的 translate 抢），改用算好的 left。 */
+.search-dock {
+  position: fixed; z-index: 9;
+  left: calc(50% - min(220px, 43vw));
+  top: var(--dockTop, 0px);
+  pointer-events: auto;
+  will-change: transform;
+  /* 滚动位移走 transform（合成层）：p=0 停在标题组末尾，p=1 停在离顶 24px；
+     --dockTop 由 js 在 resize 时量出来写回，别在这里写死像素。 */
+  transform: translate3d(0, calc(var(--p, 0) * (24px - var(--dockTop, 0px))), 0);
+}
+/* 搜索栏本体：随滚动变淡，但停在 65% 不完全消失 —— 滚到顶上后它是唯一的搜索入口 */
+.search--hero {
+  width: min(440px, 86vw);
+  /* 滚动透明度由 js 算出抛物线后写进 --dockOp（见 initParallax 的 dockOpacity）：
+     谷底提前到 p=.35，先快速变透明、再慢慢回升到半透明，避免滚到文章标题上时
+     搜索栏还实着挡字。没有这个变量（例如 js 没跑）就退回完全不透明。 */
+  opacity: var(--dockOp, 1);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+}
+.search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text); font-size: .9rem; }
+.search input::placeholder { color: var(--muted); opacity: .8; }
+.search kbd { padding: 1px 7px; border: 1px solid var(--line); border-radius: 6px; font-size: .72rem; font-family: inherit; }
+
+.card-stack { display: flex; flex-direction: column; }
+/* 首屏与搜索结果变化时按当前位置直接落位：临时掐掉过渡，摆好再放开 */
+.card-stack.no-anim .post { transition: none !important; }
+
+.post {
+  position: relative; overflow: hidden;
+  --enter-x: 0px; --enter-r: 0deg;
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface);
+  /*box-shadow: var(--shadow);*/
+  backdrop-filter: blur(12px);
+  transform: translate3d(var(--enter-x), 0, 0) rotate(var(--enter-r));
+  transform-origin: center center;
+  /* 位置/尺寸过渡必须挂在基类上：展开与收起都靠它，只在飞行态挂会导致收尾跳变。
+     入场/出场：翻转 .9s、透明度 .7s，两条曲线都不再沿用 --ease——
+     那条 cubic-bezier(.22,.8,.3,1) 在 350ms 就把翻转推到 93%、透明度推到 0.93，
+     把时长拉到 .9s 也只是拖长尾巴，中段看不出在动。改用近似匀速的对称曲线，
+     让翻转和淡入淡出铺满整段。 */
+  transition: transform .9s cubic-bezier(.4, 0, .25, 1), opacity .7s ease-in-out, box-shadow .45s var(--ease),
+              left .5s var(--ease), top .5s var(--ease), width .5s var(--ease),
+              height .5s var(--ease), border-radius .5s var(--ease);
+}
+/* 堆叠：后一张向前一张底部压叠，形成一摞纸片 */
+.post + .post { margin-top: clamp(-26px, -3.4vw, -38px); }
+/* 草稿 "more edge"：卡片顶缘保留一层高光，像一摞纸的边缘 */
+.post::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: .5;
+}
+.post:nth-child(n+2)::before { opacity: .3; }
+.post.is-hidden { display: none; }
+
+/* 滚动交错入场：未进视口时藏在左/右侧外并翻转 180°；.is-inview 翻回正位。
+   过渡正反播放——滚入翻回淡入卡片堆，逆滚动滚出时逆播放翻转离场。
+   方向按奇偶左右交替；入场偏移走独立变量，不抢占 hover 的 3D tilt 变换。 */
+.post { opacity: 0; }
+/* 左卡：屏外左侧顺时针翻 180°，入场翻回 0（视觉逆时针旋入），绕左上角；
+   右卡：屏外右侧镜像逆时针翻 180°，入场翻回 0（视觉顺时针旋入），绕右上角。 */
+.post:nth-child(odd)  { --enter-x: -120px; --enter-r: 180deg;  transform-origin: top left; }
+.post:nth-child(even) { --enter-x:  120px; --enter-r: -180deg; transform-origin: top right; }
+.post.is-inview { opacity: 1; --enter-x: 0px; --enter-r: 0deg; }
+
+.post__head {
+  display: flex; align-items: center; gap: 16px;
+  padding: var(--pad) var(--pad) calc(var(--pad) * .6);
+  background: linear-gradient(to bottom, var(--surface-2), transparent);
+}
+/* 内容层的淡入淡出：展开落位后淡入，收起落回槽位后淡入 */
+.post__head, .post__body { transition: opacity .2s var(--ease); }
+.post__thumb { width: 60px; height: 60px; flex: none; object-fit: cover; border-radius: 15px; border: 1px solid var(--line); }
+.post__heading { min-width: 0; }
+.post__heading h3 { margin: 0 0 3px; font-size: clamp(1.02rem, 2vw, 1.2rem); letter-spacing: .01em; transition: color .2s var(--ease); }
+.post__heading h3 a { text-decoration: none; }
+.post__meta { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; color: var(--muted); font-size: .8rem; }
+/* 列表卡不再挂「展开」按钮：整张卡就是热区（点卡片 / 点标题都等于展开），
+   再放一颗箭头只是重复入口，还白占标题右侧的位置 —— 用户明确要求删掉。
+   这颗按钮于是只剩「全屏阅读态退出」一个用途，基类直接不渲染；
+   它以前靠 .icon-btn 借 38px 圆形外壳，那是两个互不相干的类混在一起写，
+   现在尺寸/边框/圆角都由 .post__toggle 自己持有（见下面的 .post.is-full 段）。 */
+.post__toggle { display: none; }
+.post__toggle .icon { width: 15px; height: 15px; }
+
+.post__body {
+  display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: clamp(16px, 2.6vw, 26px);
+  padding: 0 var(--pad) var(--pad);
+}
+.post__figure img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r-md); border: 1px solid var(--line); }
+.post__text { min-width: 0; }
+.post__excerpt { margin: 2px 0 0; line-height: 1.8; font-size: .94rem; }
+
+/* 摘要之外的细节只在全屏展开后出现（原 hover 展开已移除） */
+.post__detail, .post__more {
+  max-height: 0; opacity: 0; overflow: hidden;
+  color: var(--muted); font-size: .9rem; line-height: 1.8;
+  transition: max-height .45s var(--ease), opacity .35s var(--ease), margin .35s var(--ease);
+}
+.post__detail { margin: 0; }
+.post__more { margin: 0; padding-top: 0; border-top: 1px dashed transparent; }
+.post__more p { margin: 0; }
+
+.post__tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+.post__tags span {
+  padding: 3px 11px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-2); color: var(--muted); font-size: .74rem;
+}
+
+.feed__empty { padding: 56px 0; text-align: center; color: var(--muted); }
+
+/* ---------- 全屏文章态：背景 .scene__sky 保留，其余前景元素淡出 ----------
+   注意选择器里的 :not(.is-collapsing)：收起动画一开始 body 就打上 is-collapsing，
+   这批隐藏规则要当场失效（元素用各自的 .3s 过渡淡回来），让用户看着卡片缩回槽位时
+   背景、标题组、时间线、其它卡片都已经在。早期版本是等 FLIGHT 结束摘掉 is-full 才恢复，
+   整段收起过程背后是空天空，收起显得像「凭空掉下来一张卡」。 */
+body.is-full:not(.is-collapsing) .hero__caption,
+body.is-full:not(.is-collapsing) .badge,
+body.is-full:not(.is-collapsing) .scroll-pill,
+body.is-full:not(.is-collapsing) .feed__head,
+body.is-full:not(.is-collapsing) .appsBlock,
+body.is-full:not(.is-collapsing) .footer,
+body.is-full:not(.is-collapsing) .fab,
+body.is-full:not(.is-collapsing) .post:not(.is-full):not(.is-flying) {
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .3s var(--ease), visibility .3s var(--ease);
+}
+/* 全屏阅读态连搜索栏一起收走。这里只认 visibility：搜索栏的 opacity 被入场 animation
+   的 both 锁着，写 opacity: 0 会被覆盖，反而看不见任何变化（踩过这个坑）。 */
+body.is-full:not(.is-collapsing) .search-dock { visibility: hidden; pointer-events: none; }
+
+/* 卡片列底部的渐隐带（.split__cards::after）随分页一起删掉了：列不再滚动，
+   这条 sticky 暗带没了意义；它当年会在全屏阅读时画到正文上（用户 DevTools 实测 226.31 × 30），
+   现在连根都没了，也就不需要这条抵消规则。 */
+
+/* ---------- 收起时的形状衔接 ----------
+   飞行态为了通铺，把圆角压成 0、阴影去掉、transform 也压成 none。收起时若不恢复，
+   卡片会一路以「直角 + 无影 + 正放」的形态缩到槽位，落位后才补齐这三样 ——
+   也就是用户看到的「形状对不上」。这里让它们与几何同一条 .5s 曲线一起收，
+   落位那一刻卡片已经是首页那张卡的样子（圆角 28、原阴影、斜卡姿态），摘掉 is-flying 时零跳变。
+   transform 用的是 .post.is-inview 的同一套值（--tilt / --ryEnd 由 .split 持有），
+   内联 transform 必须在 js 里清掉，否则 open 时写死的 none 会盖住这条。 */
+body.is-collapsing .post.is-flying {
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  transform: translate3d(0, 0, 0) skewY(calc(var(--tilt) * -1)) rotateY(var(--ryEnd));
+  /* 姿态和几何必须同拍收完：left/top/width/height 是 .5s，而基类的 transform 是 .8s。
+     不同步的话 500ms 时矩形已经回到槽位、卡片却还差最后一段旋转，落位帧把 transform
+     硬切到终态就会看到那一下「顿」——投影包围盒在这 2~3px 里对不上。
+     列表与 .post 基类一一对应，只把 transform 的时长压到 .5s。 */
+  transition: transform .5s var(--ease), opacity .5s var(--ease),
+              box-shadow .45s var(--ease),
+              left .5s var(--ease), top .5s var(--ease), width .5s var(--ease),
+              height .5s var(--ease), border-radius .5s var(--ease),
+              border-color .3s var(--ease);
+}
+
+/* 收起时这批元素要「淡」回来：隐藏规则（含它自带的 transition）一失效，opacity 就直接
+   跳到基类值，观感是啪地出现。这里补一条同样的 .3s，让它们在卡片缩回的同时渐显。 */
+body.is-full.is-collapsing .hero__caption,
+body.is-full.is-collapsing .badge,
+body.is-full.is-collapsing .scroll-pill,
+body.is-full.is-collapsing .feed__head,
+body.is-full.is-collapsing .appsBlock,
+body.is-full.is-collapsing .footer,
+body.is-full.is-collapsing .fab,
+body.is-full.is-collapsing .post:not(.is-full):not(.is-flying) {
+  transition: opacity .3s var(--ease), visibility .3s var(--ease);
+}
+
+/* ---------- 展开飞行态 ----------
+   JS 先在同一次任务里把卡片 fixed 钉在它原来的框上（不落帧，所以看不到位置突变），
+   然后把 left/top 收到 0、把 width/height 同时撑到视口——左上角归零与两个方向
+   的扩展走同一条过渡，边界是连续长出去的，而不是先跳位再放大。 */
+.post.is-flying {
+  position: fixed; z-index: 100; margin: 0;
+  transform: none;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+  /* 全屏尺寸下不再逐帧做整屏模糊，飞行更稳 */
+  backdrop-filter: none;
+  will-change: left, top, width, height;
+}
+/* 内容层在飞行末段淡出：落位瞬间切换阅读布局（单列 / 吸顶标题）时不会看到文字重排，
+   切换完再淡入。飞行主体阶段内容仍然可见，卡片不会变成一块空玻璃。 */
+.post.is-flying .post__head,
+.post.is-flying .post__body { transition: opacity .16s linear; }
+body.is-expanding .post.is-flying .post__head,
+body.is-expanding .post.is-flying .post__body { opacity: 0; }
+/* 收起时立即隐藏内容（不等淡出），缩回过程中不露出重排的文字 */
+body.is-collapsing .post.is-flying .post__head,
+body.is-collapsing .post.is-flying .post__body { opacity: 0; transition: none; }
+
+/* 收起末段（几何只剩最后一小截）把列表卡的内容淡进来：落位那一刻卡片里已经
+   有标题和摘要，而不是一张空白纸再等 .2s 才浮现。在 .5s 的曲线里最后一截
+   位移已经很小、卡片也接近槽位尺寸，此时交叉淡入不会被看成「文字乱跳」。
+   .is-settling 由 blog.js 在 FLIGHT-140ms 挂上，finish 时和 is-collapsing 一起摘。
+   这里要压过上面那条 opacity:0，所以多带一个 .is-settling。 */
+body.is-collapsing.is-settling .post.is-flying .post__head,
+body.is-collapsing.is-settling .post.is-flying .post__body {
+  opacity: 1; transition: opacity .2s var(--ease);
+}
+
+/* 卡片脱离文档流时顶住原槽位：兄弟卡片保持原位，收起时才能准确落回 */
+.post-ghost { flex: none; pointer-events: none; }
+
+/* ---------- 全屏阅读布局 ---------- */
+.post.is-full {
+  z-index: 100;
+  overflow-y: auto; overflow-x: hidden;
+  /* 原生条已隐藏（见 base.css「自绘覆盖式」段）：这里不再预留 gutter，
+     正文溢出时不会横向抽动；滚动滑块由 js/scroll-rail.js 统一画在视口右缘。 */
+  scrollbar-gutter: auto;
+}
+/* 标题行 = 「目录开关 + 标题/日期 + 退出」的单行栏，高度压到原来的一半左右
+   （原 89px ≈ padding 18/11 + 60px 缩略图；现在 44px = padding 9/9 + 单行 26）。
+   三件事一起改的原因：缩略图（60px）是高度的主要来源，砍掉它才有「半高」；
+   半高之后只剩一行，所以标题与日期同排；整行也不再是点击区 ——
+   退出只认最右端那颗 .post__toggle，否则点目录开关/选正文都会误触退出。 */
+.post.is-full .post__head {
+  position: sticky; top: 0; z-index: 2;
+  gap: 8px;
+  /* 高度直接钉死 44（原来 89 ≈ padding 18/11 + 60 缩略图），不靠内容撑 ——
+     标题长短、日期长短短都会让「半高」上下浮动，吸顶栏高度必须是个常数：
+     reader.css 的 scroll-margin-top 与 reader.js 的 HEAD_OFFSET 都按它算 */
+  height: 44px;
+  padding: 0 10px 0 6px;
+  background: var(--surface-2);
+  /* 折叠照导航栏：下滚折出卡片上沿、上滚滑回。卡片自身 overflow:hidden，
+     折叠后这一条被裁在边界外，正文可以直接顶到卡片顶部，不再被它压住 */
+  transition: transform .35s var(--ease), opacity .2s var(--ease);
+  will-change: transform;
+}
+.post.is-full.is-head-collapsed .post__head { transform: translateY(-100%); }
+/* 全屏不再渲染封面缩略图：高度减半的主要来源就是它（列表卡上的那条仍保留） */
+.post.is-full .post__thumb { display: none; }
+/* 标题与日期同一行：半高的栏只够一行，日期跟在标题后、放不下就自己截断 */
+.post.is-full .post__heading {
+  display: flex; align-items: baseline; gap: 10px; min-width: 0;
+}
+.post.is-full .post__heading h3 {
+  margin: 0; min-width: 0; font-size: .98rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.post.is-full .post__meta {
+  flex: 0 1 auto; min-width: 0;
+  /* 基类 .post__meta 是 flex-wrap: wrap，窄栏里日期会在「· 教程 ·」处折成两行，
+     把半高的标题栏又顶回 62px。这里强制单行，放不下就整块省略 */
+  flex-wrap: nowrap;
+  font-size: .72rem; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+/* 目录开关：钉在标题栏最左端，全站唯一的目录入口（侧栏里那颗「收起」已删，
+   窄屏唤出目录的 .toc-fab 也删了）。按钮由 reader.js 注入，只出现在有 md 的文章上。 */
+.post__toc {
+  flex: none; display: none;
+  width: 30px; height: 30px; padding: 0;
+  align-items: center; justify-content: center;
+  border: 1px solid var(--line); border-radius: 9px;
+  background: var(--surface); color: var(--muted);
+  cursor: pointer;
+  transition: color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+}
+.post.is-full .post__toc { display: flex; }
+/* 退出按钮：全屏标题栏最右端，30×30 圆角 9 —— 与左边那颗目录开关同一套尺寸，
+   一个在头、一个在尾，视觉上成对。它是阅读态唯一的退出口（标题行本身不再可点）。 */
+.post.is-full .post__toggle {
+  display: flex; align-items: center; justify-content: center;
+  flex: none; margin-left: auto;
+  width: 30px; height: 30px; padding: 0;
+  border: 1px solid var(--line); border-radius: 9px;
+  background: var(--surface); color: var(--muted);
+  cursor: pointer;
+  transition: color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+}
+.post.is-full .post__toggle:hover { color: var(--accent); border-color: var(--accent); }
+/* 只 hover 时着色。原来写的是 [aria-expanded="true"] 也高亮，
+   而它默认就是展开的，等于这颗按钮常亮成 accent 色（太吵） */
+.post__toc:hover { color: var(--accent); border-color: var(--accent); }
+.post__toc[aria-expanded="false"] { color: var(--muted); opacity: .7; }
+.post__toc .icon { width: 15px; height: 15px; }
+.post.is-full .post__body {
+  grid-template-columns: 1fr;
+  max-width: 760px; margin: 0 auto; padding-bottom: 48px;
+}
+.post.is-full .post__figure img { aspect-ratio: 16 / 9; max-height: 340px; }
+.post.is-full .post__detail,
+.post.is-full .post__more { max-height: none; opacity: 1; margin-top: 12px; }
+.post.is-full .post__more { padding-top: 14px; border-top-color: var(--line); }
+
+/* ---------- 页脚 / 移动导航 ---------- */
+.footer {
+  position: relative; z-index: 2;
+  /* 去掉实底背景，与 hero 共用天空背景 */
+  border-top: 1px solid var(--line);
+  color: var(--muted); font-size: .8rem;
+}
+.footer__inner {
+  display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  max-width: 980px; margin: 0 auto; padding: 26px 24px 110px;
+}

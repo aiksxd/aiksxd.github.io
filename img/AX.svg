@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 12 200 168" role="img" aria-labelledby="axTitle">
+  <title id="axTitle">AX</title>
+  <!-- 手写连笔 AX：去掉固定像素尺寸与纯黑描边，改用博客深蓝，圆头笔画贴合圆润的封面风格 -->
+  <g fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="#26355c" d="M32.5 118.8c-.08.3 2-7 2-8 3-8 7-15 10-23 6-13 22-57 43-48 19 8 37 62 13 78-19 10-42-50 12-53 35-2 83 58 95 55"/>
+    <path stroke="#4a5f94" d="M183 26c3.6 22-97 154-119 138"/>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+/* ==========================================================================
+   样式入口：只做拼装，不再承载具体规则。
+   顺序 = 原来的层叠顺序：base → scene → articles → responsive → split → motion。
+   改某一层时不会再误伤另一层；动画统一收在 motion.css。
+   ========================================================================== */
+
+@import url("base.css?v=5024f973");
+@import url("scene.css?v=fc7cc1c3");
+@import url("articles.css?v=9ff1b383");
+@import url("responsive.css?v=b769ded8");
+@import url("split.css?v=0a22b48c");
+@import url("motion.css?v=74262c01");

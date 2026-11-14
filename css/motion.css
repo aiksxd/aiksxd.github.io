@@ -1,0 +1,91 @@
+/* 动画层：所有 @keyframes 集中在这里；组件层只保留 animation 声明。
+   放在最后加载：下面的后台标签兜底要能覆盖前面组件的 animation。 */
+
+@keyframes galaxyDrift { to { transform: rotate(-16deg) translate3d(2%, 1.5%, 0); } }@keyframes twinkleGroup { from { opacity: .35; } to { opacity: 1; } }@keyframes seaDrift {
+  from { transform: translate3d(-8px, 3px, 0); }
+  to   { transform: translate3d(10px, -5px, 0); }
+}@keyframes seaDriftMirrored {
+  from { transform: scaleX(-1) translate3d(-8px, 3px, 0); }
+  to   { transform: scaleX(-1) translate3d(10px, -5px, 0); }
+}@keyframes heroFadeIn { from { opacity: 0 } to { opacity: var(--heroFade, 1) } }@keyframes riseIn {
+  from { opacity: 0; translate: 0 26px; }
+  to   { opacity: 1; translate: 0 0; }
+}@keyframes spin { to { transform: rotate(360deg); } }@keyframes halo { from { opacity: .94; } to { opacity: 1; } }@keyframes axDraw {
+  from { stroke-dashoffset: var(--len, 800px); }
+  to   { stroke-dashoffset: 0; }
+}@keyframes pillFloat {
+  0%, 100% { transform: translateY(0); opacity: 0.8;}
+  40%      { transform: translateY(8px); opacity: 0.6;}
+  90%      { transform: translateY(-2px); opacity: 0.8;}
+}
+
+/* ---------- 常驻慢速动画的阶梯采样（低功耗档） ----------
+   为什么是「降采样」而不是「关动画」：整帧成本是全有全无的 —— 只要有一个合成动画按
+   fps 连续采样，整张天空每帧都要按 z 序重混一遍；全部阶梯化后，只在台阶边界产帧。
+   每层的采样率按「这一步看得出来吗」定，而不是一刀切：
+     galaxyDrift   26s 走 3°       → 60 步  = 0.05°/步      （2.3Hz）
+     twinkleGroup  1.9~4.3s .35→1  → 11/16/21/26 步 ≈6Hz     （0.059 opacity/步）
+     seaDrift      13s/15s 18px    → 52/60 步 = 0.35px/步    （4Hz）
+     halo          7s .94→1        → 20 步  = 0.003/步      （2.9Hz）
+     pillFloat     3s 8px          → 20 步  = 0.4px/步      （6.7Hz）
+     spin（日间）  90s 360°        → 1800 步 = 0.2°/步       （20Hz）
+
+   为什么星点可以比云低得多：星点是 1~2px 的小点在 .35→1 之间呼吸，6Hz 时每步只差 6% 亮度，
+   而且四组相位错开、彼此抵消，肉眼等价于连续；云海是 5.6M 设备像素的 SVG 层，每一步位移
+   都要整层重新光栅化 —— 提频是实打实的成本，降频会直接变成「跳帧」。所以两者反着调：
+   星点往低了压（12Hz → 6Hz，省得最多），云海往高了抬（2Hz → 4Hz，0.35px/步，几乎与连续无异）。
+
+   实测（1440×900@1.5，Intel 核显，交替开关各 6~8 轮，取中位数）：
+     星 12Hz + 云 2Hz（上一版）      底部 21.0、顶部 27.9
+     星  6Hz + 云 4Hz（现版本）      底部 13.7、顶部 17.6   （−7.3 / −10.3）
+     星  8Hz + 云 8Hz（顺带测过）    底部 21.9、顶部 24.1   —— 云提到 8Hz 反而更贵，别这么调
+     最初未阶梯化                   底部 56.3、顶部 ~76
+
+   像素回归（同一会话内切档、暂停动画 seek 到同一 currentTime 再截图比对，6 帧）：
+     底部 平均差 0.008~0.012/255（单通道最大 10）；顶部 0.06~0.073/255（最大 52，>6 的像素 0.15%）。
+     差异全部是云边缘 1px 轮廓（两个台阶网格的 0.35px 相位差）与少数星点亮度台阶，
+     属于「同一形状在两个采样时刻」的亚像素差，运行中不可见。
+
+   ⚠ 代价：循环内的速度分布从 ease-in-out 的「两端慢、中间快」变成匀速台阶，折返处不再减速。
+   要回退到标准档，把这几条改回：
+     .galaxy steps(120) / .star-group steps(60) / .cloud-bank__sea steps(40)
+     .badge__disc steps(40) / .scroll-pill__tri steps(30) / 日间 spin 不写 timing
+   **不要**给 axDraw / riseIn / heroFadeIn 这类一次性编排加 steps —— 那些是要被看见的。 */
+.galaxy { animation-timing-function: steps(60, end); }
+/* 星点组按 duration 归一（--d = 1.9 / 2.7 / 3.5 / 4.3，见 blog.js 的 makeStarGroups），
+   让 8 张全屏层都停在 ≈6Hz，而不是慢组只剩 4Hz 出现顿感。 */
+.star-group:nth-child(1) { animation-timing-function: steps(11, end); }
+.star-group:nth-child(2) { animation-timing-function: steps(16, end); }
+.star-group:nth-child(3) { animation-timing-function: steps(21, end); }
+.star-group:nth-child(4) { animation-timing-function: steps(26, end); }
+/* 云海左右两块周期不同（13s / 15s），按时间归一才对得上同样的 4Hz。
+   这里必须分开写：同一个 .cloud-bank__sea 选择器给不出两套步数。 */
+.cloud-bank--left  .cloud-bank__sea { animation-timing-function: steps(52, end); }
+.cloud-bank--right .cloud-bank__sea { animation-timing-function: steps(60, end); }
+.badge__disc { animation-timing-function: steps(20, end); }
+.scroll-pill__tri { animation-timing-function: steps(20, end); }
+html[data-theme="day"] .badge::before { animation-timing-function: steps(1800, end); }
+
+/* ---------- 后台标签 / 开场被跳过时的兜底 ----------
+   浏览器在 document.hidden 时会把 CSS 动画冻在 currentTime=0。开场序列用的是
+   animation-fill-mode: both，冻结在 from 帧就等于标题 / 云海 / 日月永远不可见。
+   js 在初始化时若发现页面不可见，会给 <html> 挂 .no-intro 并撤掉 data-intro，
+   这里把开场按住的东西直接写成终态；页面第一次可见时 js 再摘掉 .no-intro 重放开场。 */
+html.no-intro .hero__caption,
+html.no-intro .hero__caption > .badge__avatar,
+html.no-intro .hero__caption > h1,
+html.no-intro .hero__caption > .tagline,
+html.no-intro .hero__caption > .hero__socials,
+html.no-intro .search-dock {
+  animation: none !important;
+  translate: none !important;
+}
+html.no-intro .hero__caption { opacity: var(--heroFade, 1) !important; }
+html.no-intro .hero__caption > * { opacity: 1 !important; }
+html.no-intro .cloud-bank__intro,
+html.no-intro .badge__stage {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+html.no-intro .ax-ink { opacity: 1 !important; }

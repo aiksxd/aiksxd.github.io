@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#05080f"/>
+      <stop offset=".45" stop-color="#0a1024"/>
+      <stop offset=".72" stop-color="#151232"/>
+      <stop offset="1" stop-color="#221b44"/>
+    </linearGradient>
+    <radialGradient id="moon" cx=".36" cy=".28" r=".96">
+      <stop offset="0" stop-color="#fbfdff"/>
+      <stop offset=".62" stop-color="#eef4ff"/>
+      <stop offset="1" stop-color="#b9c6e6"/>
+    </radialGradient>
+    <radialGradient id="moonShade" cx=".72" cy=".78" r=".6">
+      <stop offset="0" stop-color="#28506b" stop-opacity="0"/>
+      <stop offset=".55" stop-color="#2b3a68" stop-opacity=".04"/>
+      <stop offset="1" stop-color="#1b2440" stop-opacity=".17"/>
+    </radialGradient>
+    <radialGradient id="halo" cx=".5" cy=".5" r=".5">
+      <stop offset=".42" stop-color="#b9c6ff" stop-opacity="0"/>
+      <stop offset=".68" stop-color="#b9c6ff" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#b9c6ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c2c6d6" stop-opacity=".36"/>
+      <stop offset="1" stop-color="#c2c6d6" stop-opacity=".62"/>
+    </linearGradient>
+    <linearGradient id="cMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d8dbe8" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#d8dbe8" stop-opacity=".78"/>
+    </linearGradient>
+    <linearGradient id="cNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f6fd" stop-opacity=".64"/>
+      <stop offset="1" stop-color="#f4f6fd" stop-opacity=".9"/>
+    </linearGradient>
+    <filter id="soft" x="-12%" y="-12%" width="124%" height="124%">
+      <feGaussianBlur stdDeviation="1"/>
+    </filter>
+  </defs>
+  <rect width="120" height="120" rx="18" fill="url(#sky)"/>
+  <g fill="#dbe6ff">
+    <circle cx="14" cy="20" r="1.5" opacity=".48"/>
+    <circle cx="31" cy="11" r="1" opacity=".3"/>
+    <circle cx="104" cy="15" r="1.2" opacity=".4"/>
+    <circle cx="113" cy="42" r="1" opacity=".26"/>
+    <circle cx="7" cy="44" r="1.1" opacity=".26"/>
+    <circle cx="20" cy="62" r=".9" opacity=".2"/>
+  </g>
+  <circle cx="60" cy="55" r="59" fill="url(#halo)"/>
+  <circle cx="60" cy="55" r="30" fill="url(#moon)"/>
+  <circle cx="60" cy="55" r="30" fill="url(#moonShade)"/>
+  <g fill="#5a6c9b" opacity=".17">
+    <circle cx="45" cy="62.2" r="7.2"/>
+    <circle cx="76.8" cy="46.6" r="4.8"/>
+    <circle cx="75.6" cy="65.8" r="2.4"/>
+  </g>
+  <g filter="url(#soft)">
+    <g fill="url(#cFar)">
+      <circle cx="-12" cy="106" r="34"/>
+      <circle cx="16" cy="97" r="26"/>
+      <circle cx="46" cy="103" r="24"/>
+      <circle cx="78" cy="99" r="26"/>
+      <circle cx="106" cy="103" r="30"/>
+      <circle cx="132" cy="101" r="30"/>
+    </g>
+    <g fill="url(#cMid)">
+      <circle cx="2" cy="116" r="36"/>
+      <circle cx="36" cy="108" r="28"/>
+      <circle cx="68" cy="112" r="28"/>
+      <circle cx="100" cy="108" r="28"/>
+      <circle cx="128" cy="116" r="34"/>
+    </g>
+    <g fill="url(#cNear)">
+      <circle cx="14" cy="130" r="34"/>
+      <circle cx="50" cy="124" r="30"/>
+      <circle cx="86" cy="128" r="28"/>
+      <circle cx="120" cy="130" r="34"/>
+    </g>
+  </g>
+</svg>

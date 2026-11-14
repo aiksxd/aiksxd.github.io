@@ -1,0 +1,493 @@
+/* 场景层：固定英雄场景。天空底色、银河、星尘、云海、日月、标题组、AX、联系方式。
+   这一层只负责“世界长什么样”，不承载文章区 / 卡片 / 时间线。 */
+/* ---------- 固定英雄场景 ----------
+   整组天空 / 日月 / 云朵被钉在视窗（position: fixed，z-index:0），
+   博客内容（.feed / .footer）去掉实底背景、以更高 z-index 透出同一片天空，
+   与 hero 共用一个背景；hero 标题文字随滚动淡出，月亮随 --p 上移后融入背景。 */
+.scene {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden;
+  /* 把 --p 的样式失效范围锁在场景子树内：滚动时不再波及 main / 文章卡片 */
+  contain: layout paint;
+  /* --p 只写在 #scene 上（见 js/blog.js），不再写 documentElement */
+  --p: 0;
+  /* 搜索栏高度（实测 44px）抽成令牌：日月上移半格、标题组上移一整格都引用它，
+     以后改搜索栏的 padding/字号只改这里，三处位移会一起跟着走。 */
+  --searchH: 44px;
+  /* 标题组距视口底部的基准距离。单独抽出来是因为 js 的 layoutSearchDock 也要读它
+     （搜索栏挂在 .scene 之外，拿不到这里的变量，只能读同一个值算落点）；
+     手机端在断点里覆盖它，标题组与搜索栏会一起上移，不会各走各的。 */
+  --capBottom: clamp(72px, 12vh, 150px);
+}
+/* 占位：撑开首屏，让固定场景先完整呈现，博客随后覆盖 */
+.cover {
+  position: relative; z-index: -1;
+  min-height: 100vh; min-height: 100dvh;
+}
+.scene__sky { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.scene__sky::after {
+  content: ""; position: absolute; inset: 0; z-index: 9;
+  background: linear-gradient(to bottom, transparent 86%, var(--bg) 100%);
+}
+
+/* 天空底色：底层是首屏色（夜=深黑 / 昼=浅蓝晴天），
+   上层 .sky__base--shift 是滚动过程色（夜=紫色宇宙 / 昼=落日黄昏），随 --p 淡入叠上去。 */
+.sky__base {
+  position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(to bottom,
+    var(--sky-top-0) 0%, var(--sky-mid-0) 42%, var(--sky-low-0) 78%, var(--bg) 100%);
+  transition: background .6s var(--ease);
+}
+.sky__base--shift {
+  background: linear-gradient(to bottom,
+    var(--sky-top) 0%, var(--sky-mid) 42%, var(--sky-low) 78%, var(--bg) 100%);
+  /* opacity 直接跟 --p，不加 transition：否则过程色会滞后于滚动行程 */
+  opacity: var(--p, 0);
+}
+
+/* 辉光：base 是中性天光（微弱随滚动增亮），shift 是染色辉光（紫/橙），
+   中段短暂显现，末端与日月一起完全淡出。 */
+.sky__glow {
+  position: absolute; left: 50%; z-index: 1;
+  /* 下沉改为合成的 translate，top 保持定值 → 滚动不再触发布局 */
+  top: 34%;
+  width: min(124vw, 1320px); aspect-ratio: 1;
+  border-radius: 50%;
+  /* 径向渐变本身就是柔边，blur(34px) 是重复劳动：
+     1320px 大层带 blur 时每次 scale/opacity 变化都要重新光栅化。
+     实测删除后像素平均差 0.05/255，帧率 +6.5fps。 */
+  transform: translate3d(-50%, calc(-50% + 13dvh * var(--p, 0)), 0)
+             scale(calc(.88 + var(--p, 0) * .18));
+  will-change: transform, opacity;
+}
+.sky__glow--base {
+  background: radial-gradient(circle, var(--glow-base) 0%, transparent 66%);
+  /* 只做微弱增亮，不放大到满幅 */
+  opacity: calc(.55 + var(--p, 0) * .15);
+}
+.sky__glow--shift {
+  background: radial-gradient(circle, var(--glow-shift) 0%, transparent 70%);
+  /* 抛物线包络中段显现、两端归零；峰值系数调低，辉光更收敛 */
+  opacity: calc(var(--p, 0) * (1 - var(--p, 0)) * 1.1);
+}
+
+/* 夜间银河：与星尘同向、同高度的斜带（左下→右上），滚动时显现。
+   带心落在天空 55~60% 高度，滚到行程末端仍在视口内。 */
+.galaxy {
+  position: absolute; left: -30%; top: 4%; z-index: 2;
+  width: 160%; height: 92%;
+  background:
+    radial-gradient(ellipse 62% 3%  at 50% 58%, rgba(255, 250, 255, .50), transparent 78%),
+    radial-gradient(ellipse 70% 9%  at 50% 58%, rgba(214, 184, 255, .72), transparent 72%),
+    radial-gradient(ellipse 58% 15% at 46% 61%, rgba(134, 168, 255, .50), transparent 76%),
+    radial-gradient(ellipse 42% 7%  at 60% 52%, rgba(255, 166, 220, .46), transparent 78%),
+    radial-gradient(ellipse 76% 26% at 50% 58%, rgba(112, 72, 190, .34), transparent 82%);
+  /* 不用 mix-blend-mode：与 .fab / 侧栏的 backdrop-filter 合成会产生放射状光栅伪影 */
+  /* 五层椭圆径向渐变已足够柔，blur(12px) 让斜带旋转时每帧重新光栅化 */
+  transform: rotate(-19deg);
+  opacity: calc((.12 + var(--p, 0) * .88) * var(--galaxy-on, 1));
+  animation: galaxyDrift 26s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+}
+
+
+.galaxy-stars {
+  position: absolute; inset: 0; z-index: 3;
+  opacity: calc(.3 + var(--p, 0) * .7);
+}
+/* 星点合批：222 个逐元素 opacity 动画 → 4 组容器 opacity 动画。
+   每颗星仍保留自己的静态亮度 --o，组动画 .35→1 与之相乘，
+   亮度区间与原逐星 twinkle 完全一致，只是相位按 4 组错开。 */
+.star-group {
+  position: absolute; inset: 0;
+  animation: twinkleGroup var(--d) ease-in-out var(--delay) infinite alternate;
+}
+
+.galaxy-star {
+  position: absolute; border-radius: 50%;
+  width: var(--s); height: var(--s);
+  background: var(--star); opacity: var(--o);
+  box-shadow: 0 0 5px 1px rgba(188, 160, 255, .55);
+}
+
+.stars { position: absolute; inset: 0; z-index: 3; }
+.star {
+  position: absolute; border-radius: 50%;
+  width: var(--s); height: var(--s);
+  background: var(--star); opacity: var(--o);
+}
+
+/* 日间：关掉星点、银河星尘与银河带（落日白天不需要夜空元素） */
+html[data-theme="day"] .galaxy { --galaxy-on: 0; }
+html[data-theme="day"] .stars,
+html[data-theme="day"] .galaxy-stars { display: none; }
+
+/* 地平雾：夜间紫辉漫上来，日间落日橙余晖铺开；随滚动增厚 */
+.sky__haze {
+  position: absolute; left: -10%; right: -10%; bottom: -6%; z-index: 4;
+  /* 固定尺寸 + scaleY 复现 38%→60% 的增厚：height 动画改为纯合成变换。
+     transform-origin 在底边，缩放后的物理高度与原 height 插值完全相同。 */
+  height: 60%;
+  background: linear-gradient(to bottom, var(--haze-top), var(--haze-low) 76%, var(--bg));
+  opacity: calc(.32 + var(--p, 0) * .55);
+  /* 线性渐变无硬边，blur(18px) 省略（像素平均差 0.031/255） */
+  transform: scaleY(calc(.6333 + var(--p, 0) * .3667));
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+
+/* 参考图：左右各一片完整云海（不再用 12 朵散云）。
+   外层 .cloud-bank 承担滚动滑出，内层 svg 承担常驻漂浮，transform 互不覆盖。 */
+.cloud-bank {
+  position: absolute; bottom: 0; height: 60vw; width: 50vw; will-change: transform;
+}
+.cloud-bank--left  { left:  -2vw; }
+.cloud-bank--right { right: -2vw; }
+.cloud-bank__sea {
+  display: block; width: 100%; height: 100%;
+  /* 原 brightness(1→1.1) 与 opacity(1→.9) 近似互相抵消，净亮度几乎不变。
+     去掉这组逐帧变化的 filter 后固定 opacity，画面等效但不再重绘整张大 SVG。 */
+  opacity: 1;
+  animation: seaDrift var(--dur) ease-in-out var(--delay) infinite alternate;
+  /* CSS transform 动画由浏览器自动提升，无需常驻 will-change 占显存 */
+}
+/* night / day 两套云海几何并列，按主题显隐 */
+.cloud-bank__sea.sea-day { display: none; }
+html[data-theme="day"] .cloud-bank__sea.sea-night { display: none; }
+html[data-theme="day"] .cloud-bank__sea.sea-day { display: block; }
+.cloud-bank--left  .cloud-bank__sea { --dur: 13s; --delay: -2s; }
+.cloud-bank--right .cloud-bank__sea { --dur: 15s; --delay: -7s; transform: scaleX(-1); }
+.cloud-bank--right .cloud-bank__sea { animation-name: seaDriftMirrored; }
+
+
+
+/* 英雄文案层：钉在视窗，标题/胶囊落在圆盘下方，随博客上滑被覆盖 */
+.scene__hero {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.hero__caption {
+  position: absolute; left: 50%;
+  /* 在先前的「上移一个搜索栏高度」之上，再抬半个搜索栏高度（用户要求文字整体再高半格）。
+     基准值 --capBottom 提到 .scene 上：手机断点只改那一个数，js 算搜索栏落点时读的是同一个数。 */
+  bottom: calc(var(--capBottom, clamp(72px, 12vh, 150px)) + var(--searchH, 44px) * .5);
+  transform: translateX(-50%) translateY(calc(var(--p, 0) * -80px));
+  display: grid; justify-items: center; gap: 2px; text-align: center;
+  pointer-events: auto;
+  /* 底部留出搜索栏的位置：搜索栏已经搬出标题组（要单独钉在顶部、不被整组淡出带走），
+     这里用 padding 把它原来占的高度补回来，文字位置才不会被它一走就整体下沉。 */
+  padding-bottom: calc(var(--searchH, 44px) + 6px);
+  /* 与博客共用背景后，标题作为前景随滚动淡出。
+     必须**彻底**到 0：留给它 5% 的话，滚到文章区还能透出一层字影叠在卡片上。
+     ⚠ 这里只读 js 写的 --heroFade，公式本身还是「离开顶部越远越淡」（双向）；
+     「上滚不再补回」由 js 的冻结标记负责 —— 见 8.4：一旦淡到 0 就锁死，等回顶重播再整体淡入。 */
+  opacity: var(--heroFade, 1);
+}
+/* 重播时的整组淡入（与下面几个子元素的 riseIn 同一批起播）。
+   终值读的就是当前的 --heroFade：滚动继续变淡时动画会跟着重新插值，
+   所以不用在重播瞬间把透明度「拨回 1」，也就不会出现「归位又被下一帧打回去」的来回。 */
+
+html.is-hero-rise .hero__caption {
+  animation: heroFadeIn 1.1s cubic-bezier(.22,1,.3,1) both;
+}
+.badge {
+  position: absolute;
+  /* 顶部不再有标题栏，日月可以回到原来更贴近顶边的位置；
+     这轮再上移半个搜索栏高度，给下面多出来的搜索栏腾出视觉重心 */
+  top: calc(clamp(56px, 8vh, 130px) - var(--searchH, 40px) * .5);
+  left: 50%;
+  width: clamp(300px, min(50vw, 74vh), 680px); aspect-ratio: 1;
+  margin-bottom: 0;
+  /* 容器保持原位：下移与淡出分别交给 .badge__body（日月）和 .badge__halo（辉光） */
+  transform: translate(-50%, 0) scale(calc(1 - var(--p, 0) * .07));
+  will-change: transform;
+}
+/* ��场升降层：日月只用它做开场的下落位移，跟滚动驱动位移的 .badge__body 分开，互不覆盖。
+   层序全程不变：DOM 排在云海之前、z-index 又是 auto，所以日月始终被云压住 ——
+   这一版刻意不做「先升到顶空、再提升图层下落」的两段，也就没有 is-front。 */
+.badge__stage { position: absolute; inset: 0; will-change: transform, opacity; }
+
+/* ---------- 开场序列：纯黑夜 → 云浮入（日月同时落下）→ 标题组浮入 ----------
+   由 html[data-intro] 逐级推进。每一级只写「这一级的特殊状态」，
+   值一旦离开该级匹配、属性选择器失效，就自动过渡回默认（终态）——
+   所以不用为每级都写一对 from/to。
+   没有 data-intro（脚本没跑起来）就是终态，静态页面不会被开场动画藏住任何东西。 */
+
+/* 云海：左云从左下角、右云从右下角浮入，两边时长错开，避免像一块板一起抬上来 */
+.cloud-bank__intro {
+  width: 100%; height: 100%;
+  will-change: transform, opacity;
+  transition: transform 1.05s cubic-bezier(.22,.9,.3,1), opacity .8s ease-out;
+}
+html[data-intro="1"] .cloud-bank--left .cloud-bank__intro {
+  transform: translate3d(-7vw, 26vh, 0); opacity: 0;
+}
+html[data-intro="1"] .cloud-bank--right .cloud-bank__intro {
+  transform: translate3d(7vw, 30vh, 0); opacity: 0;
+  transition-duration: 1.25s, .9s;
+}
+
+/* 日月：整块先在视口上方（-100vh，纯黑夜时连月亮的最后一角都看不到），
+   然后跟云浮入同一时刻从最上方落回默认位置 —— 1.5s、先快后慢，同时从半透明渐显到实心。
+   渐显只跑 1s：起笔那一刻（开场后 1s）它正好完全显形，笔画不会被半透明的月亮带着一起淡。
+   图层全程不变（始终在云后面），所以落到一半时下半部是被云吃进去的，不是压着云。 */
+html[data-intro="1"] .badge__stage {
+  transform: translate3d(0, -100vh, 0); opacity: .5;
+}
+html[data-intro="2"] .badge__stage {
+  transform: translate3d(0, 0, 0); opacity: 1;
+  transition: transform 1.5s cubic-bezier(.16,.84,.3,1), opacity 1s ease-out;
+}
+
+/* 标题组：头像 → AIKSXD → 副标题 → 社交行，由下到上依次浮入。
+   位移走 translate 属性，不抢 transform（外层还有滚动位移在用 transform）。
+   回滚到顶部重播时靠「摘类 + 强制重排 + 加类」，与 AX 描边同一节奏。
+   时长 1.02s（原 .62s）：这组从 0 长出来是「回顶唯一一次出现」，慢一点才不像闪一下；
+   父级同时有 1.1s 的 heroFadeIn 包住整组，两者叠起来约 1.5s 收尾。 */
+
+html.is-hero-rise .hero__caption > .badge__avatar { animation: riseIn 1.02s cubic-bezier(.22,1,.3,1) both; }
+html.is-hero-rise .hero__caption > h1 { animation: riseIn 1.02s cubic-bezier(.22,1,.3,1) .13s both; }
+html.is-hero-rise .hero__caption > .tagline { animation: riseIn 1.02s cubic-bezier(.22,1,.3,1) .28s both; }
+/* 社交行接在简介后面浮入（与简介同一组，晚 80ms 起） */
+html.is-hero-rise .hero__caption > .hero__socials { animation: riseIn 1.02s cubic-bezier(.22,1,.3,1) .36s both; }
+/* 搜索栏已经搬出标题组（见 .search-dock），浮入由外壳负责：
+   内层的 opacity 还要留给滚动淡化，不能让它被 animation 的 both 锁死。
+   它挂在**一次性**的 is-dock-rise 上，而不是 is-hero-rise —— 回顶重播只该重放
+   文字与 AX，搜索栏每次都跟着再浮一遍会显得整页在重启（类只加一次、之后不摘，
+   所以 animation 也只播这一次）。 */
+html.is-dock-rise .search-dock { animation: riseIn .9s cubic-bezier(.22,1,.3,1) .3s both; }
+
+/* 开场还没轮到它们：先按住；轮到的那一刻挂上 is-hero-rise，
+   animation 的 both 会以 from 的 opacity:0 接管，所以不会闪出完整文字。
+   头像一个：它跟文字同一个容器，也就是同一批按住 —— 日月还在下落时不显示。 */
+html.is-booting .search-dock,
+html.is-booting .hero__caption > .badge__avatar,
+html.is-booting .hero__caption > h1,
+html.is-booting .hero__caption > .tagline,
+html.is-booting .hero__caption > .hero__socials { opacity: 0; translate: 0 26px; }
+/* AX 字标单独一档：它比文字松得早（开场 1s 就要起笔），所以不跟 is-booting 一起按。
+   只归零不透明度、不带位移 —— 字标得跟日月图形严丝合缝地贴在盘面上。 */
+html.is-ax-hold .ax-ink { opacity: 0; }
+
+/* 太阳光芒：常驻缓慢旋转，日间才显现；随滚动先舒展，末端与日月一起淡出 */
+.badge::before {
+  content: ""; position: absolute;
+  inset: calc(-13% - var(--p, 0) * 4%); border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 206, 108, .42) 0deg 5deg, transparent 5deg 22deg);
+  opacity: 0;
+  /* 旋转只在日间挂：夜间这层的 opacity 恒为 0（见下一条规则），
+     一张 857px 的 repeating-conic-gradient 却会按 60fps 一直转下去 —— 看得见的才是动画。 */
+}
+html[data-theme="day"] .badge::before {
+  opacity: calc((.5 + var(--p, 0) * .2) * (1 - var(--p, 0)));
+  animation: spin 90s linear infinite;
+}
+
+
+/* 独立辉光层：随滚动微微增亮、放大并下沉，p→1 保留 0.1 的薄紫/橙光晕（不完全归零）。 */
+.badge__halo {
+  position: absolute; inset: -36%; z-index: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--glow-shift) 0%, transparent 62%),
+    radial-gradient(circle, var(--glow-base) 0%, transparent 78%);
+  /* 随日月下沉淡出，p→1 归零；峰值收敛 */
+  opacity: calc((1 - var(--p, 0)) * (.26 + var(--p, 0) * .34));
+  transform: translate3d(0, calc(var(--p, 0) * 60px), 0)
+             scale(calc(.95 + var(--p, 0) * .15));
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* 日月 + AX + 头像：滚动到博客距离（--p→1）时整体淡出并向下沉落 */
+.badge__body {
+  position: absolute; inset: 0; z-index: 1;
+  /* 日月**不再完全淡出**：滚到底也留 10% 的一层残影（0.1 而不是 0）——
+     滚走之后天空不该是空的，留一点月亮轮廓比彻底抹掉更自然。
+     AX 字标挂在它下面（.badge__mark 自己 p≈.8 就归零），所以笔画仍然是干净消失的。 */
+  opacity: clamp(.1, calc(1 - var(--p, 0) * .9), 1);
+  /* 下移量不是写死的：让月亮圆心在 p=1 时正好被银河斜带穿过，
+     具体值由 js 的 layoutBadgeDrop() 按几何算出来写进 --badgeDrop。
+     （以前固定 90px，宽屏凑巧接近、窄屏就偏出去一截 —— 月亮尺寸按 vw/vh 取，
+      斜带却按自身框的百分比定位，两边比例根本不同。） */
+  transform: translate3d(0, calc(var(--p, 0) * var(--badgeDrop, 90px)), 0);
+  will-change: transform, opacity;
+}
+
+.badge__disc {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 36% 28%, var(--disc-a), var(--disc-b) 62%, var(--disc-c));
+  /* 辉光半径只做微弱增长，不再大幅外扩 */
+  box-shadow:
+    0 0 calc(70px + var(--p, 0) * 60px) calc(16px + var(--p, 0) * 18px) var(--disc-glow),
+    inset -14px -16px 34px rgba(40, 55, 95, .20),
+    inset 10px 10px 26px rgba(255, 255, 255, .48);
+  animation: halo 7s ease-in-out infinite alternate;
+  transition: background .6s var(--ease);
+}
+/* 第二层染色辉光：中段短暂显现（紫/橙），p→1 随 body 一起归零 */
+.badge__disc::before {
+  content: ""; position: absolute; inset: -46%; z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow-shift) 0%, transparent 64%);
+  filter: blur(22px); opacity: calc(var(--p, 0) * (1 - var(--p, 0)) * 1.1);
+}
+.badge__disc::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 40% 34%, var(--disc-shift), rgba(74, 32, 120, .5));
+  opacity: calc(var(--p, 0) * (1 - var(--p, 0)) * .6);
+}
+/* 光晕呼吸改走 opacity（可合成），不再用 filter: brightness() 每帧重绘整块圆盘 */
+
+.badge__disc span {
+  position: absolute; border-radius: 50%;
+  background: rgba(90, 108, 155, .16);
+  box-shadow: inset 2px 2px 5px rgba(60, 75, 120, .12);
+}
+.badge__disc span:nth-child(1) { width: 24%; height: 24%; left: 13%; top: 50%; }
+.badge__disc span:nth-child(2) { width: 16%; height: 16%; left: 70%; top: 28%; }
+.badge__disc span:nth-child(3) { width: 8%;  height: 8%;  left: 72%; top: 64%; }
+/* 日间没有月坑 */
+html[data-theme="day"] .badge__disc span { opacity: 0; }
+
+.badge__mark {
+  position: absolute; left: 50%; top: 44%; z-index: 1;
+  width: 88%; height: auto;
+  transform: translate(-50%, -50%);
+  /* AX 比日月更早彻底淡出（约 p=0.8 归零），随后圆盘才完全隐匿 */
+  opacity: clamp(0, calc(1 - var(--p, 0) * 1.25), 1);
+}
+
+/* AX 逐笔书写：参考 splashscreen.html 的 stroke-dasharray / stroke-dashoffset 描边。
+   每笔长度由 js/blog.js 的 getTotalLength() 写入 --len，不硬编码。
+   基础计算值的 dashoffset 保持 0（完整显示）：无 JS、或动画被测量工具冻结时
+   字标仍然完整，不会在视觉基准截图里凭空消失。
+   .is-writing 在页面 load 后注入，用 longhand 写动画时长/延迟，避免简写里的
+   var() 被判为 IACVT 而使整条 animation 失效。 */
+.badge.is-writing .ax-stroke {
+  stroke-dasharray: var(--len, 800px);
+  animation-name: axDraw;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  animation-duration: var(--dur, 1s);
+  animation-delay: var(--delay, 0s);
+}
+/* 页面加载完后等 0.5s 再开始书写；每笔 1.5s，严格串行：第二笔等第一笔画完再起笔。
+   第一笔 linear 匀速；第二笔 cubic-bezier 开头快结尾慢（强 ease-out）。 */
+.badge.is-writing .ax-stroke--1 { --dur: 1.5s; --delay: .5s;   animation-timing-function: linear; }
+.badge.is-writing .ax-stroke--2 { --dur: 1.5s; --delay: 2.05s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+/* 入场只保留笔画：不再给 .ax-ink 挂整体淡入，
+   字标可见与否交给 .badge__mark 跟 --p 的滚动淡出，
+   回到顶部重播描边时就不会和淡入抢同一个 opacity。
+   描边与淡出相互独立：向下滚动时笔画没画完也照常淡出，不阻塞。 */
+/* 清空态：只留空笔画、不挂动画。用于 AX 已经完全淡出之后先把旧字擦掉，
+   这样回滚淡入时看到的是一张空字标，不会先出现完整字再被擦。 */
+.badge.is-blank .ax-stroke {
+  stroke-dasharray: var(--len, 800px);
+  stroke-dashoffset: var(--len, 800px);
+}
+/* 滚动回滚重播：第一笔不再等 0.5s（那 0.5s 是给首次加载留的开场停顿），触发点立刻起笔。
+   第二笔仍严格串行：等第一笔 1.5s 画完（留 0.05s 间隙）后再起笔，不与第一笔重叠。 */
+.badge.is-writing.is-replay .ax-stroke--1 { animation-delay: 0s; }
+.badge.is-writing.is-replay .ax-stroke--2 { animation-delay: 1.55s; }
+
+/* 参考图：头像嵌在圆盘下缘内侧，而不是跨在边缘外 */
+/* 头像：从日月盘面搬进了标题组（.hero__caption 的第一个元素），跟文字共用同一套开场节奏。
+   尺寸改成固定 px —— 原来用盘面的 21%，现在父级是标题组，百分比会跟着文字宽度乱跑。 */
+.badge__avatar {
+  position: relative; z-index: 2;
+  width: 96px; height: 96px; object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, .62); border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 8px 22px rgba(8, 14, 34, .4);
+}
+
+/* 站点标题回到封面原位（原来被挪去顶部栏，栏删掉后还原） */
+#siteTitle {
+  margin: 0; font-size: clamp(2rem, 5vw, 3.1rem);
+  font-weight: 800; letter-spacing: .2em; text-indent: .2em;
+  text-shadow: 0 2px 14px var(--bg);
+}
+.tagline {
+  margin: 0 0 4px;
+  font-size: clamp(.92rem, 1.6vw, 1.05rem);
+  font-weight: 500;
+  letter-spacing: .01em;
+  /* 这句横跨在月盘最亮的下半部，是整块 hero 里唯一「浅字压亮底」的元素：
+     单靠一层柔和投影会糊成一片灰，所以按主题分开处理。
+     夜间用近白字 + 三层暗晕（贴边勾轮廓 / 1px 分离 / 20px 垫底），
+     字在月盘上立得起来，落到夜空那头阴影又几乎看不见。 */
+  color: #f0f4ff;
+  text-shadow:
+    0 0 3px rgba(6, 10, 20, .95),
+    0 1px 2px rgba(6, 10, 20, .9),
+    0 3px 20px rgba(6, 10, 20, .55);
+  /* 这句比原来长：宽屏（≥ 26em）一行读完，窄屏折成两行，
+     text-wrap: balance 让两行长度相近，不会一行很满、一行只剩半句。 */
+  max-width: min(88vw, 26em);
+  text-wrap: balance;
+}
+/* 日间反过来：白天是亮底，要深字才读得清，阴影也只剩一层极淡的白晕 */
+html[data-theme="day"] .tagline {
+  color: #4a5678;
+  text-shadow: 0 1px 4px rgba(255, 255, 255, .55);
+}
+
+/* 滚动提示：下圆角三角轻浮动；随滚动下移，淡出节奏对齐 AX 字标（同斜率），
+   收尾滞后约 0.1p——AX 完全淡出后 pill 再归零；回滚时与 AX 共同渐显。 */
+
+.scroll-pill {
+  position: absolute; left: 50%; bottom: clamp(24px, 6vh, 58px);
+  transform: translateX(-50%) translateY(calc(var(--p, 0) * 64px));
+  opacity: clamp(0, calc(1.125 - var(--p, 0) * 1.25), 1);
+  padding: 8px; border: 0; background: transparent; cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .35));
+  will-change: transform, opacity;
+  z-index: 3;
+}
+.scroll-pill__tri {
+  display: block; width: 16px; height: 16px;
+  fill: var(--text); stroke: var(--text); stroke-width: 1.6;
+  stroke-linejoin: round;
+  animation: pillFloat 3s ease-in-out infinite;
+}
+
+.scroll-pill:hover .scroll-pill__tri { opacity: 1; }
+
+/* ---------- 联系方式（GitHub / bilibili / 邮件）----------
+   全端只有一份：排在 .hero__caption 的末尾（简介下面），所以位置就是
+   「欢迎语之下、搜索栏之上」，并且跟着标题组一起浮入、一起随 --p 淡出。
+   早先 PC 另有一组 body 级 fixed、常驻左下角的 .contacts —— 已删除：
+   两处维护同一批链接，改一处漏一处的概率太高，而且它和标题组是两套淡出节奏。
+   这一行正好压在云海上，所以按钮用实底而非极淡玻璃（见 .hero__socials .contact）。 */
+.contact {
+  display: grid; place-items: center; width: 38px; height: 38px;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--glass); color: var(--muted);
+  text-decoration: none; backdrop-filter: blur(10px);
+  transition: color .25s, transform .25s var(--ease), border-color .25s;
+}
+.contact:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-3px); }
+/* 品牌图标走官方实心 logo（GitHub octocat / bilibili 电视），
+   与线框图标共用尺寸；fill 覆盖掉 .icon 默认的 stroke 描边。 */
+.icon--brand { fill: currentColor; stroke: none; }
+.contact .icon { width: 19px; height: 19px; }
+
+/* 社交行：作为 .hero__caption 的 grid 子项排在简介下面，天然就在搜索栏落点之上
+   （搜索栏挂在 .scene 之外，js 用 caption 的内容底 + 半格下沉算 --dockTop）。 */
+.hero__socials { display: flex; gap: 10px; margin-top: 10px; justify-content: center; }
+/* 这一行压在云海上：默认的 .contact 是深玻璃底 + 极淡描边（--line 只有 14% 不透明度），
+   实测在亮云上几乎看不出来，只剩一圈 1px 的轮廓。所以它单独加深一档底色与描边。 */
+.hero__socials .contact {
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--muted) 38%, transparent);
+  color: var(--text);
+  box-shadow: 0 8px 22px rgba(4, 8, 20, .34);
+  /* 必须去掉 backdrop-filter —— .scene 上有 contain: layout paint，
+     在这个合成根下同一时刻只画得出**第一个** backdrop-filter 元素：
+     实测三个按钮只有 GitHub 那个有底，另外两个连背景都不画（像素 (33,40,69) vs 天空 (22,17,43)）。
+     反正这里已经有实底 --surface，不需要再模糊背景。 */
+  backdrop-filter: none;
+}
+

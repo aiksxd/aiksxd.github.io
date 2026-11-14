@@ -1,0 +1,351 @@
+/* reader.css —— 文章阅读页（md 渲染 + 左侧目录）
+   ==========================================================
+   单独一个文件，不往 index.css 里塞：首页那套负责「一屏天空 + 一摞卡片」，
+   阅读页负责「长文排版 + 目录导航」，两者的选择器几乎没有交集，
+   混在一起只会让改首页动画时不小心动到正文行高。
+
+   复用首页已有的东西：
+   · 全部颜色/圆角/间距走 index.css 的令牌（--surface / --line / --muted / --accent / --r-md / --pad），
+     所以暗色与日间主题自动跟随，这里一条颜色都不用另写；
+   · 正文里的图片直接是 <figure class="post__figure">，圆角与描边沿用列表卡片的规则；
+   · 文末标签是 .post__tags 的副本，样式完全一致。
+   ========================================================== */
+
+/* ---------- 全屏阅读：两列（侧栏目录 + 正文） ----------
+   目录是设置页式的常驻侧边栏，与正文并列左右排版，不再是浮在内容上的抽屉。
+   宽屏 208 + 46 + 760 = 1014；窄屏（<980）也并列，只把侧栏压到容器的 36%。
+   窄屏原来那套「抽屉 + 唤出按钮」已删：抽屉一开就盖住正文，和「侧栏」是两套心智模型。 */
+.post.is-full.has-reader .post__body {
+  max-width: 1014px;
+  /* 贴左而不是居中：卡片（=视口宽）比 1014 宽时，`margin: 0 auto` 会在目录左边
+     留出 (视口-1014)/2 的空白（871 视口实测 body 左移 48、目录文字左移 66）。
+     侧边栏要像设置页那样贴住卡片左沿，多出来的宽度留给右侧 */
+  margin-left: 0; margin-right: auto;
+  /* 208 固定 + 760 上限的写法在卡片被压窄时会溢出（列和 968 > 卡片 419，
+     实测 is-toc-folded 时正文撑到 724 直接超出视口）。改成「侧栏上限 208 + 正文吃剩余」，
+     宽度由容器决定，任何卡片宽度下都不会溢出 */
+  grid-template-columns: minmax(0, 208px) minmax(0, 1fr);
+  column-gap: 46px;
+  align-items: start;
+  padding-bottom: 76px;
+  /* 展开/折叠的动画就靠这两条：两套列模板的轨道数量相同、都是 minmax()，
+     所以 grid-template-columns 与 column-gap 可以插值 —— 侧栏宽度会平滑收到 0，
+     正文随之平移并变宽。以前用「列数 2 → 1」，轨道数量变了就无法插值，只能跳变 */
+  transition: grid-template-columns .42s var(--ease), column-gap .42s var(--ease),
+              max-width .42s var(--ease);
+}
+/* 正文与封面永远在「最后一列」：2 列时是第 2 列、折叠时仍是第 2 列（第一列宽 0）。
+   用 -2 / -1 而不是写死 2（写死 2 在单列网格里会凭空长出一条隐式列）。 */
+.post.is-full.has-reader .reader__doc { grid-column: -2 / -1; }
+/* 卡片顶部那张封面大图在阅读态不再渲染：它是「列表卡的脸」，
+   放进阅读页会把第一屏整个占掉（md 正文里的配图不受影响） */
+.post.is-full.has-reader .post__body > .post__figure { display: none; }
+.post.is-full.has-reader .post__text { display: none; }
+
+/* 收起目录：不删列、只把第一列收到 0，配合侧栏自身淡出（见下）。
+   轨道仍是两个，才能做上面那条插值过渡 */
+.post.is-full.has-reader.is-toc-folded .post__body {
+  max-width: 760px;
+  grid-template-columns: minmax(0, 0px) minmax(0, 1fr);
+  column-gap: 0;
+}
+
+/* 目录与正文只注入一次、常驻 DOM（重开不再解析一遍 html），
+   所以不在全屏时必须由这里藏起来 —— 否则关闭后正文会留在列表卡片里。 */
+.post:not(.is-full) .reader__toc,
+.post:not(.is-full) .reader__doc { display: none; }
+
+/* ---------- 侧栏目录 ---------- */
+.reader__toc {
+  grid-column: 1; grid-row: 1 / span 2;
+  /* 吸顶时让出标题栏（44px）那一条，否则侧栏顶部会被标题栏压住 */
+  position: sticky; top: 52px; align-self: start;
+  max-height: calc(100vh - 64px);
+  display: flex; flex-direction: column; min-height: 0;
+  margin-top: 2px;
+  /* 一条竖线把侧栏和正文分开：卡片本身是玻璃面，靠留白分不清「栏」和「正文」；
+     做在右侧内边距上，不占列宽 */
+  padding-right: 12px;
+  border-right: 1px solid var(--line);
+  /* 折叠时列宽收到 0，目录内容要么被裁掉、要么溢到正文上。overflow: clip 让它被裁掉；
+     不用 hidden 是不想给这一栏再造一个滚动容器（内容由 .toc__nav 自己滚） */
+  overflow: clip;
+  /* top / max-height 是给「标题栏折叠时目录一起上移」用的（见下面那条规则）。
+     时长与缓动跟 .post__head 的 translateY(-100%) 完全对齐，两条边才是一起收的；
+     其余的 opacity / transform 仍是折叠目录、淡出竖线那套。 */
+  transition: top .35s var(--ease), max-height .35s var(--ease),
+              opacity .3s var(--ease), transform .42s var(--ease),
+              padding-right .42s var(--ease), border-right-color .42s var(--ease);
+}
+/* 正文向下滚、顶部标题栏折走（.post.is-full.is-head-collapsed 的 translateY(-100%)）时，
+   目录同步上移 44px —— 正好是标题栏让出来的那条横带。
+   不移的话顶栏收起了、侧栏还待在原地，第一屏左边会白空一截，两套动画像各走各的。
+   52 → 8：上沿留白保持和标题栏在时相同的 8px；max-height 同步 +44，
+   底部离视口 12px 的余量不变，长目录也不会因为上移而在底部少一截。
+   44 = .post.is-full .post__head 的 height，改栏高记得一起改这里。 */
+.post.is-full.is-head-collapsed .reader__toc {
+  top: 8px;
+  max-height: calc(100vh - 20px);
+}
+/* 折叠态的侧栏：左移一点淡出，竖线同时褪掉 —— 只靠列宽收缩，
+   目录会在最后一刻「啪」地消失，像被切掉 */
+.post.is-full.has-reader.is-toc-folded .reader__toc {
+  opacity: 0; transform: translateX(-12px);
+  padding-right: 0; border-right-color: transparent;
+  pointer-events: none;
+}
+
+.toc__head {
+  display: flex; align-items: center;
+  padding-bottom: 8px; margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.toc__title {
+  font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* 目录本体：条目多时自己滚，不把整栏撑出视口 */
+.toc__nav { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+
+.toc__list { list-style: none; margin: 0; padding: 0; }
+/* 层级靠「编号 + 缩进 + 字号」三个通道表达：data-level 由 js 按标题相对深度写，不写死 h2/h3。
+   缩进比前一版小（0/10/20/30）：层级已经由行首的 1. / 1.1. 编号说清楚了，
+   再给 22~56px 缩进，208px 的侧栏里留给标题的宽度就不够了。 */
+.toc__item[data-level="1"] { --indent: 0px; }
+.toc__item[data-level="2"] { --indent: 10px; }
+.toc__item[data-level="3"] { --indent: 20px; }
+.toc__item[data-level="4"] { --indent: 30px; }
+
+.toc__row { display: flex; align-items: baseline; gap: 7px; padding-left: var(--indent, 0); }
+
+/* 行首编号（1. / 1.1. / 1.1.1.）：填掉原来折叠箭头那块空白。
+   定宽 + 右对齐，同级的编号右端对齐、各级之间不会参差；tabular-nums 让 10. 和 9. 等宽 */
+.toc__num {
+  flex: none; min-width: 24px; text-align: right;
+  font-size: .72rem; line-height: 1.5; font-variant-numeric: tabular-nums;
+  color: var(--muted); opacity: .78;
+}
+
+.toc__link {
+  position: relative;
+  flex: 1 1 auto; min-width: 0;
+  padding: 4px 2px;
+  font-size: .78rem; line-height: 1.5;
+  color: var(--muted); text-decoration: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color .2s;
+}
+.toc__link:hover { color: inherit; }
+
+/* 一级：标题式（稍大、加粗、正文色）；二级及以下：小一号、退到 muted。
+   这两条特异性 (0,3,0) 高于 .toc__link.is-active 的 (0,2,0)，所以下面的激活规则
+   也写成 .toc__item .toc__link.is-active，否则当前小节会被这里的颜色盖掉。 */
+.toc__item[data-level="1"] .toc__link { font-size: .82rem; font-weight: 600; color: var(--text); }
+/* 当前小节：左侧一道 accent 竖线 + 提亮，比整条高亮底色更安静 */
+.toc__item .toc__link.is-active { color: var(--accent); }
+.toc__link.is-active::before {
+  content: ""; position: absolute; left: -6px; top: 50%; width: 2px; height: 60%;
+  transform: translateY(-50%); border-radius: 2px; background: var(--accent);
+}
+
+.toc__empty { margin: 10px 0 0; font-size: .78rem; color: var(--muted); }
+
+/* ---------- 正文排版 ----------
+   只写「阅读态需要、卡片摘要用不上」的部分：行高、标题节奏、代码块、表格、引用。
+   正文颜色跟随卡片本身的 color，不另设一套。 */
+.reader__doc {
+  grid-row: 2;
+  min-width: 0;
+  font-size: .95rem; line-height: 1.92;
+  /* 长文里中英文混排：给英文一个稍窄的字距，中文不需要 */
+  letter-spacing: .005em;
+  overflow-wrap: break-word;
+}
+.reader__doc > :first-child { margin-top: .2em; }
+
+.reader__doc h1,
+.reader__doc h2,
+.reader__doc h3,
+.reader__doc h4 {
+  /* 跳转时把这截空出来，吸顶的标题行（44px）不会压住目标标题。
+     这个值和 js/reader.js 的 HEAD_OFFSET(56) 是同一件事，改一处要改两处 */
+  scroll-margin-top: 56px;
+  color: inherit; letter-spacing: .01em;
+}
+.reader__doc h1 { margin: 2.4em 0 .8em; font-size: 1.72rem; }
+.reader__doc h2 { margin: 2.4em 0 .85em; font-size: 1.38rem; }
+.reader__doc h3 { margin: 1.9em 0 .65em; font-size: 1.13rem; }
+.reader__doc h3::before {
+  content: ""; display: inline-block; width: 3px; height: 3px; border-radius: 50%;
+  margin-right: 9px; vertical-align: middle; background: var(--accent); opacity: .55;
+}
+.reader__doc h2 + p, .reader__doc h3 + p { margin-top: 0; }
+
+.reader__doc p { margin: 0 0 1.05em; }
+.reader__doc a { color: var(--accent); text-underline-offset: 3px; text-decoration-color: color-mix(in oklab, var(--accent) 55%, transparent); }
+.reader__doc a:hover { text-decoration-color: var(--accent); }
+.reader__doc strong { font-weight: 600; }
+.reader__doc em { font-style: italic; }
+.reader__doc del { opacity: .6; }
+
+.reader__doc ul, .reader__doc ol { margin: 0 0 1.1em; padding-left: 1.35em; }
+.reader__doc li { margin: .34em 0; }
+.reader__doc li::marker { color: var(--muted); }
+
+/* 行内代码：底色用 --surface-2，和卡片玻璃面同一层，不额外引入新颜色 */
+.reader__doc code {
+  padding: .12em .38em; border-radius: 6px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  font-size: .86em;
+}
+
+/* 代码块：语法高亮由 js/reader.js 用本地 vendor/highlight.min.js 现场上色，
+   容器本身和引用块长同一个样子 —— 左边一条 accent 竖线，右角圆、左角切平。 */
+.reader__doc pre.md-code {
+  position: relative;
+  margin: 1.35em 0;
+  padding: 16px 18px 17px;
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: var(--surface-2);
+  overflow-x: auto; overscroll-behavior-x: contain;
+  line-height: 1.72;
+}
+.reader__doc pre.md-code code {
+  padding: 0; border: 0; background: none;
+  font-size: .84rem; white-space: pre;
+}
+.reader__doc pre.md-code[data-lang]::after {
+  content: attr(data-lang);
+  position: absolute; top: 9px; right: 12px;
+  font-size: .66rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); opacity: .8;
+}
+/* 代码行超宽时自身横向滚；细一点，别在暗底上糊一条白杠 */
+.reader__doc pre.md-code::-webkit-scrollbar { height: 6px; }
+.reader__doc pre.md-code::-webkit-scrollbar-thumb {
+  border-radius: 3px; background: var(--line);
+}
+.reader__doc pre.md-code::-webkit-scrollbar-track { background: transparent; }
+
+/* 语法高亮的 token 配色。
+   不引 highlight.js 自带主题：那些主题是为固定的浅底/深底设计的，和这套
+   navy + 青柠 对不上；这里只给几类 token 上色，全部 scope 在 .reader__doc，
+   首页别处的 <pre> 不受影响。 */
+.reader__doc .hljs-keyword,
+.reader__doc .hljs-built_in,
+.reader__doc .hljs-selector-tag { color: var(--accent); }
+.reader__doc .hljs-string,
+.reader__doc .hljs-attr,
+.reader__doc .hljs-template-variable { color: #7fd1b9; }
+.reader__doc .hljs-comment { color: var(--muted); opacity: .72; font-style: italic; }
+.reader__doc .hljs-number,
+.reader__doc .hljs-literal { color: #e0b985; }
+.reader__doc .hljs-title,
+.reader__doc .hljs-function,
+.reader__doc .hljs-section,
+.reader__doc .hljs-title.function_ { color: #7fb2ff; }
+.reader__doc .hljs-variable,
+.reader__doc .hljs-property,
+.reader__doc .hljs-params,
+.reader__doc .hljs-subst { color: var(--text); }
+.reader__doc .hljs-meta,
+.reader__doc .hljs-operator,
+.reader__doc .hljs-punctuation { color: var(--muted); }
+
+.reader__doc blockquote.md-quote {
+  margin: 1.4em 0; padding: 13px 18px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.reader__doc blockquote.md-quote > :last-child { margin-bottom: 0; }
+
+/* 表格：自己横向滚，不把卡片撑出横向滚动条 */
+.reader__doc .md-table { margin: 1.3em 0; overflow-x: auto; }
+.reader__doc table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.reader__doc th, .reader__doc td {
+  padding: 9px 12px; border-bottom: 1px solid var(--line);
+  text-align: left; vertical-align: top;
+}
+.reader__doc th { color: var(--muted); font-weight: 500; white-space: nowrap; }
+.reader__doc tr:last-child td { border-bottom: 0; }
+
+.reader__doc hr.md-hr {
+  margin: 2.2em 0; border: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 20%, var(--line) 80%, transparent);
+}
+
+/* 正文配图：圆角/描边沿用 .post__figure，图注单独一行小字 */
+.reader__doc .post__figure { margin: 1.6em 0; }
+.reader__doc .post__figure figcaption {
+  margin-top: 9px; font-size: .76rem; color: var(--muted); text-align: center;
+}
+
+/* 外链配图随时会挂（原有笔记的图床已经 404 了几张），失败时把图收成一条虚线提示，
+   只留图注里的原文说明 —— 别让浏览器那个破图标 + 半截边框留在正文里。 */
+.reader__doc .post__figure.is-missing img { display: none; }
+.reader__doc .post__figure.is-missing::before {
+  /* 文案由 reader.js 写进 data-missing：切语言时这里不会跟着变，所以不能写死 */
+  content: attr(data-missing);
+  display: block; padding: 16px 18px;
+  border: 1px dashed var(--line); border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: .78rem; color: var(--muted); text-align: center;
+}
+/* 行内图片挂在段落里，没有外层容器可画，失败时由 reader.js 换成这个 span */
+.reader__doc .md-img-missing {
+  display: inline-block; margin: 8px 0; padding: 10px 14px;
+  border: 1px dashed var(--line); border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: .78rem; line-height: 1.5; color: var(--muted);
+}
+
+/* 任务列表的勾选框：阅读态只是标记，不可操作 */
+.reader__doc .md-task { display: flex; align-items: baseline; gap: 8px; }
+.reader__doc .md-task input {
+  flex: none; width: 13px; height: 13px; margin: 0;
+  accent-color: var(--accent); vertical-align: baseline;
+}
+.reader__doc li.is-task { list-style: none; margin-left: -1.1em; }
+
+/* 文末标签：与列表卡片里的那份同一个外观，只是多了一条分隔 */
+.reader__doc .reader__tags { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+/* ---------- 窄屏：仍然是「侧栏 + 正文」并列 ----------
+   断点和首页那套 8xx 不完全一致：208 + 46 + 760 要 1014px，980 以下就必须让位。
+   以前这里把目录改成盖在正文上的抽屉，现在保持并列，只是把侧栏压到 40vw
+   （474 视口实测 ≈ 190px，再窄就靠标题栏左端那颗按钮折掉，把整行让给正文）。 */
+@media (max-width: 979px) {
+  .post.is-full.has-reader .post__body {
+    /* 窄屏卡内宽本来就不到 1014，直接铺满铺左，不要在右侧留一截死白 */
+    max-width: none;
+    /* 用容器百分比而不是 vw：卡片本身有自己的左右内边距，vw 算出来的 40vw
+       在 419px 宽的卡片里会变成 200px，正文只剩 152px（实测） */
+    grid-template-columns: minmax(0, 36%) minmax(0, 1fr);
+    column-gap: 12px;
+  }
+  /* 折叠：轨道仍是两个（36% → 0px），才能沿用那条插值过渡 */
+  .post.is-full.has-reader.is-toc-folded .post__body {
+    max-width: none;
+    grid-template-columns: minmax(0, 0px) minmax(0, 1fr);
+    column-gap: 0;
+  }
+
+  /* 侧栏在窄屏同样吸顶：top 让出半高的标题栏 */
+  .reader__toc { top: 50px; max-height: calc(100vh - 60px); }
+  .toc__nav { overscroll-behavior: contain; }
+
+  /* 窄屏正文只有 500 出头，80 列的代码一行塞不下。
+     这里选「折行」而不是「横向滚」：横向滚在触摸屏上没滚动条提示，
+     读者根本不知道右边还有字（实测 736px 内容挤进 532px 容器，右侧一截永远看不到）。
+     代价是续行会回到最左，缩进视觉丢失 —— 换取「看得到全部代码」。 */
+  .reader__doc pre.md-code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .reader__doc pre.md-code code { white-space: inherit; font-size: .78rem; }
+}
+
+/* 说明：宽屏（≥980px）正文 760、等宽 13.4px 一行约 88 字符，多数代码不需要折行，
+   所以 pre-wrap 只在窄屏那一段里加，宽屏仍保留 pre + 横向滚。 */

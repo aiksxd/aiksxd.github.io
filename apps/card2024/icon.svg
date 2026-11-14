@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" role="img" aria-label="Card-2024">
+  <!-- 应用自己的图标：蓝 -1 / 红 +1 两张斜牌，压在蓝→红→蓝的渐变底上，
+       四角各一道 L 形划痕 + 底部署名。造型照老站 css/icon.css 的 .card2024.app-icon
+       （60×60、圆角 8、牌 21×33 圆角 3、蓝牌 -15° 压在前、红牌 +15° 在后），
+       只把 CSS 的 flex 排布换成绝对值：牌组在 y 4..40，署名在 y 52。 -->
+  <defs>
+    <linearGradient id="c24-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#294ad0"/>
+      <stop offset=".5" stop-color="#e22a2a"/>
+      <stop offset="1" stop-color="#294dda"/>
+    </linearGradient>
+    <linearGradient id="c24-blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5e5cfc"/>
+      <stop offset="1" stop-color="#3a3af0"/>
+    </linearGradient>
+    <linearGradient id="c24-red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6b6b"/>
+      <stop offset="1" stop-color="#ff8e8e"/>
+    </linearGradient>
+    <!-- 内阴影：上方一道白的高光、下方一道黑压边，替代老站的两条 inset box-shadow -->
+    <linearGradient id="c24-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".16"/>
+      <stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="c24-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".62" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".34"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="60" height="60" rx="8" fill="url(#c24-bg)"/>
+  <rect width="60" height="60" rx="8" fill="url(#c24-sheen)"/>
+  <rect width="60" height="60" rx="8" fill="url(#c24-shade)"/>
+
+  <!-- 四角划痕：9 长、3 粗、内缩 5px -->
+  <g fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3">
+    <path d="M5 14V5h9"/>
+    <path d="M46 5h9v9"/>
+    <path d="M5 46v9h9"/>
+    <path d="M55 46v9h-9"/>
+  </g>
+
+  <!-- 红牌 +1（后） -->
+  <g transform="rotate(15 37.5 23.5)">
+    <rect x="27" y="7" width="21" height="33" rx="3" fill="url(#c24-red)"
+          stroke="#fff" stroke-opacity=".3"/>
+    <text x="37.5" y="27" text-anchor="middle" font-size="10" font-weight="bold"
+          fill="#fff" fill-opacity=".9">+1</text>
+  </g>
+
+  <!-- 蓝牌 -1（前） -->
+  <g transform="rotate(-15 22.5 25.5)">
+    <rect x="12" y="9" width="21" height="33" rx="3" fill="url(#c24-blue)"
+          stroke="#fff" stroke-opacity=".3"/>
+    <text x="22.5" y="29" text-anchor="middle" font-size="10" font-weight="bold"
+          fill="#fff" fill-opacity=".9">-1</text>
+  </g>
+
+  <!-- 署名：字号按 60 基准给，进 34px 的行高时只是一层纹理，不指望读清 -->
+  <text x="30" y="52" text-anchor="middle" font-size="8" letter-spacing="1"
+        fill="#fff" fill-opacity=".92">Card-2024</text>
+</svg>

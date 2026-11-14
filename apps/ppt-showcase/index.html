@@ -129,8 +129,23 @@
                 inlineMath: [['\\(','\\)']]
             }
         });
-        // Refresh MathJax rendering after DOM changes
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        /* 这个页面原本只有 MathJax 配置，没有任何脚本驱动 .ppt-animation-target：
+           ppt.css 里 .fade 的初始 opacity 是 0，靠 .active 才亮，所以排版完成前整页是空的，
+           右上那三个 .ppt-button 也没绑事件。这里补一段「逐条铺开」的自动演示——
+           每行错开 .32s 加 .active，走 CSS 自带的那条 0.8s 过渡，不加新的动画定义。 */
+        function reveal() {
+            var i = 0;
+            document.querySelectorAll('.ppt-animation-target').forEach(function (el) {
+                el.style.transitionDelay = (i++ * 0.32) + 's';
+                el.classList.add('active');
+            });
+        }
+        // 有 MathJax 就排到它排版之后（公式没排好就淡入，宽度会先窄后跳）；没网加载失败时直接铺开
+        if (window.MathJax && MathJax.Hub) {
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub], reveal);
+        } else {
+            reveal();
+        }
 
     </script>
 </body>

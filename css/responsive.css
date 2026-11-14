@@ -1,0 +1,38 @@
+/* 跨场景响应式：首屏高度、日月尺寸、云海滤镜、文章流留白等。 */
+/* ---------- 响应式 ---------- */
+@media (max-width: 900px) {
+  .cover { min-height: 100vh; min-height: 100dvh; }
+  .badge { width: clamp(280px, min(68vw, 62vh), 460px); }
+}
+
+@media (max-width: 640px) {
+  .cover { min-height: 100vh; min-height: 100dvh; }
+  .badge { width: min(78vw, 330px); }
+  .cloud-bank__sea {
+    /* 移动端底色偏亮，保留一层固定滤镜（不随 --p 变化 → 不会逐帧重绘） */
+    filter: brightness(1.22) saturate(1.14);
+  }
+  .sky__glow { width: 170vw; }
+  /* 联系按钮不再有手机专属处理：全端都是标题组末尾那一行（见 .hero__socials），
+     尺寸 38px 写死在 .contact 基类里。 */
+  /* 底部留白给右下角的设置按钮，最后一张卡不会被它压住 */
+  .feed { padding: 96px 16px 130px; }
+  .feed__head { align-items: stretch; flex-direction: column; gap: 14px; }
+  /* 这里曾经有一条 .search { width: 100% } ——它是首屏搜索栏在手机上「宽度不对、
+     整体偏左」的根因：.search-dock 是 fixed + left 居中的外壳，宽度靠 shrink-to-fit，
+     宽度 100% 会让本体退化成内容宽（实测 257px），而 left 仍按 440 的半宽算，于是左偏。
+     宽度只由 .search--hero 的 min(440px, 86vw) 决定，外壳的 left 又是它的负半宽，天然居中。 */
+  .post__head { gap: 12px; }
+  /* 全屏标题行在窄屏仍是单行：目录开关 30 + 标题 + 退出 30。
+     这里原来让「回到首页」换行到第二行，那行已经删了；日期放不下就截断，
+     不再让标题块被压成两行（半高的栏也不允许换行）。 */
+  .post__thumb { width: 48px; height: 48px; border-radius: 12px; }
+  .post__body { grid-template-columns: 1fr; gap: 14px; }
+  .post__figure img { max-height: 170px; aspect-ratio: 16 / 9; }
+  .post__detail { font-size: .86rem; }
+  .footer { flex-direction: column; padding: 22px 16px 110px; }
+}
+
+/* 动画常驻播放：不引入 prefers-reduced-motion / Windows「显示动画」开关相关的禁用约束，
+   云层漂浮、星点闪烁、日月光晕与滚动视差体量都很小，直接持续运行。 */
+

@@ -1,0 +1,273 @@
+/* 基础层：设计令牌、主题、重置、站点外壳（正文排版 / 设置按钮 / 侧栏）。 */
+/* ==========================================================================
+   Cloudiest Blog — 设计令牌 + 组件样式
+   旧版问题：无变量、无响应式、硬编码 2000px 高度、占位渐变、sticky 重复声明
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #171e33;
+  --bg-2: #1e2946;
+  --glass: rgba(23, 30, 51, .72);
+  --surface: rgba(38, 49, 80, .74);
+  --surface-2: rgba(48, 61, 98, .55);
+  --text: #eef3ff;
+  --muted: #9aa9cc;
+  --line: rgba(178, 199, 255, .14);
+  --accent: #96ca00;
+  --accent-ink: #12190a;
+  --shadow: 0 22px 56px rgba(6, 10, 25, .42);
+  --shadow-hover: 0 30px 70px rgba(6, 10, 25, .58);
+
+  --r-lg: 28px;
+  --r-md: 18px;
+  --r-sm: 12px;
+  --gap: clamp(16px, 2.4vw, 28px);
+  --pad: clamp(18px, 3vw, 18px);
+  --ease: cubic-bezier(.22, .8, .3, 1);
+  /* 锚点跳转的落点：目标块标题上方留出的空档（px）。
+     #posts（文章区的 .feed__head）与 .appsBlock__title 共用这一个数，
+     js 的 scrollToEl / revealFirstHit 也是读它们算出来的 scroll-margin-top，不要再各写一份。 */
+  --landing: 44px;
+
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
+  /* 夜空：首屏深黑夜色 → 滚动过程坠月紫辉宇宙。
+     --sky-0-* 是首屏底色，--sky-* 是滚动淡出过程中淡入的宇宙色。 */
+  --sky-top-0: #03050a;
+  --sky-mid-0: #080b18;
+  --sky-low-0: #110e22;
+  --sky-top: #0b1030;
+  --sky-mid: #181840;
+  --sky-low: #2c2350;
+  --glow-base: rgba(178, 196, 235, .34);
+  --glow-shift: rgba(163, 92, 255, .42);
+  --haze-top: rgba(150, 96, 232, 0);
+  --haze-low: rgba(126, 76, 208, .38);
+  --disc-a: #f9fbff; --disc-b: #d5dff6; --disc-c: #a9b9e2;
+  --disc-glow: rgba(170, 185, 255, .34);
+  --disc-shift: rgba(146, 84, 236, .42);
+  --star: #e9edff;
+  /* 云海着色板（夜间紫辉）：p=0 为白阶，p=1 着色到这套颜色 */
+  --cloud-far-1: #4a4a86; --cloud-far-2: #2b2f60;
+  --cloud-mid-1: #827cbd; --cloud-mid-2: #40407b;
+  --cloud-near-1: #c0b6ee; --cloud-near-2: #6a61a8;
+  --cloud-fog-1: #8880c4; --cloud-fog-2: #333063;
+}
+
+/* 日间主题：落日橙余晖配色（覆盖上面的夜间紫辉令牌）。
+   切换由 JS 在 <html> 上切 data-theme，组件样式全部走令牌，无需逐条改。 */
+html[data-theme="day"] {
+  color-scheme: light;
+  --bg: #e9f1ff;
+  --bg-2: #f8fbff;
+  --glass: rgba(255, 255, 255, .78);
+  --surface: rgba(255, 255, 255, .84);
+  --surface-2: rgba(226, 236, 255, .7);
+  --text: #1a2540;
+  --muted: #5d6b8d;
+  --line: rgba(30, 55, 100, .13);
+  --accent-ink: #10240a;
+  --shadow: 0 20px 50px rgba(50, 75, 130, .16);
+  --shadow-hover: 0 28px 64px rgba(50, 75, 130, .24);
+
+  /* 日间：首屏浅蓝晴天 → 滚动过程落日橙黄昏。
+     --sky-0-* 是首屏晴天底色，--sky-* 是过程中淡入的黄昏色。 */
+  --sky-top-0: #a9d2ff;
+  --sky-mid-0: #d3ebff;
+  --sky-low-0: #f3faff;
+  --sky-top: #ffe3c0;
+  --sky-mid: #ffd6b8;
+  --sky-low: #f3ab96;
+  --glow-base: rgba(255, 240, 205, .40);
+  --glow-shift: rgba(255, 150, 110, .36);
+  --haze-top: rgba(255, 156, 88, 0);
+  --haze-low: rgba(238, 140, 108, .38);
+  --disc-a: #fff8dc; --disc-b: #ffd06a; --disc-c: #f79442;
+  --disc-glow: rgba(255, 186, 92, .46);
+  --disc-shift: rgba(238, 140, 96, .36);
+  --star: #fff4dc;
+  /* 云海着色板（日间落日橙）：p=0 为白阶，p=1 着色到这套颜色 */
+  --cloud-far-1: #ffe1c6; --cloud-far-2: #f0aa92;
+  --cloud-mid-1: #ffc296; --cloud-mid-2: #dd7a78;
+  --cloud-near-1: #fff0d2; --cloud-near-2: #eb8d76;
+  --cloud-fog-1: #ffc79c; --cloud-fog-2: #c86670;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background:
+    radial-gradient(120% 70% at 50% -10%, var(--bg-2), transparent 70%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .45s var(--ease), color .45s var(--ease);
+}
+
+img { max-width: 100%; display: block; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+
+/* ---------- 滚动条：自绘覆盖式 ----------
+   原生条一律隐藏：html 与 .post.is-full 都不再占宽、也不再画任何轨道底色。
+   原因是原方案的死角 —— 原生条的那 10px 槽位属于浏览器自己的绘制层，页面内容
+   （包括 position:fixed 的 .scene）永远画不进去，槽里只剩一层 --bg 纯色带；
+   而文章卡宽 100vw 时，卡自己的条正好落进这条槽，被整条裁掉，看起来就是
+   「首页的槽把文章的条盖住了」。换页时槽位一存一放，还会把内容挤 10px。
+   现在改成：body 右侧留出 10px（与原滚动条同宽，页面宽度完全不变），
+   滑块由 js/scroll-rail.js 画在视口右缘，浮在场景和卡片之上 ——
+   没有轨道、没有底色，静止是 24% 文字色胶囊，hover / 拖动提亮到 accent。
+   根滚动条与阅读卡滚动共用这同一条轨道，不再有两条条错位的问题。
+   只在「有精确指针 + 可 hover」的设备上接管：手机 / 平板保留系统自己的
+   覆盖式滚动条，body 那 10px 也不加，免得窄屏右侧凭空多一条空白。 */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  .post.is-full {
+    scrollbar-width: none;       /* Chromium 121+ / Firefox */
+    -ms-overflow-style: none;    /* 老 Edge */
+  }
+  html::-webkit-scrollbar,
+  .post.is-full::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* 内容宽度保持 1270（1280 视口减去右缘 10px 滚动条带），开合文章不再挤压 */
+  body { padding-right: 10px; }
+
+  .scroll-rail {
+    position: fixed; top: 0; bottom: 0; right: 0;
+    width: 10px; z-index: 130;
+    touch-action: pan-y;
+    transition: opacity .2s var(--ease);
+  }
+  .scroll-rail.is-idle { opacity: 0; pointer-events: none; }
+  .scroll-rail__thumb {
+    position: absolute; top: 0; left: 2px; width: 6px;
+    border-radius: 999px;
+    background: rgba(154, 169, 204, .42);
+    background: color-mix(in srgb, var(--text) 24%, transparent);
+    transition: background .2s var(--ease);
+    will-change: transform;
+  }
+  .scroll-rail:hover .scroll-rail__thumb,
+  .scroll-rail.is-dragging .scroll-rail__thumb {
+    background: rgba(150, 202, 0, .62);
+    background: color-mix(in srgb, var(--accent) 62%, transparent);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.icon {
+  width: 20px; height: 20px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.skip-link {
+  position: fixed; top: 8px; left: 8px; z-index: 200;
+  padding: 10px 16px; border-radius: var(--r-sm);
+  background: var(--accent); color: var(--accent-ink);
+  text-decoration: none; font-weight: 600;
+  transform: translateY(-160%); transition: transform .2s var(--ease);
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* 顶部不再有导航栏 / 标题栏：站点标题回到封面里（见下方 #siteTitle），
+   这里只留右下角的设置按钮。 */
+
+/* 右下角设置按钮：外观 / 语言 / 关于全部收进它打开的侧栏 */
+.fab {
+  position: fixed; right: clamp(16px, 3vw, 30px);
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 4px);
+  z-index: 55;
+  display: grid; place-items: center;
+  width: 52px; height: 52px; padding: 0;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--glass); color: var(--muted);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  /* 常态半透明：它压在云海/月亮的角落上，实心的圆盘太像一块糊上去的贴片。
+     hover（或侧栏开着）才回到不透明 —— 提示「可以点」的同时把图标颜色也提亮。 */
+  opacity: .55;
+  transition: opacity .25s var(--ease), color .25s, border-color .25s, transform .25s var(--ease);
+}
+.fab:hover, .fab[aria-expanded="true"] {
+  opacity: 1;
+  color: var(--accent); border-color: var(--accent); transform: translateY(-2px);
+}
+.fab .icon { width: 21px; height: 21px; }
+/* H 字标（img/H.svg 原稿，159×146）：`.icon` 那套 `stroke-width: 1.7` / 圆头是给 24px 图标用的，
+   照抄到 159 的坐标里会细成一根头发，所以按原稿的比例还原描边，盒子也放大到 23×21。
+   描边颜色不用再写：`.icon` 的 `stroke: currentColor` 会继承进 path。 */
+.fab .fab__mark { width: 23px; height: 21px; }
+.fab__mark path { stroke-width: 10; stroke-linecap: square; stroke-linejoin: bevel; }
+
+.icon-btn {
+  display: inline-grid; place-items: center;
+  width: 38px; height: 38px; padding: 0;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--surface-2); color: var(--muted);
+  transition: color .25s, transform .25s var(--ease), background-color .25s;
+}
+.icon-btn:hover { color: var(--accent); transform: translateY(-2px); }
+
+/* ---------- 侧栏 ---------- */
+.sidebar {
+  position: fixed; top: 0; right: 0; z-index: 90;
+  width: min(340px, 88vw); height: 100dvh;
+  padding: 26px 24px 40px;
+  overflow-y: auto;
+  background: var(--glass);
+  border-left: 1px solid var(--line);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: var(--shadow);
+  transform: translateX(105%);
+  transition: transform .42s var(--ease);
+}
+.sidebar.is-open { transform: translateX(0); }
+.sidebar__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.sidebar__head h2 { font-size: 1.3rem; margin: 0; }
+.sidebar__section { padding: 20px 0; border-bottom: 1px solid var(--line); }
+.sidebar__section:last-child { border-bottom: 0; }
+.sidebar__section h3 { margin: 0 0 14px; font-size: .76rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.sidebar__section p { margin: 0; font-size: .9rem; color: var(--muted); line-height: 1.8; }
+.sidebar__section > a {
+  display: block; padding: 9px 12px; margin: 2px -12px;
+  border-radius: var(--r-sm); text-decoration: none; color: var(--text);
+  transition: background-color .25s, color .25s;
+}
+.sidebar__section > a:hover { background: var(--surface-2); color: var(--accent); }
+
+.seg { display: flex; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-2); }
+.seg button {
+  flex: 1; padding: 8px 10px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--muted); font-size: .86rem;
+  transition: background-color .25s, color .25s;
+}
+.seg button.is-active { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+
+.scrim {
+  position: fixed; inset: 0; z-index: 80;
+  background: rgba(5, 9, 22, .5);
+  opacity: 0; transition: opacity .35s var(--ease);
+}
+.scrim.is-open { opacity: 1; }
+

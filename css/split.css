@@ -1,0 +1,960 @@
+/* 分栏层：伪 3D 卡片堆 + 时间线 + 小行星滚动条 + 作品集。 */
+/* ==========================================================================
+   伪 3D 分栏（文章区）：左半卡片列 / 右半时间线（悬停某张卡时换成该文预览）
+   --------------------------------------------------------------------------
+   卡片形态直接沿用 card-spin-demo.html 里收敛出来的那套正交方案：
+     rotateY(var(--ryEnd))  只按 cos 收窄宽度（54° → 宽度 ×.589），左右边保持竖直；
+     skewY(-var(--tilt))    再把上下边一起斜起来 —— 是剪切不是旋转，
+                            所以左右边仍竖直、上下边互相平行，整体朝右上、左端大右端小。
+   不用 perspective：一旦投影，后退端的竖直方向也会被压缩，上下边必然汇聚成梯形，
+   和「上下边平行」在几何上互斥（矩形必须左右边等高）。
+   入场：起始角 -126°、位移 -88px、skew 0（牌子先是正的），转到落位时才斜到 -18°，
+   倾斜和转角同步过渡，观感是「路标牌被拧过来」而不是斜着平推。
+   （原来是 -150° / -120px：那一下摆幅偏大，卡几乎是横着甩进来的；收一档之后
+   仍看得清「从侧后方拧正」，但不再抢内容。改这里等于改全组，卡片没有第二份参数。）
+   ========================================================================== */
+
+/* 文章区整体放宽一点：分栏需要横向空间，980px 会让卡片压得太窄 */
+.feed__inner { max-width: 1180px; }
+
+/* 两列的父容器定高：卡片叠与时间线都撑满这一格，高度不随卡片张数 / 内容长度跳动。
+   78vh 是「一屏内能看到整组」的上限，560/800 兜住很小的手机与很高的显示器；
+   要改就改这一处，左列的叠距与右列子条目的可滚高度都由它反推。 */
+.split {
+  position: relative;   /* 贯穿箭头（.flow）的定位基准 */
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: clamp(20px, 3.2vw, 64px);
+  align-items: stretch;
+  height: clamp(560px, 78vh, 800px);
+  /* 姿态基准与实时值分开：--ryBase/--tiltBase 是静止落位（layout 只读这两个），
+     --ryEnd/--tilt 是每帧被滚动动画改写的实际值。基准放在这一层，
+     子卡片继承同一个值 —— 一次 setProperty 就能让四张卡一起动，不用逐张写。 */
+  --ryBase: 34deg;
+  --tiltBase: 8deg;
+  --ryEnd: var(--ryBase);
+  --tilt: var(--tiltBase);
+}
+/* 卡片列改成「分页」之后这里不再滚动：一页只展开 5 张，其余的压成上下两个堆，
+   翻页由 deck 热区 / 时间线滚动驱动（见 js 的 applyCards）。
+   overflow 只用来裁掉压在容器外的堆边，禁止滚动 —— 滚动会破坏「点击堆 = 翻页」的语义。 */
+.split__cards {
+  position: relative;      /* 堆与卡片的定位基准 */
+  min-width: 0; height: 100%;
+  /* 这里原来是 overflow:hidden —— 它把上堆探出容器顶的那两截直接裁掉了，
+     用户看到的就是「上一组卡片显示不全」。现在放开，让上堆真正探出窗口画出来；
+     代价是下堆也会跟着画出去，所以由 .card-stack 的 clip-path 在容器底统一切平（见 [data-role="next"]），
+     溢出的责任从「整列裁」下放到「哪一摞该被裁」。禁止滚动这条不变。 */
+  overflow: visible;
+}
+
+/* 卡片叠：高度跟着父容器（定高），卡片绝对定位一张压一张。
+   叠距由 js 反算：卡片总高不够就拉开填满容器，够/放不下就用基准值（--stack-gap-base）。
+   过滤只改透明度、不改高度 —— 右半时间线就不会因为卡片进出而上下跳。 */
+.card-stack {
+  position: relative;
+  height: 100%;
+  --stack-gap-base: 76px;   /* 每张往下错开的基准距离，也就是露出来的那条高度 */
+  --stack-gap: var(--stack-gap-base);
+}
+
+/* 卡片外层（由 js 包一层）：
+   1. 绝对定位堆叠，落点完全由 js 算好的 --y 决定 —— 分页之后一页有四种落点
+      （当前页展开 / 上堆 / 下堆 / 翻页时向上堆走），用一条 translateY 就能全部表达；
+   2. --deck-scale 让堆里的卡片整体缩一档，露出「一摞纸」的错觉；
+   3. pointer-events:none —— 命中判定交给卡片自己。否则上层槽位的矩形（含透明留白）
+      会把下层卡片露出来的那条边全挡住，下层根本点不到。 */
+.card-slot {
+  position: absolute; left: 0; right: 0; top: 0;
+  z-index: var(--zi, 1);
+  transform: translate3d(var(--deck-x, 0px), var(--y, var(--outH, 84px)), 0) scale(var(--deck-scale, 1));
+  pointer-events: none;
+  /* 翻页就是这个 transition 在播：一次改 y / scale，旧页向上堆、新页从堆里展开 */
+  transition: transform .62s var(--ease), opacity .5s var(--ease);
+}
+
+/* ---- 分页的四种角色（js 写在 data-role 上，CSS 只负责观感）---- */
+/* 当前页：正常展开，可点。
+   transition-delay 按 --zi 错开 45ms（0/45/90/135/180）：5 张一起动会像整块平移，
+   错开之后才是「从堆里一张张抽出来、展开上推」的节奏。delay 对 transform 与 opacity 各给一份。 */
+.card-slot[data-role="page"] {
+  opacity: 1;
+  transition-delay: calc((var(--zi) - 10) * 45ms), calc((var(--zi) - 10) * 45ms);
+}
+/* 上堆：上一页留下的最后 2 张，探出容器顶上沿各露 60px（overflow 已放开）。
+   半透明 .5：比页卡淡一档，但抬高到 .5 之后能看出是两张具体的纸而不是一团影子。
+   **内容不渲染**：缩略图、日期、正文全部留在 DOM 里但不画，只留下卡片形体 + 标题位，
+   标题位由 .deck-title 顶着写「上一组文章」。 */
+.card-slot[data-role="prev"] { opacity: .5; --deck-scale: .96; }
+/* 下堆：还没轮到的卡片紧堆在底部，稍微降一点亮度让第一页更跳出来。
+   只有「下一张要被取走的」那张露在面上（整摞预留 44 + (n-1)·8 的高度，正好接住最后一张页卡），
+   其余层低 8px 一整层被它盖住；切页时纸面从切口里滑出来，不会再弹开。
+   除了这张「下一组文章」，其余层的 header 藏掉。 */
+.card-slot[data-role="next"] { opacity: .88; --deck-scale: 1; }
+/* 下堆最前面那张的顶边正好接住最后一张页卡，顶边线交给它的 accent，避免多出一条浮线。 */
+.card-slot[data-role="next"][data-deck-top] .post { border-top-color: transparent; }
+/* 下堆的纸不再单独裁高：卡片保留完整纸面（比容器底长），
+   整摞由 .card-stack 的 clip-path 在容器底平切 —— 右下那块三角缺口也就被纸面补齐。
+   开全屏/飞行时取消裁切，不然展开的卡会被切在容器里。 */
+.card-stack { clip-path: inset(-260px -260px 0 -260px); }
+.card-stack:has(.post.is-full), .card-stack:has(.post.is-flying) { clip-path: none; }
+/* 整体裁切取消时，每张卡得自己在同一条底边上再裁一次：
+   --deck-vis 是 js 按 boxH - y 算的「容器底以上的可见高度」，与 .card-stack 的容器底完全重合，
+   所以整体裁切恢复时两者无缝衔接、不会跳一下。
+   没有这一条，收起动画里页卡一缩、背景一淡回来，下堆的纸就整张画在容器底外，
+   盖住正文和流星线（用户 2026-11-15 报的「下一组文章溢出」）；最后一张页卡
+   比容器底长的那一截也会跟着露出来。
+   只在 body.is-full（阅读态 / 收起中）生效：平时翻页时整体裁切是在的，
+   而那时卡片正从页卡位置往堆里滑（--y 已经换成落点），按落点算的裁切线会把
+   正在滑动的卡切成一条 —— 那种时刻必须交给整体裁切。
+   飞行中的卡与通铺的卡要排除：它们本来就该画出容器（裁切正为它们取消）。
+   --deck-vis 缺省 100% = 不裁，js 还没写值时保持原样。 */
+body.is-full .card-slot .post:not(.is-full):not(.is-flying) {
+  clip-path: inset(0 0 calc(100% - var(--deck-vis, 100%)) 0);
+}
+.card-slot[data-role="next"] .post::before { display: none; }
+.card-slot[data-role="next"][data-deck-top] .post::before { display: block; }
+.card-slot[data-role="next"]:not([data-hint]) .post__head { visibility: hidden; }
+.card-slot[data-role="prev"]:not([data-hint]) .post__head { visibility: hidden; }
+/* 翻页时被顶上去的旧页卡：偏转放大后完全淡出，沉到新一页背后 */
+.card-slot[data-role="gone"] { opacity: 0; --deck-scale: .94; }
+/* 超出「5 页 + 上 2 + 下 5」的那几张彻底不画，省掉绘制开销 */
+.card-slot[data-role="hidden"] { visibility: hidden; opacity: 0; }
+
+/* 堆态卡片的姿态：在落位角上再「拧」一把（--turn 0→1 同时增大落位角与倾斜），
+   看起来是绕左边缘朝里翻过去、压到新一页背后。
+   只改 transform 一条，所以和 .post 原有的 .8s 过渡天然接得上。 */
+.post.is-inview.is-deck:not(.is-full):not(.is-flying) {
+  transform: translate3d(calc(var(--turn, 0) * -14px), 0, calc(var(--turn, 0) * -90px))
+             skewY(calc(var(--tilt) * -1 * (1 + var(--turn, 0) * .55)))
+             rotateY(calc(var(--ryEnd) + var(--turn, 0) * 34deg));
+}
+/* 下堆第一张：在落位角上再把倾斜收 3°（页卡 5° → 2°），像一张搭在页卡下沿上的纸，
+   顶边与页卡底边不平行；卡身一直铺到切口，右下三角由纸面自己补齐。
+   它压在页卡下沿 4px（js 的 DECK_LIFT），所以两条纸边错开、不会露出背景。 */
+.card-slot[data-role="next"][data-deck-top] .post.is-inview.is-deck:not(.is-full):not(.is-flying) {
+  transform: translate3d(0, 0, 0)
+             skewY(calc(var(--tilt) * -1 + 3deg))
+             rotateY(var(--ryEnd));
+}
+
+/* 翻页入口不再需要样式：点的是卡片堆本身（见 js 里 capture 阶段的 click）。
+   原来那套 .deck 透明热区（up 48px / down 92px、hover 亮起）连同两颗 button 一起退役 ——
+   它压在卡片上还要维护 hidden，堆里的卡片本来就是入口，用它更省。 */
+
+/* 有下堆时最后一张卡也渲染正文，多出来的正文被这里裁掉：
+   cap 由 js 写成「下堆高度 + 一行正文 + header」的高度，裁切口落在下堆的下面，看不见。 */
+.post.is-capped { max-height: var(--card-cap); overflow: hidden; }
+
+/* ---- 堆两端的「标题卡」----
+   这两张不渲染自己的内容（缩略图 / 日期 / 正文全隐藏），只剩卡片形体 + 一个标题：
+   提示文本直接占据 h3 的位置，字号、字重、缩进都跟普通卡片标题同一条规则，所以它「就是卡片标题」，
+   而不是贴在纸边上的一行小字。
+   h3 的真实文本不删，只是 color:transparent —— 翻页那一刻 data-hint 消失，标题原样回来，
+   中间那段 color / opacity 过渡就是「提示先淡出、正文随后浮现」。 */
+/* 堆里的卡一律只留「纸」：上一组、下一组都不渲染缩略图 / 日期 / 摘要 / 标签 / 正文。
+   以前这条只挂在 [data-hint] 上，于是上堆里非提示那几张（rel=-2）还画着完整内容，
+   从上一页挂着的那摞纸里露出来，一眼就破了「纸堆」的形。
+   现在换成透明度 + visibility 延迟：角色切换时正文先淡出 0.2s，再撤掉绘制；
+   页卡从堆里抽出来时反过来淡入，取卡/放卡都不会「啪」地蹦出或消失。 */
+.post__thumb, .post__meta, .post__excerpt, .post__foot, .post__body, .post__detail {
+  transition: opacity .2s var(--ease), visibility 0s linear 0s;
+}
+.card-slot[data-role="prev"] .post__thumb,
+.card-slot[data-role="prev"] .post__meta,
+.card-slot[data-role="prev"] .post__excerpt,
+.card-slot[data-role="prev"] .post__foot,
+.card-slot[data-role="prev"] .post__body,
+.card-slot[data-role="prev"] .post__detail,
+.card-slot[data-role="next"] .post__thumb,
+.card-slot[data-role="next"] .post__meta,
+.card-slot[data-role="next"] .post__excerpt,
+.card-slot[data-role="next"] .post__foot,
+.card-slot[data-role="next"] .post__body,
+.card-slot[data-role="next"] .post__detail {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s var(--ease), visibility 0s linear .2s;
+}
+/* 放卡过渡：页卡退回下堆的那 .62s 里，正文跟着纸一起滑回去，落进切口后才换成标题卡。
+   只在 data-returning 期间放行；时间到由 js 摘掉并挂上 data-hint。 */
+.card-slot[data-role="next"][data-returning] .post__head,
+.card-slot[data-role="next"][data-returning] .post__thumb,
+.card-slot[data-role="next"][data-returning] .post__meta,
+.card-slot[data-role="next"][data-returning] .post__excerpt,
+.card-slot[data-role="next"][data-returning] .post__foot,
+.card-slot[data-role="next"][data-returning] .post__body,
+.card-slot[data-role="next"][data-returning] .post__detail { visibility: visible; }
+.card-slot[data-hint] .post__head { visibility: visible; }
+.card-slot[data-hint] .post__heading { flex: 1 1 100%; width: 100%; }
+.card-slot[data-hint] .post__heading h3 { position: relative; width: 100%; color: transparent; }
+/* 提示文字用 header 自己的 ::after 定位，而不是挂在 h3 里：
+   h3 在这一排 flex 里会被缩略图挤窄（实测只占 81..263，右对齐等于没对齐），
+   而 ::after 可以直接拉到 header 的左右留白线上，左/右对齐才是真的贴边。
+   字号与卡片标题同一条 clamp —— 这是「同风格」的全部依据，别在这里另起一套。 */
+.card-slot[data-hint] .post__head { position: relative; }
+.card-slot[data-hint] .post__head::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--pad) * .34); left: var(--pad); right: var(--pad);
+  font-size: clamp(1.02rem, 2vw, 1.2rem); line-height: 1.35; letter-spacing: .01em;
+  /* 用 --text 而不是写死白色：--ink 这个变量根本不存在（以前靠回退值才在白底上「看起来对」），
+     结果日间模式下这张纸是白的、字也是白的，提示直接消失。 */
+  color: var(--text, rgba(255, 255, 255, .94));
+  opacity: 0; transition: opacity .34s var(--ease);
+}
+/* 上堆里写「上一组文章」那张：左对齐，跟普通卡片标题同一个起点。
+   top 必须是 40px 而不是 34px：这张卡只探出容器顶 44px（js 里 y = pad - 64），
+   卡内 0..44 落在容器外，写 34 会把提示推到「文章」标题栏那一带。 */
+.card-slot[data-hint="up"] .post__head::after { content: attr(data-hz-up); text-align: left; opacity: 1; }
+html[data-lang="en"] .card-slot[data-hint="up"] .post__head::after { content: attr(data-he-up); }
+/* 下堆最后一张：右对齐，贴在这摞纸的右端 */
+.card-slot[data-hint="down"] .post__head::after { content: attr(data-hz-down); text-align: right; opacity: 1; }
+html[data-lang="en"] .card-slot[data-hint="down"] .post__head::after { content: attr(data-he-down); }
+
+/* 悬停的卡提到最上层，否则它只会被上面那几张盖着（js 在卡片自己 mouseenter 时加） */
+.card-slot.is-top { z-index: 30; }
+/* 悬停某张卡时，其余几张退成半透明（只有卡片自己的 hover 走这条；时间线 hover 不再压暗） */
+.card-slot.is-faded { opacity: .28; }
+/* 正文只在「这张完整露着」和「正在 hover 的那张」绘制（js 标 is-front）：
+   分页之后白名单更窄 —— 当前页最后一张，且后面没有下堆压着，才给正文（见 7.4 ⑧）。
+   opacity 不会改变绘制顺序，半透明卡片的正文会透出来压在下面几张卡上，看着像叠错了层。
+   用 visibility 而不是 display —— 正文一撤卡片就矮，叠距会跟着重算一遍。
+   全屏/飞行中的卡片要例外，那是阅读态。 */
+.post__text { transition: opacity .2s var(--ease), visibility 0s linear 0s; }
+.card-slot:not(.is-front) .post:not(.is-full):not(.is-flying) .post__text {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s var(--ease), visibility 0s linear .2s;
+}
+/* is-away 那条已经退役：分页之后「不在本页」由 data-role="hidden"/"gone" 表达
+   （opacity 0 是 transition 出来的，不是 !important 一刀切），留在这里只会和角色规则抢优先级 */
+.card-slot:has(> .post.is-hidden) > .post { pointer-events: none; }
+/* 搜索把卡片 display:none 之后，槽位也一起隐掉 */
+.card-slot:has(> .post.is-hidden) { opacity: 0 !important; }
+
+/* 槽位是 none，卡片自己得开回来自动命中 */
+.split .post { pointer-events: auto; }
+
+/* 卡片飞到全屏时临时卸掉槽位的 transform：带 transform 的祖先会成为 position:fixed 的包含块，
+   卡片就会相对槽位而不是视口定位，飞过去的位置整体错开一截。
+   过渡也必须一起关掉 —— 只要 transform 还在播动画，fixed 就依旧挂在槽位上（数值是中间值）。 */
+.card-slot.is-flat { transform: none !important; transition: none !important; }
+/* 落位帧专用：摘掉 is-flat 的那一瞬必须让 translate3d(0, --y) 一步到位。
+   槽位那条 .62s 的 transform 过渡是给翻页看的，直接摘 is-flat 会让它真的播一次 ——
+   卡片先出现在整摞顶端（transform 归零的位置），再往下滑 --y 才落到自己的槽位，
+   就是阅读页关闭时那一下「二次位移」。blog.js 在 finish 里先挂 .is-landing、
+   摘 is-flat、读一次布局提交这一帧，再把类摘掉（过渡随之恢复，但值已经不变）。 */
+.card-slot.is-landing { transition: none !important; }
+
+/* 三态 transform：起始（未入场）/ 落位（inview）。落位就是「正读姿态」，hover 不再改几何 ——
+   卡片一变宽变正，hit 区跟着变，边缘就会来回抖，所以稳定态直接取原来 hover 的那套角度。 */
+.post {
+  --ry: -126deg;      /* 起始角：从左侧旋入（摆幅比 -150° 收一档） */
+  --shift: 88px;      /* 起始横向位移（原来是 120px） */
+  /* --ryEnd / --tilt 不在这里定义：由 .split 统一持有，卡片继承（滚动动画一次改值全组生效） */
+  transform-origin: left center;   /* 旋转轴 = 卡片左边缘（即「路标杆」的位置） */
+  transition: transform .8s var(--ease), opacity .5s var(--ease),
+              box-shadow .45s var(--ease),
+              left .5s var(--ease), top .5s var(--ease), width .5s var(--ease),
+              height .5s var(--ease), border-radius .5s var(--ease),
+              border-color .3s var(--ease);
+}
+
+/* 滚动驱动姿态时，每帧都会写一次角度。transform 若还挂着 .8s 过渡，写入值会被拖着走
+   （看上去像加了层重阻尼、松手后还在慢慢转）。所以只在滚动动画运行期间把 transform 压到 .1s，
+   其余属性时长原样保留（按上面 transition 的顺序一一对应）。 */
+body.is-scrolling .post { transition-duration: .1s, .5s, .45s, .5s, .5s, .5s, .5s, .5s, .3s; }
+
+/* 出场：线彻底退回 0 那一拍，整组一起原路收回。时长比入场长一档 —— 回滚时看得清
+   「离开」，而不是啪地复位；属性顺序与上面的基类一一对应。
+   .split.is-leaving 由 initSplit 的状态机挂（flowState 的唯一边界），
+   权重压过 body.is-scrolling，所以编舞期间不会被 .1s 那套改快。 */
+.split.is-leaving .post {
+  transition: transform 1.25s var(--ease), opacity .95s var(--ease),
+              box-shadow .45s var(--ease),
+              left .5s var(--ease), top .5s var(--ease), width .5s var(--ease),
+              height .5s var(--ease), border-radius .5s var(--ease),
+              border-color .3s var(--ease);
+}
+
+/* 覆盖上文的奇偶翻转入场（那套是 2D 时代的 rotate 180°，这里换成绕左边缘的旋入） */
+.post:nth-child(odd), .post:nth-child(even) {
+  --enter-x: 0px; --enter-r: 0deg;
+  transform-origin: left center;
+}
+
+/* 未入场：藏在左侧外、面朝侧后方（--ry），且不倾斜 */
+.post:not(.is-full):not(.is-flying) {
+  opacity: 0;
+  transform: translate3d(calc(var(--shift) * -1), 0, 0) skewY(0deg) rotateY(var(--ry));
+}
+/* 落位：转到 --ryEnd、收起宽度，同时斜 --tilt */
+.post.is-inview:not(.is-full):not(.is-flying) {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) skewY(calc(var(--tilt) * -1)) rotateY(var(--ryEnd));
+}
+/* 悬停：不动几何，只把这一张点亮（阴影），其余卡片的半透明由 .is-faded 负责。
+   几何不变 = hit 区不变，鼠标停在边缘不会再被自己撑开的变形躲掉。
+   时间线条目 hover（.is-hl）是另一个入口：只给**边框**换色，不提层、不投影、
+   也不动其它卡片的透明度 —— 鼠标扫过右列时间线时左列只多一条高亮边。 */
+.post.is-inview.is-hover:not(.is-full):not(.is-flying) {
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .34);
+}
+.post.is-inview.is-hl:not(.is-full):not(.is-flying) {
+  border-color: var(--accent);
+}
+
+/* 卡片内容：伪 3D 下宽度被压到 59%，两列排布会挤，改成单列；
+   大图留给右半的预览面板，卡片本身只留标题 + 摘要 + 标签，斜条更干净 */
+.split .post__body { grid-template-columns: minmax(0, 1fr); }
+.split .post:not(.is-full) .post__figure { display: none; }
+
+/* ---------- 右半：时间线 / 预览 两个面板叠在同一格，交叉淡入淡出 ---------- */
+.rail {
+  position: relative;
+  display: grid;
+  /* 必须显式给列宽：grid 容器默认列是 auto，两个面板会被各自内容宽度撑缩，
+     时间线那几列就会被挤成一条竖着的窄条。 */
+  grid-template-columns: minmax(0, 1fr);
+  /* 行高必须用 minmax(0,1fr)：不给的话这一行是 auto，子条目一多就把 rail 撑高，
+     而 rail 一高，layoutRail 算出来的可滚高度又跟着变大 —— 自己把自己撑大。
+     定高 + overflow:hidden 之后，滚动只发生在 .tl__stream 里（条目/年号按像素槽位滑进滑出）。 */
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 6px;
+}
+.rail__pane { grid-area: 1 / 1; min-width: 0; min-height: 0; }
+.rail__pane--line { transition: opacity .32s var(--ease), transform .32s var(--ease); }
+/* 焦点只留给左侧卡片：时间线整块和条目/年号都不进 Tab 序列，也不留任何描边，
+   所以这里不再需要 #railTimeline 的 focus-visible。 */
+.rail__pane--preview { opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .32s var(--ease), transform .32s var(--ease); }
+.rail.is-preview .rail__pane--line { opacity: 0; pointer-events: none; transform: translateY(-12px); }
+.rail.is-preview .rail__pane--preview { opacity: 1; pointer-events: auto; transform: none; }
+
+/* ---------- 贯穿箭头：随滚动延伸的「流星」线 ----------
+   以前是 .tl 里的 .tl__spine（高度跟内容走，最多画到条目结束，入场靠 scaleY 拉长）。
+   现在要一直画到容器底、再拐向左、到接近左边缘后往下延伸，整条线提到 .split 这一层，
+   几何全部由 js 实测后写成自定义属性（--fx / --fy0 / --fyb / --fx2 / --fbend / --fv1）。
+   进度只改 stroke-dasharray（paint 层裁切，不触发重排），滚动时每帧写几个变量就够。
+   端点那个亮斑（--hx / --hy）就是「流星头」，尾巴用从淡到亮的渐变，起点自然更弱。
+   **形状**：三段互成直角的折线已经换成一条切线连续的贝塞尔路径 —— 两个拐角各带一段
+   四分之一圆，直线段一像素没动（竖段仍压在圆点中心），见 js 的 measureFlow()。 */
+.tl { position: relative; margin: 0; padding: 4px 0 46px; list-style: none; }
+.flow {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  --fx: 306px; --fy0: 14px; --fyb: 683px; --fx2: 12px;
+  --fbend: 80px;   /* 拐角的贝塞尔半径（js 按三段可用长度收，窄屏自动更小） */
+  --fv1: 669px;    /* 段 1 里「真直线」的那一截（虚线层只许画到这里） */
+  --lv1: 0px; --lh: 0px; --lv2: 0px;
+  --hx: 0px; --hy: 0px;
+  /* 三段的渐变端值由 js 每帧按「全局弧长」写完（--la1/--lb1 竖段、--la2/--lb2 横段、
+     --la3/--lb3 下方竖段）。段与段的接缝处两个变量取同一个值，所以拐角不再断开。 */
+  --la1: .16; --lb1: .72; --la2: .16; --lb2: .72; --la3: .16; --lb3: .72;
+  transition: opacity .3s var(--ease);
+}
+/* 悬停卡片时右半切到预览面板，这条线属于「时间线」，跟着一起让步 */
+.split:has(.rail.is-preview) .flow { opacity: .22; }
+/* 时间线抽屉收起来时，箭头已经没有指向的对象了（条目全透明），留着就是一条悬空的线 */
+.split:has(.rail__pane--line.is-collapsed) .flow { opacity: 0; }
+/* 全屏阅读时把线关掉：阅读页的正文和卡片都没有实底，这条线会从文章内容里穿过去
+   （虚线区间的 short dash 特别显眼，看着像排版错误） */
+body.is-full .flow { opacity: 0; }
+
+/* 三段「线」是同一个 svg 里的三个子路径，几何写在 d 上（见 measureFlow）。
+   进度还是 --lv1 / --lh / --lv2，只是从 clip-path 换成 stroke-dasharray：
+   描边天然只画到 dash 那一段，曲线上的收尾也是圆的，不会在拐角剩半个像素的方头。
+   overflow 必须显式 visible —— 横线在容器底外 3px、尾段还要伸出容器，
+   而 svg 在 HTML 里默认 overflow:hidden，会把这两截直接裁没。 */
+.flow__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.flow__svg path { fill: none; stroke-width: 2; stroke-linecap: butt; stroke-linejoin: miter; }
+.flow__p1 { stroke: url(#flowG1); stroke-dasharray: var(--lv1, 0px) 100000px; }
+.flow__p2 { stroke: url(#flowG2); stroke-dasharray: var(--lh, 0px) 100000px; }
+.flow__p3 { stroke: url(#flowG3); stroke-dasharray: var(--lv2, 0px) 100000px; }
+/* 渐变的两个端点就是 js 每帧算出来的 alpha（--la1 → --lb1 …），坐标由 js 按实测几何写成
+   userSpaceOnUse：两段竖线是「to bottom」、横段是「to left」，与原来三段各自的 linear-gradient
+   一一对应。接缝两侧取同一个值，所以拐角不会被画成一亮一暗的两截。 */
+.flow__svg stop { stop-color: #fff; }
+#flowG1 .a { stop-opacity: var(--la1, .16); } #flowG1 .b { stop-opacity: var(--lb1, .72); }
+#flowG2 .a { stop-opacity: var(--la2, .16); } #flowG2 .b { stop-opacity: var(--lb2, .72); }
+#flowG3 .a { stop-opacity: var(--la3, .16); } #flowG3 .b { stop-opacity: var(--lb3, .72); }
+
+/* 虚线层（可滚区间的短线）已经整块删除：文章时间线不再提示「这段还能滚」，
+   线的样子只剩一条实描边。删掉的四件东西是 .flow__dash / .flow__dash i 两条规则、
+   .split:has(.rail__pane--line.has-scroll) 的亮起规则、.split.is-leaving 里的慢淡出，
+   以及 js 侧的 --dashTop / --dashH 计算 —— 想加回来请连同 docs 里 14.5b 的坑一起读。 */
+
+/* 流星头：带光晕的亮斑，位置由 js 按进度算好写进 --hx / --hy。
+   尾巴用「起点淡、末端亮」的固定渐变，头再单独补一块高光 —— 线越长尾迹越淡，头始终最亮。 */
+.flow__head {
+  position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%;
+  transform: translate(calc(var(--hx) - 50%), calc(var(--hy) - 50%));
+  background: radial-gradient(circle, #fff 0 24%, rgba(255, 255, 255, .55) 46%, rgba(255, 255, 255, 0) 70%);
+  box-shadow: 0 0 14px 4px rgba(255, 255, 255, .38), 0 0 36px 12px rgba(150, 202, 0, .22);
+  opacity: 0;
+  transition: opacity .25s var(--ease);
+}
+.flow.is-live .flow__head { opacity: 1; }
+/* 线自己退场：线的**长度**是滚出来的，没有可补间的时长（1:1 跟手是这套线的核心，
+   不在这里加弹簧）。能补的只有「头」那团亮斑：线退到 0 那一帧它别啪一下灭掉，
+   is-leaving 期间给一段更长的淡出（.25s → .9s）。 */
+.split.is-leaving .flow__head { transition: opacity .9s var(--ease); }
+
+/* 时间线：所有年份共用一条流。
+   年号是流里的普通一行（装饰），条目在 js 里按「第几行 − 窗口起点」摆到 --slot。
+   窗口固定只显示 5 条条目，跨年时两颗年号可以同时 is-active —— 年份只管「标段落」，
+   不再管「一次只展开一年」。 */
+/* 窗口本体：**不再滚动**，也不再裁。条目/年号按像素槽位摆，
+   窗口外的只是淡出 + 滑出，所以这里必须 overflow: visible ——
+   让它们真的滑出边界淡掉，而不是被硬边切一刀。
+   代价是没有原生滚动条可用，滑块改成自绘的一颗行星（夜）/ 太阳（日），见 .tl__bar。
+   height 必须显式给：子项全是绝对定位，撑不出高度。 */
+.tl__stream {
+  position: relative;
+  display: block;
+  overflow: visible;
+  margin: 0; padding: 0; list-style: none;
+  height: var(--lineWin, 245px);
+  transition: height .5s var(--ease);
+  scrollbar-width: none;
+  /* 右侧那道槽的宽度，条目与滚动条共用一份，改一处两边一起动：
+     --bar-w    滚动条本体宽（球 20 居中放，条身要留得下 26）
+     --bar-pad  条右缘与容器右壁之间的让位。**这一段不是装饰**：`.rail` 是
+                overflow:hidden（时间线要靠它裁住滑出窗口的条目），条贴着右壁时，
+                hover 张到 40px 的环要往右伸 20px、球外面还有一圈 14px 光晕，
+                超出容器的那一截会被直接切掉，看着像小行星被削了右半。
+                环要 7px、球+光晕要 ~13px，取 12：环整颗进来，光晕刚好贴边。
+     --bar-gutter 条目右边界，= 条宽 + 让位，标题不会钻到球底下。 */
+  --bar-w: 26px;
+  --bar-pad: 12px;
+  --bar-gutter: calc(var(--bar-w) + var(--bar-pad));
+}
+.tl__stream::-webkit-scrollbar { width: 0; height: 0; }
+
+/* 年号行：跟条目一样吃 --slot。padding-bottom 是年号与这一年第一条之间的留白，
+   它也是流高的一部分（js 逐行累加时量的是这个盒子的 rect.height）。 */
+.tl__yearRow {
+  position: absolute; left: 0; right: 0; top: 0;
+  padding: 0 0 22px;
+  transform: translateY(var(--slot, 0px));
+  /* 年号必须和条目同一段位移曲线，否则条目在滑、年号在跳，看起来就像年号单独吃了惯性 */
+  transition: opacity .5s var(--ease), transform .36s var(--ease);
+  pointer-events: none;
+}
+/* 年号是预加载的占位行：滑出窗口也**不**整行透明 —— 它保留在流里，
+   等线头扫过再由 .tl__year 的 is-lit 把年号本身渲染出来。
+   条目仍按 is-out 收掉（5 条窗口外的文字不该压着别的内容）。 */
+.tl__yearRow.is-out { opacity: 1; }
+
+/* 自绘滚动条：全局只有这一颗，不再按年号各长一颗。
+   夜：行星 + 一圈倾斜的环（照 nexus-editor 的 floatball —— 球体 30% 高光的径向渐变，
+   环拆成上下两个半环各压一层 clip-path，球就有了「在环里」的厚度）；
+   日：同一颗球换成太阳，环收成光晕，body 上 data-theme=day 时换色。
+   位置由 --barPos（0..1）算，js 只在 pageStart 变时写一次。 */
+.tl__bar {
+  position: absolute; right: var(--bar-pad, 0); top: 0;
+  width: var(--bar-w, 26px); height: var(--lineWin, 245px);
+  z-index: 3; cursor: grab;
+  /* 淡入淡出：默认藏着，只有「全局能滚」且时间线已入场（is-in）时才浮出。
+     全局不足一页时由 js 挂 .is-nobar 收起来 —— 拖不动的球比没有球更容易让人误以为能滚。 */
+  opacity: 0;
+  transform: translateY(7px) scale(.9);
+  transition: opacity .55s var(--ease), transform .66s cubic-bezier(.34, 1.4, .64, 1);
+}
+.tl__bar:active { cursor: grabbing; }
+/* 只在**真的能滚**的时候浮出：.is-nobar 由 js 按 maxStart === 0 挂（全局不足一页） */
+.rail__pane--line.is-in .tl__stream:not(.is-nobar) .tl__bar {
+  opacity: 1; transform: none;
+  /* 年号由流星线驱动，不再有「等它长完」的固定延迟；球只隔一拍跟出来。 */
+  transition-delay: .12s, .12s;
+}
+/* 出场：球跟线一起退，比入场慢一档（同样由 flowState 的边界挂 is-leaving）。
+   基础规则那条 .66s 带回弹，出场不需要回弹，统一成普通缓动。 */
+.split.is-leaving .tl__bar { transition: opacity .85s var(--ease), transform .85s var(--ease); }
+.tl__track {
+  position: absolute; left: 50%; top: 4px; bottom: 4px; width: 1px;
+  margin-left: -.5px; z-index: 0;
+  /* 轨道不做命中目标：它只有 1px 宽，让鼠标真的「点中这条线」等于没有热区。
+     hover 判定交给整条 .tl__bar（球会自己抢回去，见下面的 :has），
+     轨道只负责被照亮 —— 于是「滑过滚动条」和「抓住球」是两件事。 */
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+            rgba(255, 255, 255, .10), rgba(255, 255, 255, .45), rgba(255, 255, 255, .10));
+  /* 高亮只动 width / margin-left 和叠层的 opacity：渐变本身不能过渡，
+     想「淡入一根更亮的线」只能把亮的单独铺一层再交叉淡入。 */
+  transition: width .32s var(--ease), margin-left .32s var(--ease);
+}
+.tl__track::after {
+  content: ""; position: absolute; inset: 0;
+  border-radius: 2px;
+  background: linear-gradient(to bottom,
+            rgba(255, 255, 255, .24), rgba(214, 212, 255, .95), rgba(255, 255, 255, .24));
+  box-shadow: 0 0 8px rgba(150, 146, 255, .55), 0 0 18px rgba(150, 146, 255, .26);
+  opacity: 0;
+  transition: opacity .28s var(--ease);
+}
+/* 轨道高亮：hover 整条滚动条（含拖动中指针滑出球）只亮轨道，不动球 */
+.tl__bar:hover .tl__track,
+.tl__stream.is-drag .tl__track { width: 2px; margin-left: -1px; }
+.tl__bar:hover .tl__track::after,
+.tl__stream.is-drag .tl__track::after { opacity: 1; }
+.tl__rock {
+  position: absolute; left: 50%; z-index: 2;
+  width: 20px; height: 20px; margin-left: -10px;
+  /* 轨道可用行程 = 窗口高 - 上下留白 - 球直径；--barPos 0 时贴顶，1 时贴底。
+     26px = 上下各 4px 留白 + 20px 球（这个数必须和宽高一起改，否则行程算错、球会撞底）。
+     **top 不走 transition**：位置现在由 js 的球弹簧逐帧写 --barPos（内容不参与），
+     再叠一层 CSS 过渡等于把弹簧二次平滑，松手的过冲就没了。
+     --rock-lead 只让球心沿运动方向超前一点点（js 每帧写，速度归零就回 0）。 */
+  top: calc(4px + (var(--lineWin, 245px) - 28px) * var(--barPos, 0) + var(--rock-lead, 0px));
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #dfe4ff, #6e6ad4 62%, #3b3785);
+  box-shadow: 0 0 14px rgba(140, 138, 245, .55), inset -2px -3px 6px rgba(0, 0, 0, .38);
+  /* 惯性形变：--rock-sy（-1..1，js 每帧按弹簧速度写）沿运动方向把球拉长、横向收窄，
+     像一个被甩着走的球；hover / 拖动时的胀大改走 --rock-pop 乘进同一条 scale ——
+     以前 pop 用 transform，会和形变抢同一个属性，只能二选一。
+     缓动抄 nexus-editor floatball 的过冲段（y2=2 的「先冲过头再弹回来」）。 */
+  scale: calc(var(--rock-pop, 1) * (1 + var(--rock-sy, 0) * .26))
+         calc(var(--rock-pop, 1) * (1 - var(--rock-sy, 0) * .14));
+  transition: background .5s var(--ease), box-shadow .5s var(--ease),
+              scale .42s cubic-bezier(.34, 1.7, .64, 1);
+}
+/* 球的 hover 只认**球本身**：整条 .tl__bar 有 26px 宽、整列高，
+   以前挂 `.tl__bar:hover` 等于「鼠标顺着文章区右边滑一下，球就凭空胀一下」。
+   现在 pop 挂在球自己的 :hover 上，鼠标落在轨道上只会点亮轨道（见 .tl__track::after）。
+   is-drag 仍是整条生效：手已经抓住球了，指针滑出球体不该让状态掉回去。 */
+.tl__rock:hover,
+.tl__stream.is-drag .tl__rock { --rock-pop: 1.18; }
+/* 环：上下各一半，下半环压在球前面、上半环压在球后面 —— 这就是 floatball 的层次做法。
+   **环慢半拍就是「惯性」**：球的 top 每帧瞬时跟着 --barPos，而环的 top 走 .52s 弹性过渡，
+   于是球一动环就落后、球停住时环还在往那个方向多走一段再弹回来。
+   这也是环必须从 .tl__rock 里搬出来的原因 —— 在球内部 top:50% 是绑死球心的，没有独立 top 可过渡。
+   rotate -14deg：行星轨道本来就是斜的，水平摆着太像一根装饰横线。 */
+.tl__ring {
+  position: absolute; left: 50%;
+  top: calc(4px + (var(--lineWin, 245px) - 28px) * var(--barPos, 0) + 10px);
+  width: 30px; height: 11px; margin: -5.5px 0 0 -15px;
+  border-radius: 50%;
+  border: 2px solid rgba(178, 174, 255, .8);
+  filter: blur(.3px);
+  rotate: -14deg;
+  /* 环是装饰：它比球宽（30/40px），又压着球的下半截（--lo z-index 3），
+     不挡掉命中就会在球内划出一条「进环就丢 hover」的界线，球会闪。 */
+  pointer-events: none;
+  transition: top .52s cubic-bezier(.34, 1.56, .64, 1.5),
+              opacity .45s var(--ease), border-color .5s var(--ease),
+              width .6s cubic-bezier(.34, 1.56, .64, 1.5),
+              height .6s cubic-bezier(.34, 1.56, .64, 1.5),
+              margin .6s cubic-bezier(.34, 1.56, .64, 1.5);
+}
+/* 环的张开跟球走：用 :has 从 bar 上反查「球被 hover 了吗」，
+   所以鼠标在轨道上滑过时环保持收着，只有真的指到球才张。 */
+.tl__bar:has(.tl__rock:hover) .tl__ring,
+.tl__stream.is-drag .tl__ring { width: 40px; height: 15px; margin: -7.5px 0 0 -20px; }
+.tl__ring--hi { border-bottom: none; clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%); z-index: 1; }
+.tl__ring--lo { border-top: none; clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); z-index: 3; }
+/* 日间：同一颗球变成小太阳，环让位给光晕，底色换成暖橙 */
+html[data-theme="day"] .tl__track {
+  background: linear-gradient(to bottom,
+            rgba(120, 80, 40, .10), rgba(120, 80, 40, .40), rgba(120, 80, 40, .10));
+}
+/* 日间的高亮层跟着换成暖橙：高亮只改 ::after 的颜色与光晕，宽度/显隐规则两条主题共用 */
+html[data-theme="day"] .tl__track::after {
+  background: linear-gradient(to bottom,
+            rgba(255, 190, 120, .26), rgba(255, 168, 70, .95), rgba(255, 190, 120, .26));
+  box-shadow: 0 0 8px rgba(255, 150, 50, .50), 0 0 18px rgba(255, 150, 50, .24);
+}
+html[data-theme="day"] .tl__rock {
+  background: radial-gradient(circle at 32% 30%, #fffbe2, #ffb43f 58%, #f2820f);
+  box-shadow: 0 0 18px rgba(255, 168, 60, .8), 0 0 34px rgba(255, 140, 40, .38),
+              inset -2px -3px 6px rgba(180, 90, 0, .35);
+}
+html[data-theme="day"] .tl__ring { opacity: 0; }
+
+/* 年份大字：按该年第一篇文章的主题色（--yc），描边 + 半透明填充，不抢条目标题。
+   active = 「窗口里现在出现过的年份」，下划线标记；跨年时两颗年号可以同时 active。
+   两处的年号都可点：文章时间线点它 = 窗口跳到该年第一条；作品集点它 = 按年开合。 */
+.tl__year {
+  position: relative;
+  /* flex 只为了把折叠提示摆到年号右侧、跟着字号一起缩放；年号本身仍是这个元素的文本节点 */
+  display: flex; align-items: center; gap: .26em;
+  margin: 0; padding-left: clamp(26px, 2.4vw, 34px);
+  font-size: clamp(2.3rem, 5.2vw, 3.5rem); font-weight: 800; line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--yc, var(--accent));
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+/* 折叠提示：两条边画出来的一小截 V 形角，没有底色、没有边框框 —— 只是一个「这里能收/能开」的记号。
+   尺寸用 em，年号多大它多大；默认朝下（收起状），展开的那一年转到朝上。
+   transform 与 translate 分开写：旋转给箭头，抬半格位置用独立 translate，互不干扰。 */
+.tl__fold {
+  width: .2em; height: .2em; flex: none;
+  border-right: .045em solid currentColor;
+  border-bottom: .045em solid currentColor;
+  transform: rotate(45deg);
+  translate: 0 -.08em;
+  opacity: .5;
+  transition: transform .4s cubic-bezier(.34, 1.5, .64, 1), opacity .25s var(--ease);
+}
+.tl__year.is-active .tl__fold { transform: rotate(-135deg); translate: 0 .06em; opacity: .85; }
+.tl__year:hover .tl__fold { opacity: 1; }
+/* 收起之后 arrow 回到朝下 —— 「收起态」和「展开态」必须一眼能分出来，否则箭头转了等于没转 */
+.rail__pane--line.is-collapsed .tl__year.is-active .tl__fold {
+  transform: rotate(45deg); translate: 0 -.08em; opacity: .5;
+}
+.tl__year:hover,
+.tl__year.is-active { transform: translateX(4px); }
+/* 下划线必须画在「文字自己那一格」上：年号已经是 flex 容器（右边挂着折叠提示），
+   在容器上写 text-decoration 会连箭头一起划，而且在 flex 容器上的传播并不可靠 ——
+   实测那时根本看不到线。所以文字单独包一层 .tl__y（flex item 自身宽度 = 文字宽），
+   线就正好停在文字末尾，不越过箭头。 */
+.tl__y {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 9px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color .28s var(--ease);
+}
+.tl__year.is-active .tl__y { text-decoration-color: currentColor; }
+
+/* 年号的出入场也交给流星线：初始态与 is-lit 终态写在下面「条目入场」那一节，
+   不再单独维护一套「进场时按 0.92s 延迟逐个揭示」的时序。 */
+
+/* 条目：日期 + 标题，左侧圆点压在竖线上。
+   **绝对定位 + 槽位**：一行一条槽，位置只由 --slot 决定（js 写「第几条 - pageStart」）。
+   不再用原生滚动，所以没有 scrollTop 这份中间状态，也就不会出现「滚动中途把刚翻到的页改写回去」。
+   窗口外的条目（is-out）只淡出、保留占位，滑出边界时允许溢出容器渲染。 */
+.tl__item {
+  position: absolute; left: 0; right: var(--bar-gutter, 26px); top: 0;
+  display: grid;
+  /* 圆点 / 日期 / 标题：日期紧贴圆点右侧（max-content，不再用 58px 的固定列把它和标题绑在一起），
+     标题拿走剩下的整行。列宽全部跟着视口走 —— 手机端不再另写一套。 */
+  grid-template-columns: clamp(24px, 2.2vw, 26px) max-content minmax(0, 1fr);
+  /* 居中，不是 baseline：圆点与日期是同一个「刻度」，必须在整行的垂直中线上。
+     baseline 会让日期钉在标题**首行**的基线上 —— 标题一折行，日期就吊在上半行，
+     和居中的圆点错开。作品集行本来就是 center，这里对齐它。 */
+  align-items: center;
+  column-gap: clamp(6px, .6vw, 8px);
+  margin: 0; padding: 9px 12px 9px 0;
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  transform: translateY(var(--slot, 0px));
+  /* 槽位用一段短缓动（.36s，无过冲）演成「滚动」，不是惯性：
+     下一条在换槽前就摆在窗口外、opacity 0，换槽时一边滑进来一边淡入；
+     上一条一边滑出去一边淡出。真正带过冲的弹簧只留给滚动条那颗球。 */
+  transition: transform .36s var(--ease), opacity .5s var(--ease),
+              color .25s var(--ease), background-color .25s var(--ease);
+}
+/* 滑出窗口的条目整行淡掉：年号 / 标题各自的 is-lit 只管「线扫过没扫过」，
+   窗口外的可见性由这一条收口 —— 否则拖动球时它们会贴着窗口边缘一直亮着。 */
+.tl__item.is-out { opacity: 0; }
+
+/* 换槽（滚轮 / 松手回弹 / 点 deck）期间，条目内部那套 is-lit 入场也跟着流被翻一遍：
+   窗口外的条目除了整行 .is-out 淡出，圆点 / 日期 / 标题 / 年号自己还会再淡一次，
+   两层叠加看起来就是「淡出播了两次」；年号因为自带一套 opacity/translate 过渡，
+   还会比条目慢半拍，像单独吃了惯性。这期间把内层过渡收成瞬切，只留窗口级的
+   那一次 fade（.tl__item / .tl__yearRow 的 opacity .5s）。页面滚动时的流星线入场
+   不挂这个类，仍然完整保留。 */
+.tl__stream.is-move .tl__item .tl__dot,
+.tl__stream.is-move .tl__item .tl__date,
+.tl__stream.is-move .tl__item .tl__title,
+.tl__stream.is-move .tl__year {
+  transition: none;
+}
+/* ---------- 条目入场：全站只有两套动作，时长/缓动只在这里定义一次 ----------
+   ① 圆点 + 日期：纯纵向上浮 8px，绝不横移 —— 圆点必须永远压在流星线上，
+      日期是「刻度」的一部分，所以跟着圆点走，不再和标题一起横移；
+   ② 内容（标题 / 年号 / 作品集行的图标与文字）：从左侧 8px 向右浮入。
+   两套都由 .is-lit 驱动（paintFlow 按线头判定）：线头扫过 = 入场，线头退回 = 出场。
+
+   **两个方向的时长不对称**（回滚时「离开之处出场」要比入场看得清）：
+   基础规则 = 出场，.85s；`.is-lit` 规则里再用 transition-duration 压回 .5s 当入场。
+   时长按属性顺序一一对应，改基础规则时这份 duration 列表要跟着改。 */
+.tl__dot,
+.tl__date,
+.appsRow__dot,
+.appsRow__date {
+  opacity: 0; translate: 0 8px;
+  transition: opacity .85s var(--ease), translate .85s var(--ease),
+              background-color .25s var(--ease), border-color .25s var(--ease),
+              transform .25s var(--ease);
+}
+.tl__item.is-lit .tl__dot,
+.tl__item.is-lit .tl__date,
+.appsRow.is-lit .appsRow__dot,
+.appsRow.is-lit .appsRow__date {
+  opacity: 1; translate: 0 0;
+  transition-duration: .5s, .5s, .25s, .25s, .25s;
+}
+
+.tl__year,
+.tl__title,
+.appsBlock__title,
+.appsRow > :not(.appsRow__dot):not(.appsRow__date) {
+  opacity: 0; translate: -8px 0;
+  transition: opacity .85s var(--ease), translate .85s var(--ease),
+              color .25s var(--ease), transform .25s var(--ease);
+}
+.tl__year.is-lit,
+.appsBlock__title.is-lit,
+.tl__item.is-lit .tl__title,
+.appsRow.is-lit > :not(.appsRow__dot):not(.appsRow__date) {
+  opacity: 1; translate: 0 0;
+  transition-duration: .5s, .5s, .25s, .25s;
+}
+
+/* 看不见的条目不该吃点击：只有「已被线扫过、且还在窗口里」的条目可点；
+   窗口外的（is-out）一律不可点。年号同理：被线扫过才可点（文章线点它跳年、作品集点它开合）。 */
+.tl__item { pointer-events: none; }
+.tl__item.is-lit:not(.is-out) { pointer-events: auto; }
+.tl__year { pointer-events: none; }
+.tl__year.is-lit { pointer-events: auto; }
+.appsRow { pointer-events: none; }
+.appsRow.is-lit { pointer-events: auto; }
+
+/* 拖动期间：条目必须 1px 跟手，窗口的淡入淡出也直接跟手（不做 .5s 补间），
+   所以这一段把条目的 opacity 过渡也一起收掉；位移本来就是 0s。 */
+.tl__stream.is-drag .tl__item,
+.tl__stream.is-drag .tl__yearRow {
+  transition: transform 0s linear,
+              color .2s var(--ease), background-color .2s var(--ease);
+}
+
+/* 滚轮连续推进期间：位移必须 1:1 跟手（0s）。条目平时那条 .36s 补间是给「换一格」
+   用的，每帧都带补间时目标一直在变，内容会落在手指后面半拍 —— 那正是「滚完再结算」
+   的既视感。透明度保留一段短补间，窗口边缘的条目一边滑出/滑入一边淡。 */
+.tl__stream.is-scroll .tl__item,
+.tl__stream.is-scroll .tl__yearRow {
+  transition: transform 0s linear, opacity .35s var(--ease),
+              color .2s var(--ease), background-color .2s var(--ease);
+}
+
+/* 圆点占第一列（不是 absolute —— 一旦脱离网格流，日期和标题会整体左移一列，
+   标题就被挤进 52px 的日期列里折成一条竖线）。 */
+.tl__dot {
+  width: 9px; height: 9px; margin-left: 13px;
+  align-self: center; justify-self: start;
+  border-radius: 50%;
+  /* 实心：颜色就是条目自己的当前色（未点亮时是 muted，点亮/hover/active 时转 --tc）。
+     border 保留 1px 但透明，盒尺寸跟原来的空心点一致，去边框会让它小两像素、跟线错位。 */
+  border: 1px solid transparent;
+  background: currentColor;
+}
+/* 两块时间线的「月-日」是同一个东西，公共部分只写这一次：
+   垂直居中（跟圆点同一条中线，标题折行也不跑）、等距数字、同一套字距。 */
+.tl__date,
+.appsRow__date {
+  align-self: center; justify-self: start;
+  letter-spacing: .06em; font-variant-numeric: tabular-nums;
+}
+.tl__date { font-size: .84rem; padding-right: clamp(4px, .7vw, 8px); }
+.tl__title { font-size: clamp(.9rem, 1.2vw, .98rem); color: var(--text); }
+
+.tl__item.is-lit:is(:hover, .is-active) {
+  color: var(--tc, var(--accent));
+  background: var(--surface-2);
+}
+/* hover 的位移只给标题，圆点和日期必须留在箭头的槽位上 ——
+   日期已经是「刻度」的一部分，跟着标题横移就等于把刻度从圆点上撕下来。 */
+.tl__item.is-lit:is(:hover, .is-active) .tl__title { transform: translateX(6px); }
+.tl__item.is-lit:is(:hover, .is-active) .tl__title { color: var(--tc, var(--accent)); opacity: 1; }
+.tl__item.is-lit:is(:hover, .is-active) .tl__dot {
+  background: var(--tc, var(--accent)); border-color: var(--tc, var(--accent));
+  transform: scale(1.15);
+}
+.tl__item.is-active .tl__date { font-weight: 600; }
+/* 条目已不参与 Tab；点击也不再聚焦。这里再兜一层：无论谁把焦点塞进来，都不画描边。 */
+.tl__item:focus, .tl__item:focus-visible { outline: 0; }
+
+/* ---------- 预览面板 ---------- */
+.pv { padding: 2px 0 40px; }
+.pv__meta { margin: 0 0 6px; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.pv__title {
+  margin: 0 0 16px; font-size: clamp(1.35rem, 2.6vw, 1.85rem); line-height: 1.35;
+  color: var(--tc, var(--accent));
+  letter-spacing: .01em;
+}
+.pv__fig {
+  width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+  border-radius: var(--r-lg); border: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.pv__text { margin: 0; color: var(--text); line-height: 1.9; font-size: .96rem; }
+.pv__sub { margin: 12px 0 0; color: var(--muted); line-height: 1.85; font-size: .9rem; }
+.pv__tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.pv__tags span {
+  padding: 3px 11px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-2); color: var(--muted); font-size: .74rem;
+}
+
+/* 全屏阅读态：右半整块退出（左侧只剩正在飞行的那一张）；收起时同 853 行那组，立刻回来 */
+body.is-full:not(.is-collapsing) .rail {
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .3s var(--ease), visibility .3s var(--ease);
+}
+
+/* 窄屏（手机 / 小平板）：仍然左右两栏 —— 左卡片、右时间线，结构与宽屏一致。
+   宽度不够，就把左列压到大约一半（宽屏卡片 ~553，这里 ~285），
+   同时把落位角与倾斜按列宽收小（34°/8° → 22°/5°）：34° 会把 285 的列再压成 240，
+   摘要一行只剩几个字，收小之后卡片仍是斜卡，但内容读得下去。 */
+@media (max-width: 899px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+    gap: 12px;
+    --ryBase: 22deg;
+    --tiltBase: 5deg;
+  }
+  .rail { order: 0; min-height: 0; padding-top: 2px; }   /* 两栏时不再置顶，回到默认的第二列 */
+  .post { --shift: 88px; }            /* 窄屏只收起始位移，落位角与倾斜用上面那组 */
+  /* 叠距 = 每张卡露出来的高度，必须 ≥ 卡片头的高度，否则标题会被上面那张卡吃掉一半。
+     头高在窄列里还会随内容浮动（标题 1 行还是 2 行、meta 折不折），所以先把头「定高」：
+     标题固定占 2 行（超了省略），meta 固定占 2 行的高度 —— 这样四张卡的头一样高，
+     一个 104px 的叠距就能让每张都完整露出。 */
+  .post__head { gap: 10px; padding: 12px 12px 9px; }
+  .post__heading h3 {
+    font-size: .94rem; line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; max-height: 2.8em;
+  }
+  .post__meta { font-size: .72rem; gap: 4px 6px; min-height: 2.1em; }
+  .post__excerpt { font-size: .88rem; }
+  .card-stack { --stack-gap-base: 132px; }
+  .tl__year { font-size: clamp(1.7rem, 7vw, 2.3rem); }
+  /* 区块标题跟着年号一起缩，一窄屏下面的两个大字不能各走各的 */
+  .appsBlock__title { font-size: clamp(1.7rem, 7vw, 2.3rem); }
+  /* 时间线在窄屏不再单独改版式：圆点列 / 日期列 / 年号缩进都是 clamp() 的，
+     日期紧贴圆点只占自身宽度，手机那档也塞得下（见 .tl__item 的列模板）。 */
+  /* 右半的预览面板在窄屏整块关掉：hover 预览每次都要重建一段 HTML 并解一张 16:9 的图，
+     而触屏没有真正的 hover（点击后 mouseenter 会粘住），这笔开销纯属白花。
+     js 侧 showPreview 也按同一个断点早退，两边不要只改一边。 */
+  .rail__pane--preview { display: none; }
+  .rail.is-preview .rail__pane--line { opacity: 1; transform: none; pointer-events: auto; }
+}
+
+/* 真正的手机宽度（≤460，iPhone 那档）：左列只剩 ~175px，卡片里所有文字都要再小一号，
+   否则头会折到 143px 高、meta 最后一行被上一张卡压住。叠距按实测头高（134）取 148 留余量。 */
+@media (max-width: 460px) {
+  .card-stack { --stack-gap-base: 148px; }
+  .post__head { gap: 8px; padding: 10px 10px 8px; }
+  .post__heading h3 { font-size: .86rem; }
+  .post__meta { font-size: .68rem; }
+  /* 时间线（文章条目 + 日期）在这一档不再单独改：日期已挪到圆点右侧、只占自身宽度，
+     列模板与字号都由 clamp() 跟着视口走，圆点位置不变，所以节点天然与宽屏一致。
+     原先这三条（.tl__title 字号 / 30px 列模板 / .tl__date{display:none}）已注释掉。
+  .tl__title { font-size: .92rem; }
+  .tl__item { grid-template-columns: 30px minmax(0, 1fr); gap: 6px; }
+  .tl__date { display: none; } */
+}
+
+/* 这里刻意没有 @media (prefers-reduced-motion: reduce) 那段「把动画全关掉」的兜底。
+   本站的定位就是「动效即内容」的展示型博客，入场编排（箭头绘制 → 年号揭示 → 条目浮出）
+   本身就是给人看的东西，把它按系统开关静默降级成「直接显示」，等于换了一个页面。
+   约定与取舍已写进 docs/动效规范.md，改这里之前先读那份文档。
+
+   真正需要防的是「脚本压根没跑起来」——那种情况下 is-in 永远挂不上，
+   opacity:0 / clip-path 会把标题、年号、条目永久锁死。所以用 <head> 里的同步标记
+   html.js 做存在性判断：没有 js 标记就一律按静态可见渲染。这跟用户的无障碍偏好无关。 */
+html:not(.js) .feed__inner .feed__head .eyebrow,
+html:not(.js) .feed__inner .feed__head h2,
+html:not(.js) .rail__pane--line .tl__year,
+html:not(.js) .rail__pane--line .tl__item > *,
+html:not(.js) .appsBlock .tl__year,
+html:not(.js) .appsRow > * {
+  opacity: 1 !important;
+  clip-path: none !important;
+  translate: none !important;
+  transform: none !important;
+}
+/* 没有脚本时没人能展开/收起：所有年份的条目一律摊开，别留一个「只看得见第一年」的残页 */
+html:not(.js) .appsGroup__body { grid-template-rows: 1fr !important; opacity: 1 !important; }
+/* 没有脚本时这条线没有进度可算（长度全由 js 写），干脆整条不画，别留一截半截 */
+html:not(.js) .flow { display: none !important; }
+
+/* ===== 第二部分：作品集（聚合式布局） =====
+   一行一个 app：左边是作品集自己的时间线（圆点 + MM-DD 日期），右边是图标 / 名称 / 说明 / 类型。
+   为什么聚合：原先时间线和卡片分两列，每个 app 的名字写了两遍（时间线 .appsTl__name + 卡片标题），
+   读起来重复；两列各排各的行高，越往下越容易错位。现在一行 = 一个 app，名字只出现一次。
+   圆点必须压在流星线的延长段上：尾段的 x 由 js 实测第一个 .appsRow__dot 的中心写进 --fx2，
+   行内 left: 9px 只管网格，不再假设某个固定容器左缘。
+   底色比文章卡片更浅（.038 的白 + 更淡的描边），界线靠底色而不是分割线。
+   z-index 必须 > .feed 的 2：流星线（.flow，z-index:0）长在 .feed 里面，尾段靠 overflow
+   一直伸到这一块，而 .appsBlock 只是 .feed 的兄弟（z-index:auto）。不抬这一层，
+   整块（圆点、年号、行）就被 .feed 一起压在线的下面 —— 圆点看起来像被线穿过。
+   只抬到 3：仍在搜索栏（.search-dock，z-index:9）之下，也仍在页脚/浮层之下。 */
+.appsBlock { position: relative; z-index: 3; padding: 8px 24px 96px; }
+.appsBlock__inner { position: relative; max-width: 980px; margin: 0 auto; }
+.appsBlock__grid { display: grid; row-gap: 8px; }
+
+/* 作品集区块标题：整套视觉（字号 / 字重 / 字距 / 2px 下划线 + 9px offset）与年号一致，
+   只是它不归 js 管 —— 不在 #appsGrid 里，所以不会被折叠、跳年或流星线的 is-lit 点亮。
+   颜色走站点强调色，而不是某一年的 --yc。 */
+.appsBlock__title {
+  display: flex; align-items: center;
+  margin: 0 0 clamp(10px, 1.6vh, 18px);
+  padding-left: clamp(26px, 2.4vw, 34px);
+  font-size: clamp(2.3rem, 5.2vw, 3.5rem); font-weight: 800; line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--accent);
+  /* 搜索只命中作品集时，滚到这里的就是它 —— 和 #posts 共用同一个落点（见 base.css 的 --landing） */
+  scroll-margin-top: var(--landing);
+}
+.appsBlock__title > span {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 9px;
+}
+
+/* 作品集的年号跟文章时间线是**同一个** .tl__year（同一份 yearHTML、同一号字号、
+   同一套折叠箭头 / 下划线 / is-lit 入场），不再有「小一号的纯标签」那种第二形态。
+   一年一组：年号 + 可折叠的 .appsGroup__body。 */
+.appsGroup > .tl__year { margin: 0; }
+.appsGroup:not(:first-child) { margin-top: 18px; }   /* 叠加 .appsBlock__grid 的 8px row-gap ≈ 原来 26px 的段距 */
+.appsGroup__body {
+  display: grid; grid-template-rows: 1fr; margin-top: 6px;
+  transition: grid-template-rows .5s var(--ease), opacity .4s var(--ease);
+}
+.appsGroup:not(.is-open) .appsGroup__body { grid-template-rows: 0fr; opacity: 0; }
+/* 0fr 那一格高为 0，内层再用 overflow 收边；min-height:0 是让 0fr 真的能压到 0。
+   间距写成 margin 而不是 padding：padding 是盒子的一部分，0fr 压到 0 后那 6px 还在。 */
+.appsGroup__rows { min-height: 0; overflow: hidden; display: grid; row-gap: 8px; }
+/* 每年的开合独立：收起只摘掉这组自己的 is-active，箭头自然回到朝下，不再用整块 is-collapsed 统一压 */
+
+.appsRow { position: relative; display: grid; grid-template-columns: max-content 34px minmax(0,1fr) auto 14px;
+  align-items: center; column-gap: clamp(8px, 1vw, 12px); padding: 10px 14px 10px clamp(26px, 2.4vw, 34px);
+  min-height: 58px; color: inherit; text-decoration: none; border-radius: 14px; }
+/* 搜索筛掉的行 / 整年没有命中的组直接收掉：组里只剩一颗年号时，
+   几组年号会挨在一起（下面没有行撑着），看起来像「年号挤成一团」。 */
+.appsRow.is-hidden, .appsGroup.is-hidden { display: none; }
+.appsRow__dot { position: absolute; left: 9px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
+  border-radius: 50%; background: var(--tc); box-shadow: 0 0 0 3px rgba(8, 10, 22, .18); }
+.appsRow__date { font-size: .7rem; color: rgba(255, 255, 255, .42); }
+.appsRow__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .07); color: var(--tc); }
+.appsRow__svg { width: 20px; height: 20px; }
+.appsRow__svg path { fill: currentColor; }
+.appsRow__img { width: 34px; height: 34px; border-radius: 10px; object-fit: cover; }
+.appsRow__txt { font-size: .58rem; font-weight: 600; letter-spacing: .1em; }
+.appsRow__body { min-width: 0; }
+.appsRow__name { display: block; font-size: .95rem; font-weight: 650; }
+.appsRow__desc { display: block; margin-top: 2px; font-size: .76rem; line-height: 1.5; color: rgba(255, 255, 255, .5); }
+.appsRow__kind { font-size: .6rem; letter-spacing: .12em; padding: 2px 7px; border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, .14); color: rgba(255, 255, 255, .55); }
+.appsRow__go { width: 7px; height: 7px; border-top: 1.5px solid rgba(255, 255, 255, .35);
+  border-right: 1.5px solid rgba(255, 255, 255, .35); transform: rotate(45deg); }
+
+/* 手机端不再单独改时间线版式：圆点固定在 left:9px、日期紧贴其右侧，
+   列宽与字号走 clamp()，所以手机上的节点与宽屏是同一套对齐（流星线按实测圆点跟随）。
+   .appsBlock 的内边距属于板块留白，不是节点对齐，保留。原覆盖已注释在下面。 */
+@media (max-width: 560px) {
+  .appsBlock { padding-left: 16px; padding-right: 16px; }
+  /* .appsGroup > .tl__year { margin-left: 8px; }
+  .appsRow { padding-left: 46px; grid-template-columns: 28px minmax(0,1fr) auto 12px; column-gap: 10px; }
+  .appsRow::before { inset: 0 0 0 26px; }
+  .appsRow__date { display: none; }
+  .appsRow__desc { display: none; } */
+}

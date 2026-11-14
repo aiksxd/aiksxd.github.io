@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900" preserveAspectRatio="none" role="img" aria-label="cloud sea">
+  <title>Cloud sea</title>
+  <defs>
+  <linearGradient id="g-far" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="900">
+    <stop offset="0" stop-color="#d6d8e4"/>
+    <stop offset="1" stop-color="#bcbecf"/>
+  </linearGradient>
+  <linearGradient id="g-mid" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="900">
+    <stop offset="0" stop-color="#eceef4"/>
+    <stop offset="1" stop-color="#d3d5e0"/>
+  </linearGradient>
+  <linearGradient id="g-near" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="900">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#e4e5ec"/>
+  </linearGradient>
+  <linearGradient id="g-fog" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="900">
+    <stop offset="0" stop-color="#dcdee8"/>
+    <stop offset="1" stop-color="#c4c6d4"/>
+  </linearGradient>
+    <linearGradient id="g-shelf" gradientUnits="userSpaceOnUse" x1="0" y1="420" x2="0" y2="640">
+      <stop offset="0" stop-color="#d6d8e4" stop-opacity="0"/>
+      <stop offset="1" stop-color="#bcbecf" stop-opacity=".36"/>
+    </linearGradient>
+    <linearGradient id="g-fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".62" stop-color="#fff"/>
+      <stop offset="1" stop-color="#000"/>
+    </linearGradient>
+    <mask id="edgeFade" maskUnits="userSpaceOnUse" x="0" y="0" width="700" height="900">
+      <rect x="0" y="0" width="700" height="900" fill="url(#g-fade)"/>
+    </mask>
+  </defs>
+  <g mask="url(#edgeFade)">
+    <rect x="-150" y="690" width="600" height="240" fill="url(#g-fog)" opacity=".72"/>
+    <rect x="-150" y="420" width="900" height="530" fill="url(#g-shelf)"/>
+  <g fill="url(#g-far)" opacity=".68">
+    <circle cx="-85" cy="463" r="180"/>
+    <circle cx="145" cy="438" r="149"/>
+    <circle cx="316" cy="466" r="128"/>
+    <circle cx="584" cy="796" r="126"/>
+    <circle cx="-51" cy="568" r="187"/>
+    <circle cx="171" cy="559" r="165"/>
+    <circle cx="454" cy="624" r="169"/>
+  </g>
+  <g fill="url(#g-mid)" opacity=".82">
+    <circle cx="-77" cy="577" r="160"/>
+    <circle cx="87" cy="546" r="150"/>
+    <circle cx="300" cy="564" r="120"/>
+    <circle cx="457" cy="680" r="111"/>
+    <circle cx="-76" cy="669" r="179"/>
+    <circle cx="147" cy="664" r="172"/>
+    <circle cx="327" cy="683" r="131"/>
+    <circle cx="-63" cy="770" r="191"/>
+    <circle cx="135" cy="762" r="182"/>
+    <circle cx="325" cy="773" r="139"/>
+  </g>
+  <g fill="url(#g-near)" opacity=".98">
+    <circle cx="-103" cy="799" r="205"/>
+    <circle cx="143" cy="702" r="167"/>
+    <circle cx="346" cy="787" r="167"/>
+    <circle cx="534" cy="851" r="110"/>
+    <circle cx="178" cy="954" r="234"/>
+    <circle cx="536" cy="950" r="100"/>
+  </g>
+  </g>
+</svg>
