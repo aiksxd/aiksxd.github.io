@@ -14,6 +14,16 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const html = document.documentElement;
 
+  /* ---------- 手机轻量档判定 ----------
+     这条判定必须与 css/mobile-lite.css 的媒体查询**逐字一致**，
+     否则会出现「样式降级了、脚本还在按桌面规格造层」或者反过来。
+     触屏窄屏走轻量档；桌面（pointer: fine）无论窗口多窄都保持完整效果。
+     判一次就够：转屏 / 改变窗口宽度属于罕见的重排场景，不值得挂 listener。 */
+  const LITE = !!(window.matchMedia && (
+    window.matchMedia('(pointer: coarse) and (max-width: 900px)').matches ||
+    window.matchMedia('(max-width: 600px)').matches
+  ));
+
   // 由 initParallax 注入：程序化滚动（锚点按钮 / 回顶部）与滚轮共用同一条插值通道
   let smoothScrollTo = null;
   // 由 initSplit 注入：时间线标题是从卡片里抄来的快照，切语言后要重建
@@ -79,8 +89,13 @@
        不再是「每个滚动变化帧都重写 ~30 个 <stop>」。每次改 stop-color 都会让
        那两张 50vw 的云海 SVG 重新光栅化，这是滚动路径上最大的一笔冤枉开销；
        1/128 的色阶在 8-bit 色彩下不足 1 个色值，肉眼无差。
-       主题切换时 theme 变化会强制重刷一次，不受量化影响。 */
-    const t = Math.round(Math.min(1, Math.max(0, p * 2)) * 128) / 128;
+       主题切换时 theme 变化会强制重刷一次，不受量化影响。
+
+       手机轻量档再降到 1/32：每改一次 stop-color，那两张 50vw 的云海 SVG
+       都要重新光栅化（DPR 3 下各约 82 万设备像素）。32 级在手机上仍然平滑
+       （云海从白到紫的过渡本身铺在几百像素上），但重绘次数是原来的 1/4。 */
+    const STEPS = LITE ? 32 : 128;
+    const t = Math.round(Math.min(1, Math.max(0, p * 2)) * STEPS) / STEPS;
     if (t === cloudT && theme === cloudTheme) return;
     cloudT = t; cloudTheme = theme;
     const board = CLOUD_BOARD[theme], white = CLOUD_WHITE;
@@ -124,7 +139,11 @@
     const box = $('#stars');
     if (!box) return;
     const { groups, frags } = makeStarGroups(box);
-    for (let i = 0; i < 72; i++) {
+    /* 手机轻量档：72 → 24。星点数量不只是绘制成本 —— .scene 子树里每多一个元素，
+       滚动时 --p 每次变化都要多遍历、重算一次样式（实测这一项是手机端最大的一笔）。
+       取 24 = 4 组各 6 颗，组间相位错开，视觉上仍是「一片星空」而不是几颗孤星。 */
+    const total = LITE ? 24 : 72;
+    for (let i = 0; i < total; i++) {
       const star = document.createElement('span');
       star.className = 'star';
       star.style.left = (Math.random() * 100).toFixed(2) + '%';
@@ -143,7 +162,10 @@
     const box = $('#galaxyStars');
     if (!box) return;
     const { groups, frags } = makeStarGroups(box);
-    for (let i = 0; i < 150; i++) {
+    /* 手机轻量档：150 → 44。银河星尘本来就只有 1~2px，小屏上密度差一半看不出来，
+       但省下的是一整层 150 个元素的重算与合成。 */
+    const total = LITE ? 44 : 150;
+    for (let i = 0; i < total; i++) {
       const t = Math.random();
       // 近似正态的带宽扰动，让星尘中间密、两侧疏；
       // 基线从左下 (8%,74%) 斜向右上 (92%,44%)，与 .galaxy 的 -19deg 亮带重合
@@ -284,9 +306,18 @@
     let lastP = -1;
     let lastClamped = -1;
 
+    /* 手机轻量档：把 --p 再切成 48 级（720px 行程 → 每级 15px）。
+       每写一次 --p，.scene 整棵子树（云海 SVG 的每个 stop、几十颗星、日月各层）
+       都要重新计算样式 —— 实测这是手机滚动时最大的一笔主线程开销。
+       场景层的位移只有行程的 0.06~0.17 倍，15px 一级约等于 1~2px 的图层位移，
+       在整屏都在滚动的画面上不可辨；桌面仍按像素全精度走。 */
+    const P_LEVELS = LITE ? 48 : 0;
+
     function paint(y) {
       const clamped = Math.max(0, Math.min(y, RANGE));
-      const p = clamped / RANGE;
+      const p = P_LEVELS
+        ? Math.round(clamped / RANGE * P_LEVELS) / P_LEVELS
+        : clamped / RANGE;
 
       // 只在值变化时写：滚过 RANGE 后场景静止，不再产生任何 DOM 写入
       if (p !== lastP) {
@@ -314,6 +345,9 @@
         paintClouds(p);
         lastP = p;
       }
+      /* 云海的滑出走逐像素的 clamped，不用 --p：--p 在轻量档被切成 15px 一级，
+         而这两块云是 518px 的位移，跟着粗档位会变成一格一格的顿挫。
+         单独写 inline transform 只影响云海自己这一层（实测只占滚动总重算的 2.5%）。 */
       if (clamped !== lastClamped) {
         banks.forEach(bank => {
           const dir = bank.dataset.side === 'left' ? -1 : 1;
@@ -888,6 +922,13 @@
     }
 
     function start() {
+      /* 手机轻量档：不做滚动姿态弹簧。
+         它每帧往 .split 写两次 --ryEnd / --tilt，而 .split 是「卡片堆 + 文章时间线 +
+         作品集」的共同祖先 —— 等于每帧把整块文章区重算一遍样式，这是整页滚动时
+         最贵的一笔。而它换来的只是滚动时 6°/2° 的微倾，在 350px 宽的卡堆上几乎看不出来。
+         不启动 = 角度恒为基准：.split 上已经写着 --ryEnd: var(--ryBase)，
+         卡片照常摆成 skewY + rotateY 的静止姿态，只是不再随速度前后摆。 */
+      if (LITE) return;
       if (rafId || tiltFrozen) return;   // 鼠标还在卡片区里就完全不启动
       /* 编舞窗口内不接手：入场那串 .8s 过渡（和 0/80/160… 的延迟）还没播完，
          这时起弹簧会把 transform 压成 .1s、并且每帧重定终点 —— 那正是「前 1-2 张先出、
@@ -900,9 +941,13 @@
     }
 
     /* 鼠标进入卡片区就冻结：停掉 rAF，角度停在当前值，几何一动不动（滚轮在卡片上滚也不会重启）。
-       离开时重新起帧 —— 若此时角度偏离基准，弹簧会把它平滑地送回静止姿态。 */
-    stack.addEventListener('mouseenter', () => { tiltFrozen = true; stop(); });
-    stack.addEventListener('mouseleave', () => { tiltFrozen = false; start(); });
+       离开时重新起帧 —— 若此时角度偏离基准，弹簧会把它平滑地送回静止姿态。
+       手机轻量档不挂这两条：tilt 的 start() 第一行就 return，弹簧永远不会起，
+       它们只会在每次点按时白白跑一遍 start()/stop()。 */
+    if (!LITE) {
+      stack.addEventListener('mouseenter', () => { tiltFrozen = true; stop(); });
+      stack.addEventListener('mouseleave', () => { tiltFrozen = false; start(); });
+    }
     window.addEventListener('scroll', start, { passive: true });
 
     return {
@@ -2041,6 +2086,21 @@
 
      工厂创建时就把三条监听挂上，末尾那次 markFront() 也一并带进来（原在 initSplit 里紧挨监听）。 */
   function createHover({ stack, prev, rail, items, textOf, getFocusPost, applyFocus, fadeOthers, markFront }) {
+
+    /* 手机轻量档：不挂指针 hover 这一套。
+       触屏没有真正的 hover —— 点一下会合成 mouseenter 并**粘住**，卡片停在「已悬停」态；
+       而 hover 原本要做的三件事，在窄屏下只剩一件是有用的、且还是坏的：
+         · 右半换成该文预览 —— 窄屏早被 previewOff() 关掉了，没有可换的面板；
+         · 这张提到最上层并点亮阴影 —— 直接点开就能读，不需要它提前预览；
+         · 其余卡片退成半透明（.card-slot.is-faded = opacity:.28）—— 这条最伤：
+           手机上的卡堆每张只露一条头部（约 94px），再压到 .28 就只剩个影子，
+           翻页时连「下一页有哪几篇」都认不出来。
+       所以整块指针交互不挂载（三条监听 + hoverRaf + 预览渲染一并省掉）。
+       **markFront() 必须照跑**：它决定哪张卡放行正文
+       （.card-slot:not(.is-front) 的 .post__text 是 visibility:hidden），
+       跳过它会让所有卡片正文都藏着不显示。它跟 hover 无关，只管「谁完整露着」。
+       点击锁定的焦点（applyFocus / fadeOthers）不经过这里，手机上照旧可用。 */
+    if (LITE) { markFront(); return; }
 
     function renderPreview(it) {
       // 同样现取：语言切换后 items 里的文本快照会过期

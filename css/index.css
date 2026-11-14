@@ -10,3 +10,6 @@
 @import url("responsive.css?v=b769ded8");
 @import url("split.css?v=0a22b48c");
 @import url("motion.css?v=74262c01");
+/* 手机轻量档：必须排在最后 —— 它靠「同特异性 + 后加载」覆盖上面各层的
+   动画、磨砂玻璃与随 --p 变化的昂贵属性。只在触屏窄屏生效，桌面不受影响。 */
+@import url("mobile-lite.css?v=3d5f7a91");
