@@ -36,6 +36,32 @@ const LABEL = (process.argv.find(a => a.startsWith('--label=')) || '--label=run'
 const SHOT = (process.argv.find(a => a.startsWith('--shot=')) || '').slice(7);
 /* 只截图、不测量：改样式后快速看一眼构图，不必等完三个测量阶段 */
 const SHOT_ONLY = process.argv.includes('--shot-only');
+/* --geom：滚到卡片区，把卡堆的叠距 / 容器高 / 各槽位角色与落点导出来。
+   截图看不出「下堆实际露了几像素」，这个才是判断遮挡的依据。 */
+const GEOM = process.argv.includes('--geom');
+
+const GEOM_EXPR = `JSON.stringify((() => {
+  const stack = document.getElementById('cardStack');
+  const cs = getComputedStyle(stack);
+  const box = stack.getBoundingClientRect();
+  return {
+    boxH: Math.round(box.height),
+    gap: cs.getPropertyValue('--stack-gap').trim(),
+    outH: cs.getPropertyValue('--outH').trim(),
+    clip: cs.clipPath,
+    roles: [...stack.querySelectorAll('.card-slot')].map(s => {
+      const r = s.getBoundingClientRect(), p = s.querySelector('.post');
+      return {
+        role: s.dataset.role || '-', hint: s.dataset.hint || '',
+        topIn: Math.round(r.top - box.top), h: Math.round(r.height),
+        peek: Math.round(box.bottom - r.top),
+        op: getComputedStyle(s).opacity,
+        cap: p ? (p.getAttribute('style') || '').replace(/.*--card-cap: ?([^;]+).*/, '$1') : '',
+        postH: p ? Math.round(p.getBoundingClientRect().height) : 0,
+      };
+    })
+  };
+})())`;
 
 const CHROME_CANDIDATES = [
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -372,6 +398,15 @@ async function main() {
        （桌面档用来做对照，那里应当数到 pointermove / pointerover / pointerleave 三条。） */
     const hoverListeners = await checkHover(cdp);
 
+    let geom = null;
+    if (GEOM) {
+      await evaluate(cdp, 'window.scrollTo(0, 1200)');
+      await sleep(1400);   // 等编舞与下堆落位
+      geom = await evaluate(cdp, GEOM_EXPR);
+      console.log('   几何: ' + geom);
+      await evaluate(cdp, 'window.scrollTo(0, 0)');
+    }
+
     /* ---------- 可选：降级后的构图截图（确认「关掉的只是动画与模糊，不是内容」） ---------- */
     if (SHOT) {
       await mkdir(SHOT, { recursive: true });
@@ -394,6 +429,7 @@ async function main() {
       view: VIEW, cpuThrottle: CPU_THROTTLE,
       idle, scroll, full,
       hoverListeners,
+      geom,
     };
 
     print(report);
