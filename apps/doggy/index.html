@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- theme.css 是 appUI.css 声明的前置令牌层（见其文件头）。本页内联样式里的
+         --bg / --text / --card-bg / --title / --input-bg / --active-color 全来自它，
+         缺了这行整页会退成白底 + 浏览器默认控件（连文件选择框都是系统样式）。 -->
+    <link rel="stylesheet" href="../../css/theme.css?v=27885f0d">
     <link rel="stylesheet" type="text/css" href="../../css/appUI.css">
     <title>图像合成编辑器</title>
     <style>
@@ -167,11 +171,13 @@
             border-radius: 5px;
             text-align: center;
             font-style: italic;
-            color: #555;
+            /* 原来硬编码 #555：令牌层接上后底色是近黑，这行深灰字会直接沉进去 */
+            color: var(--text-muted);
         }
         
         .export-btn {
-            background-color: #2196F3;
+            background-color: var(--accent);
+            color: var(--text-on-accent);
             padding: 10px 20px;
             font-size: 1.1rem;
         }

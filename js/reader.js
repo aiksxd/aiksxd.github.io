@@ -13,6 +13,10 @@
   'use strict';
 
   const DATA = window.AX_POSTS || {};
+  /* 与 blog.js、css/mobile-lite.css 里逐字相同的「手机轻量档」判定。
+     这里只用到一件事：手机上阅读页是正文独占一栏，左侧目录改成可唤出的覆盖层，
+     所以进来时目录应当是收起的 —— 否则第一屏就被目录占掉 36%。 */
+  const LITE = matchMedia('(pointer: coarse) and (max-width: 900px), (max-width: 600px)').matches;
   /* 吸顶标题行高 + 余量，跳转时把这截空出来。
      标题行高度减半（单行标题 + 日期，见 index.css 的 .post.is-full .post__head）后
      从 104 降到 56 —— 这个数和 CSS 里的 scroll-margin-top 是同一件事，改一处要改两处。 */
@@ -305,6 +309,11 @@
     if (!post) return;
     ensureReader(post);
     post.classList.remove('is-toc-folded', 'is-toc-open');   // 每次进来都是默认状态
+    /* 手机：默认收起。桌面两栏并列、目录占 208px 是导航栏；
+       390px 屏上那一栏只剩 129px、正文被压到 217px，正文一行只放得下六七个字，
+       表格里的 token 还会直接顶出右边界。收起后正文吃满，内容要目录就点标题栏那颗按钮，
+       目录会以覆盖层滑出（见 mobile-lite.css ⑦），盖住正文而不是把它挤窄。 */
+    if (LITE) post.classList.add('is-toc-folded');
   });
 
   document.addEventListener('post:close', e => {

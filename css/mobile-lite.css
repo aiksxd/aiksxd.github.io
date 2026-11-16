@@ -37,9 +37,15 @@
   }
 
   /* 卡片原来靠 blur(12px) 把 6% 的白色底「糊」成可读的一片；
-     没有模糊后必须换成实底，否则正文直接压在云海上。 */
+     没有模糊后必须换成实底，否则正文直接压在云海上。
+
+     注意 fallback：--surface-solid 只在 theme.css 里定义，而 theme.css 并没有被
+     index.css 拼装进去（那边只有 base / scene / articles / responsive / split / motion），
+     所以这个令牌在当前站点是未定义的 —— 直接写 var(--surface-solid) 会让整条声明
+     失效，卡片就退回 base.css 的 --glass（夜间 .72 / 日间 .78），比原来更透。
+     所以带上用 base 令牌算出来的实色 fallback：将来真把 theme.css 接进来也能自动生效。 */
   .post {
-    background: var(--surface-solid);
+    background: var(--surface-solid, color-mix(in srgb, var(--bg) 92%, var(--bg-2)));
   }
   /* 搜索栏：底色从 55% 提到 92%，保证输入框里的字在任何云层上都读得清 */
   .search--hero {
@@ -51,7 +57,7 @@
   }
   /* 右下角设置按钮：实底 + 保持原来的半透明常态，仍能透出一点云 */
   .fab {
-    background: var(--surface-solid);
+    background: var(--surface-solid, color-mix(in srgb, var(--bg) 92%, var(--bg-2)));
   }
 
   /* ---------- ② 常驻动画：全部停成静态 ----------
@@ -132,5 +138,105 @@
   .rail,
   .flow {
     display: none;
+  }
+
+  /* ---------- ⑤ 搜索栏：行为与桌面一致 ----------
+     这里原来把搜索栏改成「原地淡出 / 回到顶部淡入」的离散状态（跨 24px 切一次 class），
+     省掉了每帧两次 setProperty 和 dock 子树的样式重算。但那样它滚动后就彻底不见了，
+     不像桌面一直钉在屏顶 —— 手机上搜索栏基本是唯一入口，看不见等于没有。已撤回。
+     现在 js 照旧每帧写 --p / --dockOp，`will-change: transform` 也保留（别改回 auto：
+     它让 dock 常驻一个合成层，每帧变的是 transform 与 opacity，只在合成器上改，
+     撤掉这层就变成每帧重绘一次 —— 省下的是几百 KB 合成内存，赔上的是整块重绘）。
+     唯一保留的差异是模糊：① 已经移除 .search--hero 的 backdrop-filter ——
+     它钉在屏顶、背后正是滚动的页面，每帧都要重新采样再模糊，是手机端的头号开销；
+     底色改成 92% 不透明（见 ①），小屏上观感差异很小。 */
+
+  /* 注意：轻量档的 js 不再写 .search--hero 的 opacity。
+     手机屏宽只有 390px，这条搜索栏占 358px ≈ 整屏 92%，桌面那条「随滚动淡到 .55」
+     的抛物线在这里会让背后正文透出来、与输入框占位文字叠成两层，滚到哪里都在叠字。
+     所以固定 .94：背后文字只剩 6% 的亮度，几乎不可辨（从「重叠」变成「遮挡」），
+     又不完全是 1 —— 实测 opacity 恰为 1 时，这条不透明横条每次平移都要让合成器
+     重算一遍遮挡关系，整页重算反而从 986ms 涨到 1520~1558ms（测了三次）。
+     保持 < 1 就走半透明层那条路径，不参与遮挡剔除，快得多。 */
+  .search--hero {
+    opacity: .94;
+    will-change: opacity;
+  }
+
+  /* ---------- ⑥ 作品集（APP 区块）直接常亮 ----------
+     split.css 里 .appsRow 的行 / 圆点 / 日期、以及「APP」区块标题，初始态都是
+     opacity:0 + translate，只有被流星线的线头扫过（js 打 .is-lit）才浮出。
+     手机上那条线和右栏一起被收掉了，paintFlow 在画线之前就 return，
+     于是没有人再给它们打 .is-lit —— 整块作品集停在 opacity:0，看起来像「APP 内容不见了」。
+     这里把点亮态直接写死在 CSS 上：内容立即可见，也不依赖 js 的时机
+     （折叠 / 搜索整块重建 #appsGrid 之后同样成立）。
+     pointer-events 也要一起给：.appsRow 默认 none，只有 .is-lit 才 auto，
+     不补的话行是亮的但点不进去。 */
+  .appsBlock__title,
+  .appsRow__dot,
+  .appsRow__date,
+  .appsRow > :not(.appsRow__dot):not(.appsRow__date) {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .appsRow {
+    pointer-events: auto;
+  }
+
+  /* ---------- ⑦ 阅读页：正文独占一栏，目录收成覆盖层 ----------
+     reader.css 在 979px 断点让「侧栏目录 + 正文」继续并列（36% + 1fr，间距 12）。
+     注释里的算法是按 419px 宽的卡片推的，但 390px 竖屏扣掉卡片内边距后内宽约 358px：
+     目录拿到 129px，正文只剩 217px —— 一行六七个字，正文里的表格（width:100%）
+     还会把 `tools/md2html.mjs` 这类长 token 顶出右边界，横向滚动条在触摸屏上又看不见。
+     手机上并列没有余地，正文独占整宽；目录改成点标题栏那颗按钮唤出的覆盖层
+     （js/reader.js 在轻量档进来时默认收起）。 */
+  .post.is-full.has-reader .post__body {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+    max-width: none;
+  }
+
+  /* 目录从网格里取出来，改成贴着左上角的浮层：
+     fixed 相对视口（.post.is-full 的 transform 已被 js 置为 none，不会成为包含块），
+     宽度取 min(74vw, 300px)，长目录自己在盒内滚。 */
+  .post.is-full.has-reader .reader__toc {
+    position: fixed;
+    left: 10px;
+    top: 54px;
+    bottom: 14px;
+    /* 几乎满宽的目录面板：74vw（≈289px）时右侧会露出 90px 参差的正文，
+       半句半句地断在边上比全遮住更乱。手机上目录本来就是个「跳一下就走」的面板，
+       做成整幅反而干净 —— 点条目即跳转并自动收起。 */
+    width: calc(100vw - 20px);
+    max-height: none;
+    z-index: 3;
+    grid-column: auto;
+    grid-row: auto;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, .45);
+    overflow: auto;
+    overscroll-behavior: contain;
+    transform: translateX(calc(-100% - 16px));
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .3s var(--ease), opacity .24s var(--ease);
+  }
+
+  /* 展开态（不在 is-toc-folded 里）：滑回原位。
+     特异性 4 个类，与 reader.css 里 is-toc-folded 那条平手，靠本文件后 import 取胜。 */
+  .post.is-full.has-reader:not(.is-toc-folded) .reader__toc {
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 标题栏折走时目录跟着上移 44px 那条规则（reader.css 里是 top: 8px），
+     浮层这里改成贴合视口 8px —— 标题栏已经滑走了，不再需要给它让位。 */
+  .post.is-full.is-head-collapsed .reader__toc {
+    top: 8px;
   }
 }

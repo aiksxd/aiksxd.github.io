@@ -1,58 +1,186 @@
+/* ==========================================================================
+   ppt.css — 公式动画演示页（apps/ppt-showcase 专用）
+   依赖：theme.css（设计令牌）+ appUI.css（.icon-arrow 那个 L 形箭头）
 
-.ppt-animation-target {
-    will-change: opacity, transform; /* 优化动画性能 */
+   2026-11-15 重写。原来的问题是三件叠在一起：
+   ① 两个 .ppt-trigger-area 各自 max-height:80vh + overflow-y:auto，硬堆成上下两块，
+      公式一长就同时冒出竖的、横的原生滚动条，右侧整段被切（横向 overflow 默认 visible → 仍会撑出页面宽度）；
+   ② 按钮是 background:#fff 的白色圆片、opacity .5，压在**未着色**的纯白页面上 → 等于隐形；
+      箭头 .icon-arrow 的 border-color 取 var(--text-body)，而这套令牌当时根本没加载 → 连框都没有；
+   ③ .move 里有一行裸的 var(--i); —— 这是非法声明（不是属性），浏览器直接丢掉，写上等于没写。
+   现在改成：整页深色舞台 + 两个演示块做成玻璃卡片，滚动条交给 theme.css 统一（细、圆角、可悬停），
+   按钮脱离文档流钉在卡片右上角、深玻璃底配 accent 箭头，看得见也点得着。
+   ========================================================================== */
+
+/* ---- 舞台：整页一列，两块演示各自成卡片 ---- */
+body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 22px clamp(14px, 3vw, 36px) 36px;
+    box-sizing: border-box;
 }
+
+.ppt-trigger-area {
+    position: relative;
+    flex: 0 1 auto;
+    /* 原来这里是 max-height:80vh，两块各占八成屏高、一块顶到视口外；
+       改成按内容给高度，超出才滚 */
+    min-height: 54vh;
+    max-height: 76vh;
+    margin: 0;
+    /* 右padding给按钮让位（40px 按钮 + 14px 边距 + 一段呼吸） */
+    padding: 18px 78px 22px 26px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    backdrop-filter: var(--glass-blur-soft);
+    -webkit-backdrop-filter: var(--glass-blur-soft);
+    box-shadow: var(--shadow-card);
+    /* 横竖都允许滚，但滚动条外观走 theme.css 的 8px 圆角细条 —— 不做 overflow-x:hidden，
+       那是把超宽公式直接切掉，比能滚更糟 */
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+
+/* 第二块（补例）比主演示矮一档，避免又把页面顶出去 */
+.ppt-trigger-area.ppt-add {
+    min-height: 34vh;
+    max-height: 58vh;
+}
+
+/* ---- 动画目标 ---- */
+.ppt-animation-target {
+    will-change: opacity, transform;
+    margin: 8px 0;
+}
+
 /* 初始状态 */
 .fade {
     opacity: 0;
-    transition: opacity 0.8s ease-in-out
- }
+    transition: opacity 0.8s ease-in-out;
+}
+
+/* 移动元素：translateX(100%) 是它自己的起点，.active 就位；原来那行 var(--i) 是无效声明，已删 */
 .move {
-    var(--i);
-    transform: translateX(100%); transition: transform 0.8s ease-in-out;
+    transform: translateX(100%);
+    transition: transform 0.8s ease-in-out;
 }
 
 /* 激活状态 */
 .fade.active {
     opacity: 1;
 }
-.move.active { transform: translateX(0); }
+.move.active {
+    transform: translateX(0);
+}
 
+/* ---- 悬浮控件：三个按钮钉在卡片右上，竖排 ---- */
 .ppt-button {
-    opacity: 0.5;
-    position: sticky;
-    top: 10px;
-    float: right;
-    left: unset;
+    position: absolute;
+    right: 14px;
+    float: none;
     width: 40px;
     height: 40px;
-    border: none;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-full);
+    /* --surface-active 在深色主题里是白色 10%，压在近黑舞台上几乎看不见；
+       按钮是这条页面上唯一的可操作物，换成不透明的深色实板（--surface-solid 夜 .82） */
+    background: var(--surface-solid, rgba(15, 18, 30, 0.82));
+    backdrop-filter: var(--glass-blur-soft);
+    -webkit-backdrop-filter: var(--glass-blur-soft);
+    color: var(--accent-light);
+    opacity: 0.9;
+    box-shadow: var(--shadow-sm);
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
+    transition: opacity var(--t-fast) var(--ease),
+                background var(--t-fast) var(--ease),
+                border-color var(--t-fast) var(--ease),
+                transform var(--t-fast) var(--ease);
+    z-index: 2;
 }
+
+/* 各自错开，避免叠成一坨 */
+.ppt-button.ppt-add {
+    top: 14px;
+}
+.ppt-button.ppt-remove {
+    top: 62px;
+}
+.ppt-button.ppt-show {
+    top: 110px;
+}
+
 .ppt-button:hover {
     opacity: 1;
+    background: var(--accent-a20);
+    border-color: var(--accent-a40);
+    transform: translateY(-1px);
 }
-.ppt-button.ppt-add .icon-arrow{
+
+/* 键盘可达：label 不是原生控件，这里补一圈焦点环 */
+.ppt-button:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 2px;
+}
+
+/* 箭头本体：appUI 那份是 8×8 的 L 形边框，颜色取 var(--text-body)。
+   这里改成 currentColor（= 按钮的 accent-light），尺寸放大到 9×9 更清楚。 */
+.ppt-button .icon-arrow {
+    width: 9px;
+    height: 9px;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    border-radius: 1px;
+}
+
+.ppt-button.ppt-add .icon-arrow {
     transform: rotate(225deg);
 }
-.ppt-button.ppt-remove .icon-arrow{
+.ppt-button.ppt-remove .icon-arrow {
     transform: rotate(45deg);
 }
-.ppt-button.ppt-show .icon-arrow{
+.ppt-button.ppt-show .icon-arrow {
     transform: rotate(-45deg);
 }
-.ppt-trigger-area {
-    overflow-y: auto;
-    max-height: 80vh;
-    margin: 10px 50px;
-    border: 1px solid #ddd;
-    border-radius: 0.5em;
+
+/* ---- 窄屏：按钮缩小、内容少让一点位 ---- */
+@media (max-width: 600px) {
+    body {
+        padding: 14px 10px 24px;
+        gap: 12px;
+    }
+    /* 公式是按 MathJax CommonHTML 的 scale:230（相对字号 2.3 倍）排的，390px 宽的屏放不下，
+       右侧整段被裁。MathJax 的尺寸全部基于 em，缩一层 font-size 就是等比缩小：
+       54% × 230% ≈ 1.24 倍基准字号，常用长度的式子能整条读进一屏；
+       最长的两条（左右两半各一整个分式）仍会超，那是横向滚动条该干的事，不做裁切。 */
+    .ppt-animation-target {
+        font-size: 54%;
+    }
+    .ppt-trigger-area {
+        min-height: 46vh;
+        max-height: 70vh;
+        padding: 14px 58px 18px 14px;
+        border-radius: var(--r-md);
+    }
+    .ppt-trigger-area.ppt-add {
+        min-height: 30vh;
+        max-height: 52vh;
+    }
+    .ppt-button {
+        right: 10px;
+        width: 34px;
+        height: 34px;
+    }
+    .ppt-button.ppt-add {
+        top: 10px;
+    }
+    .ppt-button.ppt-remove {
+        top: 50px;
+    }
+    .ppt-button.ppt-show {
+        top: 90px;
+    }
 }

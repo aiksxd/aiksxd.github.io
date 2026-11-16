@@ -932,20 +932,24 @@ html:not(.js) .flow { display: none !important; }
 .appsRow.is-hidden, .appsGroup.is-hidden { display: none; }
 .appsRow__dot { position: absolute; left: 9px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
   border-radius: 50%; background: var(--tc); box-shadow: 0 0 0 3px rgba(8, 10, 22, .18); }
-.appsRow__date { font-size: .7rem; color: rgba(255, 255, 255, .42); }
+.appsRow__date { font-size: .7rem; color: var(--muted); opacity: .82; }
 .appsRow__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
-  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .07); color: var(--tc); }
+  background: var(--surface); border: 1px solid var(--line); color: var(--tc); }
 .appsRow__svg { width: 20px; height: 20px; }
 .appsRow__svg path { fill: currentColor; }
 .appsRow__img { width: 34px; height: 34px; border-radius: 10px; object-fit: cover; }
 .appsRow__txt { font-size: .58rem; font-weight: 600; letter-spacing: .1em; }
 .appsRow__body { min-width: 0; }
 .appsRow__name { display: block; font-size: .95rem; font-weight: 650; }
-.appsRow__desc { display: block; margin-top: 2px; font-size: .76rem; line-height: 1.5; color: rgba(255, 255, 255, .5); }
+/* 这几行原来硬编码 rgba(255,255,255,.x)：夜间是「浅灰字压深底」，没问题；
+   日间主题的背景是落日橙（--sky-mid #ffd6b8 一类），白字压白底等于看不见 ——
+   截图里描述文字几乎消失。全部改走 --muted / --line / --surface 令牌，
+   日间那套是 #5d6b8d，压在浅橙上仍有 4.5:1 以上；夜间 --muted #9aa9cc 与原值接近。 */
+.appsRow__desc { display: block; margin-top: 2px; font-size: .76rem; line-height: 1.5; color: var(--muted); }
 .appsRow__kind { font-size: .6rem; letter-spacing: .12em; padding: 2px 7px; border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, .14); color: rgba(255, 255, 255, .55); }
-.appsRow__go { width: 7px; height: 7px; border-top: 1.5px solid rgba(255, 255, 255, .35);
-  border-right: 1.5px solid rgba(255, 255, 255, .35); transform: rotate(45deg); }
+  border: 1px solid var(--line); color: var(--muted); }
+.appsRow__go { width: 7px; height: 7px; border-top: 1.5px solid var(--muted);
+  border-right: 1.5px solid var(--muted); transform: rotate(45deg); opacity: .8; }
 
 /* 手机端不再单独改时间线版式：圆点固定在 left:9px、日期紧贴其右侧，
    列宽与字号走 clamp()，所以手机上的节点与宽屏是同一套对齐（流星线按实测圆点跟随）。

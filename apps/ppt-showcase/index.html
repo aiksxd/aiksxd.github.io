@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>动画演示</title>
+    <!-- theme.css 是设计令牌层，appUI.css 文件头写着「必须先引入」。
+         缺它的时候 --bg / --text / --border / --accent / --thumb 全是未定义：
+         页面退成纯白底 + 默认黑字，按钮是白底白圆（还 opacity .5）等于隐形，
+         箭头取 var(--text-body) 连边框都画不出来，滚动条也回落到原生粗条。 -->
+    <link rel="stylesheet" href="../../css/theme.css?v=27885f0d">
     <link rel="stylesheet" href="../../css/appUI.css">
-    <link rel="stylesheet" href="../../css/ppt.css">
+    <link rel="stylesheet" href="../../css/ppt.css?v=94697689">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head>
 <body>

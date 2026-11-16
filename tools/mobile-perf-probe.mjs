@@ -39,6 +39,59 @@ const SHOT_ONLY = process.argv.includes('--shot-only');
 /* --geom：滚到卡片区，把卡堆的叠距 / 容器高 / 各槽位角色与落点导出来。
    截图看不出「下堆实际露了几像素」，这个才是判断遮挡的依据。 */
 const GEOM = process.argv.includes('--geom');
+/* --open：点开第一篇文章的阅读页再截图。手机上「卡片 → 全屏阅读页」是整个站子的
+   核心路径，而它平时只有在真机点一下才看得到；这里直接点 .post__toggle。 */
+const OPEN = process.argv.includes('--open');
+/* --toc：配合 --open 用，进阅读页后再点标题栏那颗目录按钮，
+   确认目录是「覆盖层滑出」而不是把正文挤窄。 */
+const TOC = process.argv.includes('--toc');
+/* --day：切到日间主题再截图。日间那套令牌与夜间的开销结构不同
+   （多一层 conic 光芒、云海另一套几何），要单独看一眼构图。 */
+const DAY = process.argv.includes('--day');
+/* --audit：切到英文模式，扫出所有仍然含中文的可见文本节点。
+   「哪些文案还没英文化」用眼睛扫会漏（隐藏的、动态生成的、CSS attr() 通道都看不见），
+   直接遍历文本节点最可靠。 */
+const AUDIT = process.argv.includes('--audit');
+/* --nego：语言协商验证。注入 navigator.language(s)=en-US 模拟英文浏览器，
+   再分别跑「无存档（首次访问）」与「存档 cb:lang=zh（手动选过）」两条分支。 */
+const NEGO = process.argv.includes('--nego');
+/* --lang-hint=zh-CN / en-US：把 navigator.languages 覆盖成指定语言。
+   两个用途：① 验证「按浏览器语言协商」；② 把性能测量钉在某个语言版本上 ——
+   英文文案普遍长三成，卡片高度、页面总高都跟着变，两种语言的数据不能混着比。 */
+const LANG_HINT = (process.argv.find(a => a.startsWith('--lang-hint=')) || '').split('=')[1] || '';
+/* --page=相对路径：改成测 apps/ 下的子页面（默认首页）。
+   子页面没有首页那套开场序列与卡片堆，性能三段和悬停检查对它没有意义，配 --shot-only 用。 */
+const PAGE_PATH = (process.argv.find(a => a.startsWith('--page=')) || '').split('=')[1] || 'index.html';
+
+/* 遍历文本节点而非元素：一个元素里可能中英混排，按节点报出更准。
+   跳过 .post__text / .reader__doc —— 那是文章正文，没有英文版的篇目回退中文是设计如此。 */
+const AUDIT_EXPR = `JSON.stringify((() => {
+  const out = [];
+  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(n) {
+      const t = (n.textContent || '').trim();
+      if (!t || !/[\\u4e00-\\u9fff]/.test(t)) return NodeFilter.FILTER_REJECT;
+      const p = n.parentElement;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      if (p.closest('.post__text, .reader__doc, script, style')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  let n;
+  while ((n = walk.nextNode())) {
+    const el = n.parentElement;
+    const cls = typeof el.className === 'string' ? el.className : '';
+    out.push({
+      tag: el.tagName.toLowerCase(),
+      cls: cls.trim().slice(0, 48),
+      zhv: el.getAttribute('data-zh') || '',
+      env: el.getAttribute('data-en') || '',
+      text: (n.textContent || '').trim().slice(0, 60),
+      shown: !!(el.offsetParent || el.getClientRects().length),
+    });
+  }
+  return out;
+})())`;
 
 const GEOM_EXPR = `JSON.stringify((() => {
   const stack = document.getElementById('cardStack');
@@ -371,10 +424,24 @@ async function main() {
     }
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: CPU_THROTTLE });
 
-    await cdp.send('Page.navigate', { url: `http://127.0.0.1:${port}/index.html` });
+    /* 语言注入必须在 navigate 之前注册：addScriptToEvaluateOnNewDocument 对这次导航即生效，
+       页面脚本（含 index.html 那段 <head> 协商脚本）读到的就是这里覆盖的值。 */
+    if (LANG_HINT) {
+      const tag = LANG_HINT;
+      const head = tag.toLowerCase().split('-')[0];
+      await cdp.send('Page.addScriptToEvaluateOnNewDocument', {
+        source: 'try{'
+          + `Object.defineProperty(navigator,'language',{get:function(){return '${tag}';},configurable:true});`
+          + `Object.defineProperty(navigator,'languages',{get:function(){return ['${tag}','${head}'];},configurable:true});`
+          + '}catch(e){}'
+      });
+    }
+
+    await cdp.send('Page.navigate', { url: `http://127.0.0.1:${port}/${PAGE_PATH}` });
     await waitComplete(cdp);
-    /* 开场序列（云海浮入 / 日月下落 / AX 描边）约 3s，等它跑完再量稳态 */
-    await sleep(3600);
+    /* 开场序列（云海浮入 / 日月下落 / AX 描边）约 3s，等它跑完再量稳态。
+       子页面（apps/）没有开场，但要留时间给 MathJax 这类异步排版跑完。 */
+    await sleep(PAGE_PATH === 'index.html' ? 3600 : 7000);
     await evaluate(cdp, SAMPLER_BOOT);
 
     const env = await evaluate(cdp, `JSON.stringify({
@@ -398,6 +465,77 @@ async function main() {
        （桌面档用来做对照，那里应当数到 pointermove / pointerover / pointerleave 三条。） */
     const hoverListeners = await checkHover(cdp);
 
+    /* ---------- 语言审计：切英文后，还有哪些文本是中文 ---------- */
+    if (AUDIT) {
+      /* 先记下点击前的状态：初始语言、一个典型双语元素的属性值 ——
+         若 data-en 本身就是中文，或 textContent 与 data-en 不一致，问题就在这里。 */
+      console.log('   初始 data-lang = ' + await evaluate(cdp, `document.documentElement.dataset.lang`));
+      console.log('   skip-link 探针 = ' + await evaluate(cdp, `(() => {
+        const a = document.querySelector('.skip-link');
+        if (!a) return 'none';
+        return 'text=' + JSON.stringify(a.textContent.trim())
+             + ' zh=' + JSON.stringify(a.getAttribute('data-zh'))
+             + ' en=' + JSON.stringify(a.getAttribute('data-en'));
+      })()`));
+      const switched = await evaluate(cdp, `(() => {
+        const b = document.querySelector('[data-lang-choice="en"]');
+        if (b) { b.click(); return true; }
+        return false;
+      })()`);
+      console.log('   切到英文: ' + (switched ? 'ok' : '没找到语言按钮'));
+      await sleep(1500);   // 等卡片叠距重算 + 目录重建
+      console.log('   点击后 skip-link 探针 = ' + await evaluate(cdp, `(() => {
+        const a = document.querySelector('.skip-link');
+        return a ? 'text=' + JSON.stringify(a.textContent.trim()) : 'none';
+      })()`));
+      const raw = await evaluate(cdp, AUDIT_EXPR);
+      const list = JSON.parse(raw || '[]');
+      const shown = list.filter(x => x.shown);
+      const hidden = list.filter(x => !x.shown);
+      console.log(`   仍含中文的文本节点: ${list.length}（可见 ${shown.length} / 隐藏 ${hidden.length}）`);
+      console.log('   html[data-lang] = ' + await evaluate(cdp, `document.documentElement.dataset.lang`));
+      for (const x of shown) {
+        const pair = x.zhv || x.env ? ` [zh=${x.zhv} | en=${x.env}]` : '';
+        console.log(`     <${x.tag}.${x.cls}>${pair} ${x.text}`);
+      }
+      for (const x of hidden) {
+        const pair = x.zhv || x.env ? ` [zh=${x.zhv} | en=${x.env}]` : '';
+        console.log(`     (隐藏) <${x.tag}.${x.cls}>${pair} ${x.text}`);
+      }
+    }
+
+    /* ---------- 语言协商：英文浏览器下，首次访问 / 手动选过 两条分支 ---------- */
+    if (NEGO) {
+      /* 覆盖 navigator.language(s)：addScriptToEvaluateOnNewDocument 在文档创建后、
+         页面脚本执行前注入，所以页面读到的就是目标语言。
+         已经在导航前用 --lang-hint 注过就不重复注册。 */
+      if (!LANG_HINT) {
+        await cdp.send('Page.addScriptToEvaluateOnNewDocument', {
+          source: "try{"
+            + "Object.defineProperty(navigator,'language',{get:function(){return 'en-US';},configurable:true});"
+            + "Object.defineProperty(navigator,'languages',{get:function(){return ['en-US','en'];},configurable:true});"
+            + "}catch(e){}"
+        });
+      }
+      const readLang = () => evaluate(cdp, `JSON.stringify({
+        dataLang: document.documentElement.dataset.lang,
+        htmlLang: document.documentElement.lang,
+        saved: (() => { try { return localStorage.getItem('cb:lang'); } catch (e) { return 'ERR'; } })(),
+        navLangs: (navigator.languages || []).join(','),
+        bodyText: (document.querySelector('.skip-link') || {}).textContent || '',
+      })`);
+
+      await evaluate(cdp, `(() => { try { localStorage.removeItem('cb:lang'); } catch (e) { } return true; })()`);
+      await cdp.send('Page.reload');
+      await sleep(1800);
+      console.log('   ① 首次访问（英文浏览器，无存档）:\n     ' + await readLang());
+
+      await evaluate(cdp, `(() => { try { localStorage.setItem('cb:lang', 'zh'); } catch (e) { } return true; })()`);
+      await cdp.send('Page.reload');
+      await sleep(1800);
+      console.log('   ② 手动选过中文（存档 cb:lang=zh）:\n     ' + await readLang());
+    }
+
     let geom = null;
     if (GEOM) {
       await evaluate(cdp, 'window.scrollTo(0, 1200)');
@@ -410,15 +548,43 @@ async function main() {
     /* ---------- 可选：降级后的构图截图（确认「关掉的只是动画与模糊，不是内容」） ---------- */
     if (SHOT) {
       await mkdir(SHOT, { recursive: true });
-      for (const y of [0, 1200]) {
-        await evaluate(cdp, `window.scrollTo(0, ${y})`);
-        /* 卡片入场编舞 CHOREO_IN = 1.2s，加 0.8s 单张过渡 —— 等 2.2s 才是稳定态，
-           否则截到的是「正在入场」的中间帧，不能拿来判断排版。 */
-        await sleep(2200);
+      if (DAY) await evaluate(cdp, `document.documentElement.dataset.theme = 'day'`);
+      if (OPEN) {
+        /* 点开第一张卡。阅读页由 blog.js 派发 post:open 后 reader.js 注入正文，
+           FLIGHT 飞行 + 正文淡入大约 2.4s，等够再截。 */
+        const clicked = await evaluate(cdp, `(() => {
+          const btn = document.querySelector('.post .post__toggle');
+          if (!btn) return false;
+          btn.click();
+          return true;
+        })()`);
+        console.log('   点开阅读页: ' + (clicked ? 'ok' : '没找到 .post__toggle'));
+        await sleep(2800);
+        if (TOC) {
+          const tocClicked = await evaluate(cdp, `(() => {
+            const b = document.querySelector('.post.is-full .post__toc');
+            if (!b) return false;
+            b.click();
+            return true;
+          })()`);
+          console.log('   点开目录: ' + (tocClicked ? 'ok' : '没找到 .post__toc'));
+          await sleep(600);
+        }
         const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' });
-        const file = path.join(SHOT, `y${String(y).padStart(4, '0')}.png`);
+        const file = path.join(SHOT, (DAY ? 'day-' : '') + (TOC ? 'open-toc.png' : 'open.png'));
         await writeFile(file, Buffer.from(data, 'base64'));
         console.log('   截图 -> ' + file);
+      } else {
+        for (const y of [0, 1200, 2200]) {
+          await evaluate(cdp, `window.scrollTo(0, ${y})`);
+          /* 卡片入场编舞 CHOREO_IN = 1.2s，加 0.8s 单张过渡 —— 等 2.2s 才是稳定态，
+             否则截到的是「正在入场」的中间帧，不能拿来判断排版。 */
+          await sleep(2200);
+          const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' });
+          const file = path.join(SHOT, (DAY ? 'day-' : '') + `y${String(y).padStart(4, '0')}.png`);
+          await writeFile(file, Buffer.from(data, 'base64'));
+          console.log('   截图 -> ' + file);
+        }
       }
       await evaluate(cdp, 'window.scrollTo(0, 0)');
     }

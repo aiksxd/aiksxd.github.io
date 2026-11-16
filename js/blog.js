@@ -196,10 +196,26 @@
     paintClouds(currentP); // 切换主题后按当前进度重绘云海配色
   }
 
-  function applyLang(lang) {
+  const SUPPORTED_LANG = ['zh', 'en'];
+
+  /* 首访语言：手动选择 > 浏览器语言 > 中文。
+     手动选过的（localStorage cb:lang 有值）直接用 —— 用户点过按钮就是明确意图，
+     不该被浏览器偏好拉回去。
+     没选过的，协商结果由 index.html <head> 里那段同步脚本写好（它比这份 defer 脚本早得多），
+     这里只负责沿用，避免两处各长一套规则；读不到就回退中文（站点主体是中文）。 */
+  function pickLang() {
+    const saved = store.get('lang', null);
+    if (SUPPORTED_LANG.includes(saved)) return saved;
+    return html.dataset.lang === 'en' ? 'en' : 'zh';
+  }
+
+  /* persist=false 用于首访协商：协商结果**不写** localStorage。
+     否则第一次进站就把那一刻的浏览器语言固化成「手动选择」，用户之后改了浏览器语言也不会跟随。
+     点按钮 / 快捷键那条路径走默认值 true，一律持久化。 */
+  function applyLang(lang, persist = true) {
     html.dataset.lang = lang === 'en' ? 'en' : 'zh';
     html.lang = html.dataset.lang === 'en' ? 'en' : 'zh-CN';
-    store.set('lang', html.dataset.lang);
+    if (persist) store.set('lang', html.dataset.lang);
     const key = html.dataset.lang;
     $$('[data-zh][data-en]').forEach(el => { el.textContent = el.dataset[key]; });
     $$('[data-zh-ph][data-en-ph]').forEach(el => {
@@ -339,8 +355,30 @@
         // 搜索栏挂在 .scene 外面（要钉在屏顶、又不能被 .feed 盖住），继承不到 --p，
         // 所以单独给它写一份：位移读 --p，透明度读 --dockOp（抛物线，见 dockOpacity）
         if (dock) {
-          dock.style.setProperty('--p', p.toFixed(4));
-          dock.style.setProperty('--dockOp', dockOpacity(p).toFixed(3));
+          if (LITE && dockTopPx) {
+            /* 手机轻量档：直写具体属性，不写自定义属性。
+               --p / --dockOp 都挂在 .search-dock 上，而自定义属性是可继承的 ——
+               写一次就把整棵 dock 子树标记成「样式失效」重新计算，哪怕真正用到它们的
+               只有 .search-dock 自己的 transform 和 .search--hero 的 opacity，
+               输入框、kbd、图标全都陪着重算一遍。
+               实测：只去掉 --dockOp 那一次写入，整页重算就从 1480ms 掉到 961ms。
+               这里改成直接写 transform / opacity —— 具体属性只作用于各自的元素，
+               而且两者都在合成层上（.search-dock 有 will-change:transform，
+               .search--hero 在轻量档补了 will-change:opacity），变化只走合成器。
+               位移公式与 css 里的 calc(var(--p) * (24px - var(--dockTop))) 逐字等价，
+               所以手机与桌面的观感完全一致（照样从标题组末尾滑到屏顶、透明度照样走抛物线）。
+               桌面路径保持原样（写变量），一行未动。 */
+            dock.style.transform =
+              `translate3d(0, ${(p * (24 - dockTopPx)).toFixed(2)}px, 0)`;
+            /* 不写 opacity。手机上这一条几乎横跨整屏（390px 里占 358px），
+               半透明会让背后的正文透出来、与输入框的占位文字叠成两层 ——
+               滚到任何位置都在叠字，非常难读。保持不透明，它就是一整块压在内容上的
+               搜索条（遮挡，而不是重叠）。底色本就是 92% 不透明，观感上像一条工具栏。
+               桌面仍按抛物线淡到 .55：那边它只占屏宽 30%，且多落在卡片留白处。 */
+          } else {
+            dock.style.setProperty('--p', p.toFixed(4));
+            dock.style.setProperty('--dockOp', dockOpacity(p).toFixed(3));
+          }
         }
         paintClouds(p);
         lastP = p;
@@ -411,7 +449,11 @@
     }
 
     // 滚轮：只累加目标，真实滚动条由插值循环连续驱动（缩放等交还浏览器）
-    window.addEventListener('wheel', (e) => {
+    /* 手机轻量档不挂这条：不拦截滚轮、不做「每帧 scrollTo 追目标」的插值，
+       滚动完全交还原生 —— 触屏本来就是原生惯性，再叠一层插值只会让画面比手指晚一拍。
+       省掉的是一整个 rAF 循环（每帧 lerp + scrollTo + 读回 scrollY）。
+       没有它，scroll 事件仍然走下面的 adopt()，每帧一次 paint，--p 照常更新。 */
+    if (!LITE) window.addEventListener('wheel', (e) => {
       // 全屏文章态：交回被点卡片内部滚动，不拦截页面滚轮
       if (document.body.classList.contains('is-full')) return;
       if (e.ctrlKey || e.metaKey) return;
@@ -972,6 +1014,12 @@
       const box = $('#appsGrid');
       const apps = Array.isArray(window.APPS) ? window.APPS.slice() : [];
       if (!box || !apps.length) return;
+      /* 文案语言：nameEn / descEn 有就换，没有回退中文 —— 与阅读页那边 htmlEn || html 同一套规矩。
+         这一块是内联拼出来的串，走不了 applyLang 的 data-zh/data-en 属性通道，只能渲染时自己挑。
+         这里必须读 document.documentElement，不能读模块常量 html：本函数下面还有个
+         let html = '' 拼串，同作用域提前引用会撞 TDZ（Cannot access 'html' before initialization），
+         render 一抛，作品集整块空白、初始化序列跟着断。 */
+      const en = document.documentElement.dataset.lang === 'en';
       const ys = [...new Set(apps.map(a => a.year))].sort((a, b) => b - a);
 
       /* 两列是同一个 grid 的两行：左边一条时间线条目、右边一张卡。
@@ -1007,8 +1055,8 @@
                 + `<span class="appsRow__dot"></span>`
                 + `<span class="appsRow__date">${(a.date || '').slice(5)}</span>`
                 + `<span class="appsRow__icon">${markOf(a)}</span>`
-                + `<span class="appsRow__body"><span class="appsRow__name">${a.name}</span>`
-                + `<span class="appsRow__desc">${a.desc}</span></span>`
+                + `<span class="appsRow__body"><span class="appsRow__name">${en ? (a.nameEn || a.name) : a.name}</span>`
+                + `<span class="appsRow__desc">${en ? (a.descEn || a.desc) : a.desc}</span></span>`
                 + `<span class="appsRow__kind">${a.kind}</span>`
                 + `<span class="appsRow__go" aria-hidden="true"></span></a>`;
         });
@@ -1067,6 +1115,11 @@
         if (e.propertyName === 'grid-template-rows') remeasure();
       });
     }
+
+    /* 切语言要整块重建：名称与说明是 render() 拼进去的，data-zh/data-en 那条通道管不到。
+       重建会把每行的 is-lit / 显隐一起清掉，render 末尾的 applyAppsFilter 会按当前搜索词补回来；
+       高度变了，几何紧跟着量一次。 */
+    document.addEventListener('langchange', () => { render(); requestAnimationFrame(remeasure); });
 
     return { render, setYear, box: appsBox };
   }
@@ -1786,6 +1839,14 @@
          所以缓慢滚动（或停在临界点上轻轻抖）不会把整组反复重播。 */
       const live = flowState ? drawn > 0 : drawn > ENTER_PX;
       if (live !== flowState) applyFlow(live);
+
+      /* 手机轻量档：flow 与右栏时间线被 CSS 收掉（display:none），这条线的长度、三段渐变、
+         流星头坐标，以及「箭头扫到哪一条」的逐条 toggle，全都画在一个看不见的元素上 ——
+         每帧 11 次 setProperty 加一整遍 sweep 循环，换来的是零像素。
+         这里保留上面那句入场判定（它是全站唯一的进出场状态，卡片靠 applyFlow 才会入场），
+         到此为止。桌面上照旧全画。 */
+      if (LITE) return;
+
       flow.classList.toggle('is-live', live);
 
       // 箭头扫到哪一条，哪一条才浮出（回头往上滚就收回去）；折走之后就等于全扫过
@@ -3070,6 +3131,11 @@
 
      这里**直接量真盒子**，不再按 --capBottom 公式推：手机端标题组里多了一行社交按钮
      （.hero__socials），公式推就漏掉它，搜索栏会压在按钮上；量 rect 则自动跟着内容长高。 */
+  /* 搜索栏首屏落点（px，相对视口顶）。layoutSearchDock() 量出来写在这里，
+     同时仍写一份 --dockTop 给 css 兜底（js 还没跑起来时靠它定位）。
+     手机轻量档的 paint 直接读这个数值算 transform，不必每帧回读 style。 */
+  let dockTopPx = 0;
+
   function layoutSearchDock() {
     const dock = $('#searchDock');
     const scene = $('#scene');
@@ -3084,6 +3150,7 @@
     const contentBottom = cap.getBoundingClientRect().bottom + p * 80 - padBottom;
     // 落点比内容底再低 6px 起、并整体下沉半个搜索栏高（用户要它比文字再低半格）
     const top = contentBottom + 6 + searchH * .5;
+    dockTopPx = top;
     dock.style.setProperty('--dockTop', top.toFixed(1) + 'px');
   }
 
@@ -3160,7 +3227,7 @@
   // 视口变了，标题组的 clamp 底边跟着变，搜索栏的落点与日月落点也要重量
   window.addEventListener('resize', () => { layoutSearchDock(); layoutBadgeDrop(); }, { passive: true });
   applyTheme(store.get('theme', 'night'));
-  applyLang(store.get('lang', 'zh'));
+  applyLang(pickLang(), false);
   // 先包卡片槽位、生成右半时间线，再让 initPosts 按最终布局落位（否则它量到的是旧结构）
   // 必须等 DOMContentLoaded：阅读器会在这一拍为新增文章补卡片，blog.js 排在它后面监听，
   // 等它先把卡片补齐，再统一分包槽位，新增的几条才能和原卡片进同一套分页。
