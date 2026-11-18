@@ -340,6 +340,33 @@
   }
   .card-stack > .tl__year--inline:first-child { margin-top: 0; }
 
+  /* ---------- 首页禁选 ----------
+     手机上「按住想滑动」很容易变成「长按选中一段文字」，iOS 还会弹出
+     「拷贝 / 查询 / 翻译」的系统菜单，把卡片点击一起吃掉。
+     这里把首页整块设为不可选 + 不弹系统菜单，两处例外：
+       · 搜索输入框 —— 不能选词等于不能全选重输
+       · 阅读页正文 —— 复制正文是基本信息行为
+     只作用在手机档：桌面上用鼠标拖选文本是正常操作，不该一并禁掉。 */
+  body:not(.is-full),
+  body:not(.is-full) * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  body:not(.is-full) input,
+  body:not(.is-full) textarea,
+  body:not(.is-full) [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+  body.is-full .post.is-full,
+  body.is-full .post.is-full * {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+
   /* 文章区头部：桌面靠 `.feed__inner.is-in` 揭示（那一下由流星线挂上）。
      轻量档那条线整块收掉了，is-in 可能永远挂不上 —— eyebrow 与大标题会停在
      opacity:0 + clip-path 里，看起来像「这一块没内容」。这里直接常亮。 */
