@@ -118,27 +118,239 @@
     box-shadow: none;
   }
 
-  /* ---------- ④ 单栏：右栏让位给卡片 ----------
-     split.css 在窄屏（≤899px）保留「左卡片 + 右时间线」两栏，并把落位角从 34° 收到 22°，
-     注释里的假设是「左列约 285px，内容读得下去」。但 390px 的竖屏上，扣掉 padding 与 12px
-     间距、再按 1fr : .9fr 分，左列只剩约 170px、右列约 100px：
-       · 右列 100px 装不下一条标题，字被压成一列一个字（实测截图逐字竖排）；
+  /* ---------- ④ 首页：卡片堆 → 单列流水线（线 · 年号 · 节点 · 玻璃框卡） ----------
+     split.css 在窄屏（≤899px）保留「左卡片 + 右时间线」两栏，注释里的假设是
+     「左列约 285px，内容读得下去」。但 390px 竖屏扣掉 padding 与 12px 间距、
+     再按 1fr : .9fr 分，左列只剩约 170px、右列约 100px：
+       · 右列 100px 装不下一条标题，字被压成一列一个字；
        · 左列 170px 的卡片头只剩「标题 2 行 + 日期」，正文全被下一张盖住。
-     手机上没有「并排」的余地，所以这里收掉右栏、卡片占满整列。
-     代价：手机上不显示右侧时间线（它本来就是桌面版的导航栏，卡片堆自己可以翻页浏览全部文章）。
-     .flow 是那条贯穿线（绝对定位在 .split 上、从时间线底部拐向左下），
-     右栏没了它就没有走向可言，一起隐藏；它的「有没有画出来」只用来驱动卡片入场，
-     这个信号由 js 继续算（元素在、只是不渲染），所以卡片进出场不受影响。 */
+     手机上没有「并排」的余地，所以这里把两栏**合并成一条纵向流水线**：
+       最左边一条竖线贯穿到底，线上挂年号与每一篇的节点，节点右边是卡片。
+     时间线的内容一样没少，只是不再需要第二个面板 —— 日期与标题本来就在卡片头部，
+     年号由 js 按 data-date 插进列表（见 syncInlineYears，与本段同一个断点判据）。
+     卡片取消一切位移与过渡：没有 hover、没有倾斜、没有翻页堆叠、没有入场旋转，
+     完全透明，只留一圈玻璃框。滚动时只发生一件事 —— 页面滚。
+     代价：不再有「点下堆翻页」（js 那条 capture 监听在轻量档不注册），
+     所有文章一条列到底 —— 这正是「融合」的意思。 */
   .split {
-    grid-template-columns: minmax(0, 1fr);
-    /* 不再需要为「两栏共存」付宽度税，角度可以再收一档 */
-    --ryBase: 16deg;
-    --tiltBase: 3deg;
+    display: block;
+    height: auto;
+    /* 姿态基准归零：下面所有 transform 都会被覆盖掉，留着旧值只是徒增困惑 */
+    --ryBase: 0deg;
+    --tiltBase: 0deg;
   }
+  .split__cards {
+    position: relative;
+    height: auto;
+    overflow: visible;
+    /* 左侧 24px 是给线与节点留的槽：线在 left:6px（中心 6.5），
+       节点 left:-21px（左 3、宽 7、中心 6.5）—— 两者中心严格重合 */
+    padding: 6px 0 30px 24px;
+  }
+  /* 主线：纯竖直一条，从列表顶端画到列底，再跨过 .feed 的底部留白一路接到 APP 区。
+     顶部淡入，底部**不淡** —— 它要和下面 .appsBlock::before 那一段首尾对接，
+     中间一淡就断了（电脑端那条线本来就是一路画到作品集底）。
+     --spine-tail = 「.split__cards 底 → .appsBlock 顶」的距离，也就是 .feed 的
+     padding-bottom：桌面档 72，≤640 的窄档 130（见本文件末尾那条覆写）。
+     这个值不写死在这里，是因为 responsive.css 那两个断点的 padding 不一样。 */
+  .split__cards { --spine-tail: 72px; }
+  .split__cards::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 0; bottom: calc(-1 * var(--spine-tail)); width: 1px;
+    background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, .32) 7%,
+      rgba(255, 255, 255, .32) 100%);
+    pointer-events: none;
+  }
+  /* 日间要换成深色线，否则白线画在浅蓝天上等于没有 */
+  html[data-theme="day"] .split__cards::before {
+    background: linear-gradient(to bottom,
+      rgba(30, 48, 90, 0) 0,
+      rgba(30, 48, 90, .30) 7%,
+      rgba(30, 48, 90, .30) 100%);
+  }
+
+  /* APP 区（作品集）：同一条线的下半段。
+     .appsBlock 是 .feed 的**兄弟**，CSS 里没有同时罩住两者的祖先（body 之下就分叉），
+     所以线只能分两段画、首尾接上：这一段从 .appsBlock 顶边（含它 8px 的 padding-top）
+     一直画到它底边（含 96px 的 padding-bottom），末尾淡出。
+     x=22 与 .split__cards 那条线的绝对位置一致（.feed__inner 左缘 16 + left 6）。 */
+  .appsBlock::before {
+    content: '';
+    position: absolute;
+    left: 22px; top: 0; bottom: 0; width: 1px;
+    background: linear-gradient(to bottom,
+      rgba(255, 255, 255, .32) 0,
+      rgba(255, 255, 255, .32) 88%,
+      rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+  }
+  html[data-theme="day"] .appsBlock::before {
+    background: linear-gradient(to bottom,
+      rgba(30, 48, 90, .30) 0,
+      rgba(30, 48, 90, .30) 88%,
+      rgba(30, 48, 90, 0) 100%);
+  }
+  /* APP 行的圆点也要落在这条线上：原来的 left:9 是相对 .appsRow（左缘 16），
+     9 + 4（半宽）= 29；改 2 → 16 + 2 + 4 = 22，与本段线中心重合。 */
+  .appsRow__dot { left: 2px; }
+
+  /* 右栏与那条拐弯的流星线整块收掉：结构与内容都由上面这条静态主线 + 年号接替。
+     .flow 仍留在 DOM 里（paintFlow 的入场判定还要用它算，只是不渲染）。 */
   .rail,
   .flow {
     display: none;
   }
+
+  .card-stack {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    --stack-gap: 0px;
+    clip-path: none;
+  }
+
+  /* 槽位从「绝对定位的纸堆」退回普通流：一列排下来，只负责给节点做定位基准。
+     这里必须是 relative 而不是 static —— ::before 那颗节点要相对卡片左上角定位。 */
+  .card-slot {
+    position: relative !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: none !important;
+    margin: 0 0 18px;
+    --deck-scale: 1;
+  }
+  .card-slot:last-child { margin-bottom: 0; }
+  /* 搜索把卡片 display:none 之后，槽位也一起收掉（否则会留一个空框占着位置） */
+  .card-slot:has(> .post.is-hidden) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    margin-bottom: 0;
+  }
+  /* 节点：压在主线上，与卡片首行标题同一条水平线 */
+  .card-slot::before {
+    content: '';
+    position: absolute;
+    left: -21px; top: 19px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .06), 0 0 10px rgba(150, 202, 0, .45);
+    pointer-events: none;
+  }
+
+  /* 卡片：完全透明 + 一圈玻璃框。
+     底色、模糊、阴影、旋转、过渡全部清掉 —— 这四样都是「每帧重绘」的来源，
+     而且单列平铺之后它们已经没有要表达的东西（不再有纸堆的层次、不再有 hover 的提层）。
+     **只对列表态生效**（:not(.is-full):not(.is-flying)）：阅读页与飞行中的卡片
+     必须保留实底和位移过渡 —— 否则正文会顶着背后的卡片列表与云海显示，
+     打开/关闭也没有那一段位移了（2026-11-18 用户报「打开文章背景有问题、首页内容没隐藏」）。 */
+  .card-slot > .post {
+    opacity: 1 !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .card-slot > .post:not(.is-full):not(.is-flying) {
+    transform: none !important;
+    transition: none !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, .14) !important;
+    border-radius: 14px;
+    /* 透明底上字会压在云海上：一层很轻的投影把笔画和背景分开，不改任何布局 */
+    text-shadow: 0 1px 3px rgba(4, 8, 18, .55);
+  }
+  html[data-theme="day"] .card-slot > .post:not(.is-full):not(.is-flying) {
+    border-color: rgba(26, 40, 72, .18) !important;
+    /* 日间是「浅底深字」，本身就有对比，不需要描边阴影（加了反而糊） */
+    text-shadow: none;
+  }
+  /* 阅读态（含飞行）：底色回落到 ① 那条实底，并且把背景色也纳入过渡 ——
+     列表态是透明、阅读态是有色实底，中间那一下要淡过去，不能瞬间跳。
+     位移过渡必须在这里列全：列表态那条 transition:none 已用 :not() 排除了这两种状态，
+     但基类那份（articles.css / split.css）的时长列表不带 background-color。 */
+  .card-slot > .post.is-full,
+  .card-slot > .post.is-flying {
+    text-shadow: none;
+    transition: background-color .38s var(--ease),
+                transform .8s var(--ease), opacity .5s var(--ease),
+                box-shadow .45s var(--ease),
+                left .5s var(--ease), top .5s var(--ease),
+                width .5s var(--ease), height .5s var(--ease),
+                border-radius .5s var(--ease),
+                border-color .3s var(--ease);
+  }
+  /* 阅读页要盖住整块首页，包括 z-index 3 的 APP 区。
+     .post.is-full 的 z-index:100 只在 .feed 自己的层叠上下文里有效，而 .feed 是 2、
+     .appsBlock 是 3（后者抬高是为了让流星线尾段能压过 .feed）—— 所以单靠卡片自己
+     抬不起来，必须把 .feed 整块抬到 APP 之上。关闭时随 is-full 一起回落。 */
+  body.is-full .feed { z-index: 4; }
+  /* 头部那块「从半透明渐到透明」的底也一起撤掉，否则框里会多一条色带。
+     同样只对列表态 —— 阅读页的吸顶标题栏（.post.is-full .post__head，高 44px、
+     自带 --surface-2 底）必须保留自己的底和 padding，否则正文滚过去会直接压在上面。 */
+  .card-slot > .post:not(.is-full):not(.is-flying) .post__head {
+    background: none !important;
+    padding: 14px 14px 10px;
+  }
+  /* 顶部那条 accent 高光留着 —— 它就是「玻璃框」上沿的那道反光 */
+  .card-slot > .post::before { opacity: .4; }
+
+  /* 内容一律可见：堆里那几条「只留纸」「只给最前一张正文」的规则在平铺之后没有意义 */
+  .card-slot .post__thumb,
+  .card-slot .post__meta,
+  .card-slot .post__excerpt,
+  .card-slot .post__foot,
+  .card-slot .post__body,
+  .card-slot .post__detail,
+  .card-slot .post .post__text {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
+  /* 提示卡（上一组 / 下一组）在平铺之后没有角色：标题必须显示回真文本，
+     header 上那条 ::after 提示语（content 来自 data-hz-*）也要撤掉。 */
+  .card-slot[data-role] .post__heading h3 { color: var(--text) !important; }
+  .card-slot[data-role] .post__head::after { content: none !important; }
+  .card-slot.is-faded { opacity: 1 !important; }
+  /* 标题与摘要跟着单列的宽度放开：不再被 170px 的行宽挤成两三个字一行。
+     阅读页不参与：那边的标题是吸顶栏里的单行（.98rem + nowrap + 省略号），
+     摘要也要按正文自己的排版走，不能被这里的 clamp / 截断影响。 */
+  .card-slot > .post:not(.is-full):not(.is-flying) .post__heading h3 {
+    font-size: clamp(.98rem, 4vw, 1.12rem);
+  }
+  .card-slot > .post:not(.is-full):not(.is-flying) .post__excerpt {
+    font-size: .88rem; line-height: 1.7;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  /* 年份：列表里的一个分隔行，复用时间线年号那套字号 / 颜色 / 下划线（同一颗 .tl__y）。
+     静态可见 —— 不等流星线扫过（那条线在手机上不跑）。 */
+  .tl__year--inline {
+    margin: 20px 0 4px;
+    padding-left: 0;
+    font-size: clamp(1.55rem, 8vw, 2rem);
+    opacity: 1 !important;
+    translate: none !important;
+    transition: none !important;
+    pointer-events: none;
+    cursor: default;
+  }
+  .card-stack > .tl__year--inline:first-child { margin-top: 0; }
+
+  /* 文章区头部：桌面靠 `.feed__inner.is-in` 揭示（那一下由流星线挂上）。
+     轻量档那条线整块收掉了，is-in 可能永远挂不上 —— eyebrow 与大标题会停在
+     opacity:0 + clip-path 里，看起来像「这一块没内容」。这里直接常亮。 */
+  .feed__head .eyebrow,
+  .feed__head h2 {
+    opacity: 1 !important;
+    clip-path: none !important;
+    translate: none !important;
+    transition: none !important;
+  }
+
 
   /* ---------- ⑤ 搜索栏：行为与桌面一致 ----------
      这里原来把搜索栏改成「原地淡出 / 回到顶部淡入」的离散状态（跨 24px 切一次 class），
@@ -188,4 +400,11 @@
      原因：index.html 把 reader.css 当独立 <link> 引在 assets/site.css（含本文件）之后，
      同特异性的规则永远由 reader.css 胜 —— 写在这里会被它的 979px 断点压掉，
      390px 竖屏实测 .post__body 还是 126.7 + 213.3 两列。2026-11-18 已整块搬走，只留这条指针。 */
+}
+
+/* ≤640：responsive.css 把 .feed 的底部留白从 72 提到 130（给右下角设置按钮让位），
+   线尾要跟着长，否则它会在 72px 处停住、与 APP 区那段之间空出一截。
+   这条写在外层：非触屏的窄窗口里 .split__cards::before 没有 content，改了也不画。 */
+@media (max-width: 640px) {
+  .split__cards { --spine-tail: 130px; }
 }

@@ -7,17 +7,17 @@
       "css/responsive.css": "b769ded8",
       "css/split.css": "a2ed17d8",
       "css/motion.css": "74262c01",
-      "css/mobile-lite.css": "2345f511"
+      "css/mobile-lite.css": "05f06b8c"
     },
     "assets/site.js": {
       "js/apps.data.js": "2015ffde",
       "js/reader.js": "35996ad3",
-      "js/blog.js": "25bcc20d",
+      "js/blog.js": "7675c56d",
       "js/scroll-rail.js": "208ec144"
     }
   },
   "assets": {
-    "assets/site.css": "57ae2f50",
-    "assets/site.js": "a1c8ab08"
+    "assets/site.css": "3fa7e323",
+    "assets/site.js": "94267fa2"
   }
 }

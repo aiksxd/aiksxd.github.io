@@ -625,7 +625,8 @@ async function main() {
           '    " w=" + Math.round(r.width) + " h=" + Math.round(r.height) +' +
           '    " pos=" + cs.position + " cols=" + cs.gridTemplateColumns +' +
           '    " op=" + cs.opacity + " cls=" + (el.className || "") +' +
-          '    " overflow=" + cs.overflow + " tf=" + (cs.transform === "none" ? "none" : "有");' +
+          '    " overflow=" + cs.overflow + " tf=" + (cs.transform === "none" ? "none" : "有") +' +
+          '    " tier=" + (el.dataset && el.dataset.tier ? el.dataset.tier : "-");' +
           '}).join("\\n"); })()';
         console.log('   量测:\n' + (await evaluate(cdp, code)));
       }

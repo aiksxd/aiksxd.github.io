@@ -24,6 +24,30 @@
     window.matchMedia('(max-width: 600px)').matches
   ));
 
+  /* ---------- 设备档位（tier）：手机档内再分三档 ----------
+     轻量档原来是一刀切（触屏窄屏全部按最省跑）。但同一套「最省」放在旗舰机上
+     明显浪费 —— 那些机器能跑更多星点、更细的云海色阶。这里用三个信号估一次：
+       · navigator.hardwareConcurrency — 全平台都有，反映大核规模（低端 4 / 中端 6~8 / 旗舰 8+）
+       · navigator.deviceMemory        — 只有 Chrome 系有（iOS Safari 读不到，按未知处理）
+       · innerWidth × innerHeight × DPR² — 真正要填充的设备像素，DPR3 的 390 屏就是 296 万
+     判据只用于**下调**动效规模（云海色阶 / 星点数量 / --p 精度），不改结构、不改交互。
+     桌面一律 full：桌面那套降级由 motion.css 的 steps() 阶梯负责，不该被手机规则牵连。
+     结果挂到 html[data-tier]，CSS 侧要按档位收紧时可以直接用。 */
+  const TIER_FORCED = (function () {
+    const m = /[?&]tier=(lite|mid|full)\b/.exec(location.search);
+    return m ? m[1] : '';
+  })();
+  const TIER = TIER_FORCED || (!LITE ? 'full'
+    : ((navigator.hardwareConcurrency || 4) <= 4
+       || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 2)
+       || (window.innerWidth * window.innerHeight * Math.pow(window.devicePixelRatio || 1, 2)) > 3.6e6)
+      ? 'lite'
+    : ((navigator.hardwareConcurrency || 4) <= 6
+       || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 3))
+      ? 'mid'
+    : 'full');
+  html.dataset.tier = TIER;
+
   // 由 initParallax 注入：程序化滚动（锚点按钮 / 回顶部）与滚轮共用同一条插值通道
   let smoothScrollTo = null;
   // 由 initSplit 注入：?post=post-N 深链把目标卡挪进当前页并锁定，返回那张卡
@@ -96,7 +120,7 @@
        手机轻量档再降到 1/32：每改一次 stop-color，那两张 50vw 的云海 SVG
        都要重新光栅化（DPR 3 下各约 82 万设备像素）。32 级在手机上仍然平滑
        （云海从白到紫的过渡本身铺在几百像素上），但重绘次数是原来的 1/4。 */
-    const STEPS = LITE ? 32 : 128;
+    const STEPS = TIER === 'lite' ? 24 : TIER === 'mid' ? 40 : LITE ? 56 : 128;
     const t = Math.round(Math.min(1, Math.max(0, p * 2)) * STEPS) / STEPS;
     if (t === cloudT && theme === cloudTheme) return;
     cloudT = t; cloudTheme = theme;
@@ -144,7 +168,7 @@
     /* 手机轻量档：72 → 24。星点数量不只是绘制成本 —— .scene 子树里每多一个元素，
        滚动时 --p 每次变化都要多遍历、重算一次样式（实测这一项是手机端最大的一笔）。
        取 24 = 4 组各 6 颗，组间相位错开，视觉上仍是「一片星空」而不是几颗孤星。 */
-    const total = LITE ? 24 : 72;
+    const total = TIER === 'lite' ? 20 : TIER === 'mid' ? 32 : LITE ? 44 : 72;
     for (let i = 0; i < total; i++) {
       const star = document.createElement('span');
       star.className = 'star';
@@ -166,7 +190,7 @@
     const { groups, frags } = makeStarGroups(box);
     /* 手机轻量档：150 → 44。银河星尘本来就只有 1~2px，小屏上密度差一半看不出来，
        但省下的是一整层 150 个元素的重算与合成。 */
-    const total = LITE ? 44 : 150;
+    const total = TIER === 'lite' ? 36 : TIER === 'mid' ? 64 : LITE ? 100 : 150;
     for (let i = 0; i < total; i++) {
       const t = Math.random();
       // 近似正态的带宽扰动，让星尘中间密、两侧疏；
@@ -329,7 +353,7 @@
        都要重新计算样式 —— 实测这是手机滚动时最大的一笔主线程开销。
        场景层的位移只有行程的 0.06~0.17 倍，15px 一级约等于 1~2px 的图层位移，
        在整屏都在滚动的画面上不可辨；桌面仍按像素全精度走。 */
-    const P_LEVELS = LITE ? 48 : 0;
+    const P_LEVELS = LITE ? (TIER === 'lite' ? 48 : 72) : 0;
 
     function paint(y) {
       const clamped = Math.max(0, Math.min(y, RANGE));
@@ -2898,8 +2922,10 @@
        （.card-slot 是 pointer-events:none，堆里的卡也没开自动命中），所以热区不会和卡片抢。 */
     /* 翻页的点击入口：卡片的角色就是入口（下堆的卡 = 下一页，上堆的卡 = 上一页）。
        capture 阶段拦 —— 必须在 initEvents 那条「点任意卡片进阅读」的冒泡监听之前
-       stopPropagation，否则点堆会先被开放成全屏。 */
-    if (cardsCol) {
+       stopPropagation，否则点堆会先被开放成全屏。
+       **手机轻量档不挂**：那边是平铺的单列列表（见 mobile-lite.css ④），没有上下堆，
+       每张卡都是「打开这一篇」；沿用这条会把 role=next/prev 的卡变成翻页，等于点不动。 */
+    if (cardsCol && !LITE) {
       cardsCol.addEventListener('click', e => {
         const slot = e.target.closest && e.target.closest('.card-slot');
         const role = slot && slot.dataset.role;
@@ -2947,6 +2973,38 @@
        先点后算会被它按滚动位置（首屏滚动 0）重新抹掉。 */
     if (document.readyState === 'complete') { deckCtl.layout(); repaintLine(); }
     else window.addEventListener('load', () => { deckCtl.layout(); repaintLine(); }, { once: true });
+
+    /* ---------- 手机档：把时间线的年号搬进卡片列表 ----------
+       手机上是「线 · 年号 · 卡片」一条纵向流水线（见 mobile-lite.css ④），
+       右栏整块不渲染，年号就没人画了。这里按卡片的 data-date 取年份，
+       在每一年的第一张卡前面插一行 .tl__year——样式直接复用时间线那颗年号
+       （同一份 .tl__y 下划线、同一号字号），所以它不是「另做一套」。
+       判据读 matchMedia 实时值（不是 LITE 那个加载时常量）：从桌面把窗口缩到
+      手机宽度时补上、拉回去时再撤掉，两条方向都跟得上。
+       桌面档必须什么都不插 —— 那边是叠卡片堆，多出几个不参与 --y 布局的兄弟会打乱落点。 */
+    const LITE_MQ = window.matchMedia('(pointer: coarse) and (max-width: 900px), (max-width: 600px)');
+    function syncInlineYears() {
+      const stack = $('#cardStack');
+      if (!stack) return;
+      $$('.tl__year--inline', stack).forEach(el => el.remove());
+      if (!LITE_MQ.matches) return;
+      let last = '';
+      $$('.card-slot', stack).forEach(slot => {
+        const post = $('.post', slot);
+        const time = post ? $('.post__meta time', post) : null;
+        const date = (post && post.dataset.date) || (time && time.getAttribute('datetime')) || '';
+        const year = date.slice(0, 4);
+        if (!year || year === last) return;
+        last = year;
+        const row = document.createElement('div');
+        row.className = 'tl__year tl__year--inline';
+        row.innerHTML = '<span class="tl__y"></span>';
+        $('.tl__y', row).textContent = year;
+        stack.insertBefore(row, slot);
+      });
+    }
+    syncInlineYears();
+    LITE_MQ.addEventListener('change', syncInlineYears);
   }
 
   /* ---------- 锚点落点：一套算法，两处入口 ----------
