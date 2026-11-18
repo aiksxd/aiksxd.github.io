@@ -21,11 +21,11 @@ minutes: 5
 3. 敲空格：取消当前这次补全，重新开一个词
 4. 补全内容里写 `$1` `$2` 占位符，插入后光标直接停在第一个占位符上
 
-![在 $...$ 里打字，候选列表跟着弹](img/md/latex-autocomplete-demo.gif "公式补全的实际输入过程")
+![在 $...$ 里打字，候选列表跟着弹](img/md/latex-autocomplete-demo.webp "公式补全的实际输入过程")
 
 ## 只有三个设置项
 
-![插件设置界面](img/md/latex-autocomplete-setting.png "最小触发字符数、映射表、预览符号")
+![插件设置界面](img/md/latex-autocomplete-setting.webp "最小触发字符数、映射表、预览符号")
 
 | 设置项 | 作用 | 建议 |
 |---|---|---|

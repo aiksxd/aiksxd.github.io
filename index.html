@@ -7,14 +7,70 @@
   <meta name="color-scheme" content="dark light">
   <title>Cloudiest Blog · AIKSXD</title>
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-  <link rel="stylesheet" href="css/index.css?v=2a7d1f83">
+  <!-- 首屏样式打成单文件：css/*.css 七层（含手机档）按原层叠顺序逐层压缩后拼接，
+       由 tools/build.mjs 生成 assets/site.css。原先 8 个请求（入口 + 7 个 @import）
+       合成 1 个，gzip 后 53.7KB → 12KB；源码仍留在 css/ 下可直接维护。 -->
+  <!-- 头像在开场 1.56s 才浮入，提前拉它，避免文字起来了图才落 -->
+  <link rel="preload" as="image" href="img/avatar.webp" fetchpriority="high">
+  <link rel="stylesheet" href="assets/site.css?v=57ae2f50">
   <!-- 阅读页（md 正文 + 左侧目录）的样式单独一份：改首页动画时不会牵动正文排版 -->
-  <link rel="stylesheet" href="css/reader.css?v=17866369">
+  <link rel="stylesheet" href="css/reader.css?v=c286b428">
   <!-- 同步标记：① js 表示脚本活着（文章区入场初始态靠它兜底）；② data-intro=1 是开场序列的
        「纯黑夜」起点 —— 云、日月、标题都先藏起来，由 js 逐级推进到终态。没有脚本时这三个标记
        都不存在，页面直接以静态终态渲染，不会把任何东西永久藏住。
        ③ is-ax-hold 只管 AX 字标：它比标题那批松得早（开场 1s 就要起笔），所以单独一个类。 -->
-  <script>document.documentElement.classList.add('js');document.documentElement.dataset.intro = '1';document.documentElement.classList.add('is-booting');document.documentElement.classList.add('is-ax-hold');</script>
+  <script>
+    /* 开场序列留在这里，不放回 site.js：那是 defer 脚本，首访要等它下载执行完才起步，
+       用户看到的就是「先黑一阵，云/月亮/头像再一起冒出来」。
+       内联这段在 CSS 就绪那一刻就计时，脚本在后台加载，不再挡开场。
+       site.js 里的 initHeroIntro 降级为兜底（外部没有这段内联脚本时才跑）。 */
+    (function () {
+      var html = document.documentElement;
+      html.classList.add('js');
+      html.dataset.intro = '1';
+      html.classList.add('is-booting', 'is-ax-hold');
+      /* blog.js / 深链共用的进度旗标：即使脚本比开场晚 2 秒才加载完，
+         也能据此直接起笔 / 直接滚，不用猜事件有没有错过。 */
+      window.__cbHero = { inline: true, axDone: false, introDone: false };
+      var fire = function (name) { window.dispatchEvent(new Event(name)); };
+      function begin() {
+        /* ① 140ms：云海浮入 + 日月从顶部落下（CSS 1.05~1.5s，并行推进） */
+        setTimeout(function () { html.dataset.intro = '2'; }, 140);
+        /* ② 1140ms：AX 起笔，叠在已显形的实心月亮上 */
+        setTimeout(function () {
+          html.classList.remove('is-ax-hold');
+          window.__cbHero.axDone = true;
+          fire('hero-intro-done');
+        }, 1140);
+        /* ③ 1560ms：云与日月落定 → 撤按住，标题组与搜索栏依次浮入。
+           原先 is-hero-rise 由 blog.js 的 playHeroRise() 挂；这里直接挂等价的类 ——
+           CSS 的 heroFadeIn 终值读 var(--heroFade,1)，首屏就是 1，不依赖任何脚本。 */
+        setTimeout(function () {
+          delete html.dataset.intro;
+          html.classList.remove('is-booting');
+          html.classList.add('is-dock-rise', 'is-hero-rise');
+          window.__cbHero.introDone = true;
+          fire('hero-intro-final');
+        }, 1560);
+      }
+      /* 后台标签：浏览器把 CSS 动画冻在 from 帧，先给终态；可见时从第一级重放 */
+      if (document.hidden) {
+        html.classList.add('no-intro');
+        delete html.dataset.intro;
+        html.classList.remove('is-booting', 'is-ax-hold');
+        document.addEventListener('visibilitychange', function onVisible() {
+          if (document.hidden) return;
+          document.removeEventListener('visibilitychange', onVisible);
+          html.classList.remove('no-intro');
+          html.dataset.intro = '1';
+          html.classList.add('is-booting', 'is-ax-hold');
+          begin();
+        });
+        return;
+      }
+      begin();
+    })();
+  </script>
   <!-- 首访语言协商：必须赶在第一屏文案渲染前定下来 —— blog.js 是 defer 的，等它跑完再切，
        英文用户会先看到一屏中文再跳成英文。
        优先级与 js/blog.js 的 pickLang 一致：手动选过（localStorage cb:lang）优先 →
@@ -39,19 +95,20 @@
       set('zh');
     })();
   </script>
-  <!-- 作品集（第二部分）的展示数据：apps/<id>/index.html 在磁盘上，这里只登记年份与文案 -->
-  <script src="js/apps.data.js?v=2015ffde" defer></script>
-  <!-- md 编译产物（node tools/md2html.mjs 生成）+ 阅读页装配。
-       顺序不能反：reader.js 要读 window.AX_POSTS。
-       blog.js 必须排在最后：它初始化时按当时 DOM 里的全部 .post 分包槽位，
-       阅读器会补上新增文章，早于它执行才能一起收进同一套分页。 -->
-  <script src="js/posts.data.js?v=36d5417e" defer></script>
-  <!-- 代码高亮：本地 vendor 文件（不挂 CDN，file:// 下也能跑），reader.js 注入正文后调用它 -->
-  <script src="js/vendor/highlight.min.js?v=471ef9ae" defer></script>
-  <script src="js/reader.js?v=d31f7b08" defer></script>
-  <script src="js/blog.js?v=c998f2d4" defer></script>
-  <!-- 自绘覆盖式滚动条：原生条已在 css/base.css 里隐藏，滑块由它画在视口右缘 -->
-  <script src="js/scroll-rail.js?v=208ec144" defer></script>
+  <!-- 作品集数据 + 阅读页 + 交互 + 滚动条四个脚本按原 defer 顺序合并压缩成一个文件，
+       gzip 87KB → 19KB；源码仍分文件维护，tools/build.mjs 负责重新打包。 -->
+  <script src="assets/site.js?v=a1c8ab08" defer></script>
+  <!-- md 编译产物（112KB）与代码高亮（125KB）都改成按需加载：
+       首屏用不到它们，原先挂在 defer 链里却会把交互脚本一起挡在 237KB 后面。
+       site.js 在第一次打开文章时按下面的地址动态插入 <script>；
+       深链 ?post= 检测到目标时会提前预取，飞行 500ms 期间正好下完。
+       地址留在 HTML 而不是写死在脚本里，tools/build.mjs 才能继续给它们打内容哈希。 -->
+  <script>
+    window.CB_ASSETS = {
+      posts: 'js/posts.data.js?v=d39fcbf6',
+      hljs: 'js/vendor/highlight.min.js?v=471ef9ae'
+    };
+  </script>
 </head>
 <body>
   <!-- 图标精灵：全部内联，不依赖外部图标字体 / CDN -->

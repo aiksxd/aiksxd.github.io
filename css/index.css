@@ -8,8 +8,8 @@
 @import url("scene.css?v=fc7cc1c3");
 @import url("articles.css?v=9ff1b383");
 @import url("responsive.css?v=b769ded8");
-@import url("split.css?v=7e3a6fd0");
+@import url("split.css?v=a2ed17d8");
 @import url("motion.css?v=74262c01");
 /* 手机轻量档：必须排在最后 —— 它靠「同特异性 + 后加载」覆盖上面各层的
    动画、磨砂玻璃与随 --p 变化的昂贵属性。只在触屏窄屏生效，桌面不受影响。 */
-@import url("mobile-lite.css?v=f4b8e05c");
+@import url("mobile-lite.css?v=cf179c4b");

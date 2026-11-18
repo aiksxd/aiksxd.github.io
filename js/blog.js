@@ -26,6 +26,8 @@
 
   // 由 initParallax 注入：程序化滚动（锚点按钮 / 回顶部）与滚轮共用同一条插值通道
   let smoothScrollTo = null;
+  // 由 initSplit 注入：?post=post-N 深链把目标卡挪进当前页并锁定，返回那张卡
+  let revealPost = null;
   // 由 initSplit 注入：时间线标题是从卡片里抄来的快照，切语言后要重建
   let refreshSplitLine = null;
   // 由 initSplit 注入：搜索框的命中结果决定左侧该露哪几张卡，过滤完要让叠层重新排一遍
@@ -523,6 +525,9 @@
     if (!post || fullPost) return;
     fullPost = post;
     clearTimeout(flightTimer);
+    /* 正文数据 + 高亮库按需加载：从点击这一刻就起飞，500ms 飞行结束时大多已经就绪；
+       没就绪则由下面的落位回调等着它，不会让空正文先淡入再跳字。 */
+    if (window.CBloadReaderAssets) window.CBloadReaderAssets();
     clearTimeout(fadeTimer);
     clearTimeout(settleTimer);
     settleTimer = 0;
@@ -591,10 +596,17 @@
     flightTimer = setTimeout(() => {
       if (fullPost !== post) return;
       post.classList.add('is-full');
-      // 阅读页（reader.js）在这一拍注入 md 正文。此时内容还是 opacity:0（is-expanding
-      // 尚未摘掉），注入引起的重排会被随后的淡入整段盖住，看不到文字跳一下。
-      document.dispatchEvent(new CustomEvent('post:open', { detail: post }));
-      document.body.classList.remove('is-expanding');
+      const reveal = () => {
+        if (fullPost !== post) return;
+        // 阅读页（reader.js）在这一拍注入 md 正文。此时内容还是 opacity:0（is-expanding
+        // 尚未摘掉），注入引起的重排会被随后的淡入整段盖住，看不到文字跳一下。
+        document.dispatchEvent(new CustomEvent('post:open', { detail: post }));
+        document.body.classList.remove('is-expanding');
+      };
+      /* 按需资源若还没下完，宁可让卡片在多等一会儿（仍是空的飞行终态），
+         也不要先揭开空正文再补一张进来。Promise 是缓存的，正常点击几乎立刻兑现。 */
+      if (window.CBloadReaderAssets) window.CBloadReaderAssets().then(reveal);
+      else reveal();
     }, FLIGHT);
   }
 
@@ -736,6 +748,12 @@
       shown = on;
       if (on && !force) staggerEntrance();   // 整组进场前铺好 0/80/160… 的逐个延迟
       posts.forEach(p => p.classList.toggle('is-inview', on));
+      /* 全屏阅读期间，正在读的那张必须始终可见。
+         resize（拖窗 / 手机档拉到桌面档）与可见性恢复都会让 split 的 paintFlow
+         按新几何重算「卡片流」在不在，算出 false 时这一行会把 is-inview 从**正在读的
+         那张卡**上一起摘掉 —— .post 的基础样式就是 opacity: 0，整屏立刻只剩天空。
+         （对照实测：不 resize 时 is-inview 在、opacity 1；resize 后两者一起没了。） */
+      if (fullPost && fullPost.classList.contains('is-full')) fullPost.classList.add('is-inview');
     }
     /* initSplit 的唯一入口：它只管把「线还在不在」传进来，别的什么都不判 */
     setCardFlow = on => syncStack(on);
@@ -812,10 +830,19 @@
       if (shown) replayEntrance();
     });
 
-    // 全屏时窗口尺寸变化（旋屏 / 拖窗）：直接刷新飞行态的内联尺寸，不留下半屏的卡片
+    /* 全屏时窗口尺寸变化（旋屏 / 拖窗 / 手机档拉到桌面档）：重新钉死到视口。
+       这里**不能**只判 is-full：
+       飞行途中（is-flying、is-full 还没加）就 resize 的话，内联几何还是飞行起点
+       （= 列表卡那一小块），而后面没有任何人再推进它 —— 结果全屏卡片卡在两百多像素高、
+       下面一大片天空（手机档窗口直接拉宽到桌面时必现）。
+       resize 本来就该打断飞行：直接给终点几何、关掉过渡，不再等那两帧 rAF。
+       left/top 也要一起写：只改 width/height 的话，若 resize 发生在双 rAF 之前，
+       卡片还钉在它原来在列表里的位置。 */
     window.addEventListener('resize', () => {
-      if (!fullPost || !fullPost.classList.contains('is-full')) return;
+      if (!fullPost) return;
       fullPost.style.transition = 'none';
+      fullPost.style.left = '0px';
+      fullPost.style.top = '0px';
       fullPost.style.width = window.innerWidth + 'px';
       fullPost.style.height = window.innerHeight + 'px';
       requestAnimationFrame(() => { if (fullPost) fullPost.style.transition = ''; });
@@ -2714,6 +2741,31 @@
       applyFocus();
     }
 
+    /* ?post=post-N 深链：把目标挪进当前页窗口再锁定。
+       只改 pageStart 不动滚动，滚动与展开交给 runPostDeeplink 编排 —— 那样才能
+       先让首屏淡出、流星线画出来，再让卡片飞成阅读页。 */
+    revealPost = postId => {
+      const it = items.find(x => x.post.id === postId);
+      if (!it) return null;
+      const vis = visibleItems();
+      const idx = vis.indexOf(it);
+      if (idx >= 0) {
+        const maxStart = Math.max(0, vis.length - PAGE);
+        const next = Math.min(idx, maxStart);
+        if (next !== pageStart) {
+          pageStart = next;
+          lineCtl.move(pageStart);
+          applyCards();
+          lineCtl.spring(pageStart, 0);
+          lineCtl.sync();
+          deckCtl.layout();
+          repaintLine();
+        }
+      }
+      toggleFocus(postId);
+      return it.post;
+    };
+
     /* 外部改了 pageStart（换年份 / 筛选 / 重建时间线）之后，把内容窗口收回整数、
        球追上新的整数（球可以慢慢弹，内容不等它）。
        springBall 里带「已经到位就一帧结束」的短路，所以平常调用几乎不花时间。 */
@@ -2912,6 +2964,73 @@
     else el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  /* ---------- 文章深链：?post=post-N / ?article= / ?p= ----------
+     URL 带上文章 id 时，页面加载完先走一遍开场（云/日月/标题），再自动往下滚：
+     第一段到文章区大标题（首屏淡出 + 卡片入场），第二段到卡片堆（流星线画完），
+     最后把指定文章按原路径全屏展开。?post=11 这种纯数字等价于 post-11。
+     与已有的 #post-N 锚点不同：锚点只是滚到卡片，深链要连阅读页一起打开。 */
+  /* ?post= 的解析：id、纯数字、文章标题（中/英文）都能用。
+     标题从卡片 h3 a 的 textContent 与 data-zh/data-en 三处取 —— applyLang 会把
+     textContent 换成当前语言，只看它会在另一种语言的标题上漏匹配。
+     归一化只吃掉大小写、空白和标点，不碰中英文字符本身。 */
+  function resolvePostParam(raw) {
+    const r = String(raw || '').trim();
+    if (/^\d+$/.test(r)) return 'post-' + r;
+    if (/^post-\d+$/i.test(r)) return r.toLowerCase();
+    const norm = s => String(s || '').toLowerCase()
+      .replace(/[\s\u3000]+/g, '')
+      .replace(/[：:·・，,。.、！!？?\-_—()（）\[\]【】《》<>"'“”‘’]/g, '');
+    const want = norm(r);
+    if (!want) return null;
+    const cards = $$('.post');
+    const names = p => {
+      const a = $('h3 a', p);
+      return [p.id, a && a.textContent, a && a.dataset && a.dataset.zh, a && a.dataset && a.dataset.en];
+    };
+    const exact = cards.find(p => names(p).some(n => norm(n) === want));
+    if (exact) return exact.id;
+    /* 只写了标题的一部分也认；但多命中就不猜 —— 几篇「直播」会被同一个词捞出来 */
+    const partial = cards.filter(p => names(p).some(n => {
+      const k = norm(n);
+      return k.length > 2 && k.indexOf(want) >= 0;
+    }));
+    return partial.length === 1 ? partial[0].id : null;
+  }
+
+  function runPostDeeplink() {
+    const q = new URLSearchParams(location.search);
+    const raw = q.get('post') || q.get('article') || q.get('p') || '';
+    if (!raw) return;
+    const id = resolvePostParam(raw);
+    if (!id) {
+      console.warn('[deeplink] 找不到文章：' + raw);
+      return;
+    }
+    const post = document.getElementById(id);
+    if (!post || !post.classList.contains('post')) {
+      console.warn('[deeplink] 找不到文章：' + raw);
+      return;
+    }
+    // 提前拉正文数据：不等用户点，500ms 的展开飞行结束前多半已下完
+    if (window.CBloadReaderAssets) window.CBloadReaderAssets();
+    const target = revealPost ? revealPost(id) : post;
+
+    const play = () => {
+      const head = $('#posts');
+      if (smoothScrollTo && head) smoothScrollTo(landingY(head));
+      else scrollToEl(head);
+      setTimeout(() => {
+        const split = $('.split');
+        if (smoothScrollTo && split) smoothScrollTo(landingY(split) + 80);
+        else scrollToEl(split);
+      }, 1000);
+      setTimeout(() => openFullscreen(target), 1900);
+    };
+    /* 开场未播完就等它；__cbHero 不存在（无内联脚本的外部环境）则立刻走 */
+    if (!window.__cbHero || window.__cbHero.introDone) play();
+    else window.addEventListener('hero-intro-final', play, { once: true });
+  }
+
   /* 搜索命中 → 把那一块带到眼前（通用落点）。
      不再写死「滚到文章区」：命中落在哪一块就滚到哪一块的锚点。
      两块按文档顺序排（文章在上、作品集在下），取第一个有命中的；
@@ -3041,7 +3160,8 @@
     // 不能让字标永久空白 —— 宁可晚一点，不能没有。
     let started = false;
     const startFirst = () => { if (started) return; started = true; rewrite(true); };
-    window.addEventListener('hero-intro-done', startFirst, { once: true });
+    if (window.__cbHero && window.__cbHero.axDone) startFirst();
+    else window.addEventListener('hero-intro-done', startFirst, { once: true });
     setTimeout(startFirst, 6000);
 
     /* 淡出后再回来：边沿触发，来回多次都会重播。
@@ -3072,8 +3192,11 @@
      时间点必须与 css 里的过渡时长对齐（data-intro 各级的 transition），改时长两边一起改。 */
   function initHeroIntro() {
     const html = document.documentElement;
+    // 正常路径：head 内联脚本已经接管开场，这里不能再推一遍 data-intro
+    if (window.__cbHero && window.__cbHero.inline) return;
     // 没有开场标记（例如外部环境直接渲染终态）就不推进，避免把页面卡在黑场
     if (!document.getElementById('badge') || html.dataset.intro !== '1') return;
+    window.__cbHero = { inline: false, axDone: false, introDone: false };
 
     const at = (ms, fn) => setTimeout(fn, ms);
 
@@ -3086,6 +3209,7 @@
       //    笔画叠在实心月亮上不会跟着一起淡。标题那批还按着，等云与日月都落定再浮入。
       at(1140, () => {
         html.classList.remove('is-ax-hold');
+        window.__cbHero.axDone = true;
         window.dispatchEvent(new Event('hero-intro-done'));
       });
 
@@ -3097,6 +3221,8 @@
         // 搜索栏单独挂一次性类：它属于「世界建立」这一拍，回顶只重播文字与 AX
         html.classList.add('is-dock-rise');
         playHeroRise();
+        window.__cbHero.introDone = true;
+        window.dispatchEvent(new Event('hero-intro-final'));
       });
     };
 
@@ -3237,6 +3363,7 @@
     initPosts();
     initEvents();
     initParallax();
+    runPostDeeplink();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', waitForAllPostsThenBoot, { once: true });

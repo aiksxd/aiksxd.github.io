@@ -12,16 +12,51 @@
 (() => {
   'use strict';
 
-  const DATA = window.AX_POSTS || {};
+  /* 正文数据不再在首屏同步就绪：posts.data.js / highlight.min.js 已移出 defer 链，
+     由下面的 loadReaderAssets() 在第一次打开文章时按需插入。所以这里只留一个取值函数，
+     不能像以前那样在 IIFE 入口把 window.AX_POSTS 缓存成常量（那时它一定是空的）。 */
+  const dataOf = () => window.AX_POSTS || {};
   /* 与 blog.js、css/mobile-lite.css 里逐字相同的「手机轻量档」判定。
-     这里只用到一件事：手机上阅读页是正文独占一栏，左侧目录改成可唤出的覆盖层，
-     所以进来时目录应当是收起的 —— 否则第一屏就被目录占掉 36%。 */
-  const LITE = matchMedia('(pointer: coarse) and (max-width: 900px), (max-width: 600px)').matches;
+     手机上阅读页是正文独占一栏，左侧目录改成左侧滑入的抽屉 + 遮罩，
+     所以进来时目录应当是收起的 —— 否则第一屏就被抽屉盖住。
+     做成函数而不是一次性常量：桌面↔手机跨断点 resize 时要按当前档位重设目录形态。 */
+  const isLite = () => matchMedia('(pointer: coarse) and (max-width: 900px), (max-width: 600px)').matches;
   /* 吸顶标题行高 + 余量，跳转时把这截空出来。
      标题行高度减半（单行标题 + 日期，见 index.css 的 .post.is-full .post__head）后
      从 104 降到 56 —— 这个数和 CSS 里的 scroll-margin-top 是同一件事，改一处要改两处。 */
   const HEAD_OFFSET = 56;
   const $ = (sel, root = document) => root.querySelector(sel);
+
+  /* ---------- 按需加载正文数据 / 代码高亮 ----------
+     这两份加起来 237KB，首屏一点都用不上，却会在 defer 队列里挡住 blog.js 的执行。
+     现在只在第一次打开文章（或检测到 ?post= 深链）时才拉，Promise 缓存保证只插一次脚本。
+     地址取自 HTML 里的 CB_ASSETS —— 那里的 ?v= 由 tools/build.mjs 按内容写，这里不复制哈希。 */
+  const ASSETS = window.CB_ASSETS || {};
+  let assetsPromise = null;
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (!src) { reject(new Error('reader asset url missing')); return; }
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('failed to load ' + src));
+      document.head.appendChild(s);
+    });
+  }
+  function loadReaderAssets() {
+    if (!assetsPromise) {
+      assetsPromise = Promise.allSettled([
+        window.AX_POSTS && Object.keys(window.AX_POSTS).length
+          ? Promise.resolve() : loadScript(ASSETS.posts),
+        window.hljs ? Promise.resolve() : loadScript(ASSETS.hljs)
+      ]);
+    }
+    return assetsPromise;
+  }
+  /* blog.js 在 openFullscreen 开头就会调它（提前 500ms 起飞），深链也会预取。 */
+  window.CBloadReaderAssets = loadReaderAssets;
+
   /* 语言开关由 blog.js 的 applyLang 写在 html[data-lang] 上。
      这里每次注入都现读、不缓存：切语言要整块换正文，缓存只会拿到旧值。 */
   const isEn = () => (document.documentElement.dataset.lang || 'zh') === 'en';
@@ -108,7 +143,7 @@
   function ensureReader(post) {
     if (post.dataset.readerReady === '1') return;
 
-    const data = DATA[post.id];
+    const data = dataOf()[post.id];
     const body = $('.post__body', post);
     if (!data || !data.html || !body) return;
 
@@ -168,9 +203,18 @@
 
     const head = document.createElement('div');
     head.className = 'toc__head';
-    /* 侧栏自己的「收起」按钮已经去掉：唯一入口是全屏标题栏左端那颗
-       .post__toc（见下面），两处都能收起会让人以为侧栏有两条独立状态。 */
-    head.innerHTML = `<span class="toc__title">${en ? 'Contents' : '目录'}</span>`;
+    /* 桌面端：标题栏左端那颗 .post__toc 是唯一开关，侧栏很长、不必再塞一颗。
+       手机端：抽屉通高盖住标题栏，那颗按钮随标题栏一起被遮住，所以侧栏头部
+       自己带一颗同款收起按钮（.toc__close，只在手机档 CSS 里显示）。
+       两颗按钮走同一个 setTocOpen，状态始终只有 is-toc-folded 一份。 */
+    /* 桌面端：标题栏左端那颗 .post__toc 是唯一开关，侧栏很长、不必再塞一颗。
+       手机端：目录通高盖住标题栏，那颗按钮被盖住了，所以侧栏头部自己带一颗
+       **同样式、同左上角**的收起按钮（.toc__close，只在手机档 CSS 里显示）。
+       按钮排在标题之前，与标题栏那颗的位置对应；两颗走同一个 setTocOpen，
+       状态始终只有 is-toc-folded 一份。 */
+    head.innerHTML = '<button type="button" class="toc__close" data-zh-aria="收起目录" data-en-aria="Close contents" aria-label="收起目录">' +
+      '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>' +
+      `<span class="toc__title">${en ? 'Contents' : '目录'}</span>`;
     toc.appendChild(head);
 
     const nav = document.createElement('nav');
@@ -193,6 +237,13 @@
 
     body.appendChild(toc);
     body.appendChild(doc);
+    /* 手机抽屉的遮罩：与目录同一档位（只在手机档 CSS 里 display:block），
+       点击即收起。放在 body 里而不是 post 根上，是为了和目录一起被
+       langchange 的重建逻辑清掉，切语言不会留下第二层遮罩。 */
+    const scrim = document.createElement('div');
+    scrim.className = 'toc__scrim';
+    scrim.setAttribute('aria-hidden', 'true');
+    body.appendChild(scrim);
     post.classList.add('has-reader');
     post.dataset.readerReady = '1';
 
@@ -247,9 +298,19 @@
   }
 
   function wireToc(post, doc, toc) {
-    // 整栏展开 / 折叠：按钮在标题栏最左端
+    // 整栏展开 / 折叠：按钮在标题栏最左端；展开态同时由 scrim 显隐表达
     const btn = $('.post__toc', post);
     if (btn) btn.addEventListener('click', () => setTocOpen(post, post.classList.contains('is-toc-folded')));
+
+    /* 遮罩：只负责收起，不吞掉冒泡之外的东西。桌面档 CSS 里它 display:none，
+       绑定了也不会触发 —— 同一套逻辑覆盖两档，不为手机另写一套状态。 */
+    const scrim = $('.toc__scrim', post);
+    if (scrim) scrim.addEventListener('click', () => setTocOpen(post, false));
+
+    /* 侧栏头部的收起按钮：手机档抽屉通高盖住标题栏按钮时用它。
+       桌面档 display:none，绑定无效；两档收起都走同一个 setTocOpen。 */
+    const closeBtn = $('.toc__close', toc);
+    if (closeBtn) closeBtn.addEventListener('click', () => setTocOpen(post, false));
 
     toc.addEventListener('click', e => {
       // 跳转：用卡片自己的滚动容器，不用 scrollIntoView —— 后者会把外层
@@ -262,7 +323,10 @@
       if (!target) return;
       const top = post.scrollTop + target.getBoundingClientRect().top - post.getBoundingClientRect().top - HEAD_OFFSET;
       scrollToY(post, Math.max(0, top));
-      // 侧栏是常驻并列的，跳转后不再收起 —— 收起等于把刚点的那一条藏起来
+      /* 桌面并列：侧栏常驻，跳完不收起，刚点的那一条还看得见。
+         手机抽屉：不收起就盖着刚跳到的正文，等于白跳 —— 必须收。
+         两档共用上面同一段跳转逻辑，差别只在最后这一步可见性处理。 */
+      if (isLite()) setTocOpen(post, false);
     });
 
     /* 跟随高亮：取「已经在标题行下方滚过去」的最后一个标题。
@@ -309,11 +373,10 @@
     if (!post) return;
     ensureReader(post);
     post.classList.remove('is-toc-folded', 'is-toc-open');   // 每次进来都是默认状态
-    /* 手机：默认收起。桌面两栏并列、目录占 208px 是导航栏；
-       390px 屏上那一栏只剩 129px、正文被压到 217px，正文一行只放得下六七个字，
-       表格里的 token 还会直接顶出右边界。收起后正文吃满，内容要目录就点标题栏那颗按钮，
-       目录会以覆盖层滑出（见 mobile-lite.css ⑦），盖住正文而不是把它挤窄。 */
-    if (LITE) post.classList.add('is-toc-folded');
+    /* 手机：默认收起（抽屉从左侧滑入，不挡正文）；桌面：两栏并列默认展开。
+       收起态由 is-toc-folded 一个类统一表达：桌面收第一列、手机收抽屉，
+       setTocOpen / scrim / 按钮 aria 全部跟着它走，两档操作逻辑完全相同。 */
+    if (isLite()) post.classList.add('is-toc-folded');
   });
 
   document.addEventListener('post:close', e => {
@@ -337,21 +400,23 @@
     const keep = full.scrollTop;
     stopScrollAnim();
     // 重建正文时把标题栏那颗目录开关也一起摘掉，否则每切一次语言就多一颗
-    full.querySelectorAll('.reader__doc, .reader__toc, .post__toc').forEach(el => el.remove());
+    full.querySelectorAll('.reader__doc, .reader__toc, .toc__scrim, .post__toc').forEach(el => el.remove());
     full.classList.remove('has-reader');
     delete full.dataset.readerReady;
     ensureReader(full);
     full.scrollTop = keep;
   });
 
-  // 跨过断点时重置目录形态：宽窄两套列模板不同（208px / 36%），
-  // 折叠态留在 old 断点上会让新断点一进来就是收起的
+  /* 跨过断点时按当前档位重置目录形态：桌面两栏并列默认展开；
+     手机是左侧抽屉，展开会盖住整篇正文，必须收起。
+     isLite() 现算而不是用加载时的常量 —— 窗口从桌面拖窄到手机档也要跟着切。 */
   let resizeTimer = 0;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       const full = $('.post.is-full');
-      if (full) full.classList.remove('is-toc-folded');
+      if (!full) return;
+      full.classList.toggle('is-toc-folded', isLite());
     }, 120);
   }, { passive: true });
 })();

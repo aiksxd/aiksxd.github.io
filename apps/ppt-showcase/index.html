@@ -134,23 +134,94 @@
                 inlineMath: [['\\(','\\)']]
             }
         });
-        /* 这个页面原本只有 MathJax 配置，没有任何脚本驱动 .ppt-animation-target：
-           ppt.css 里 .fade 的初始 opacity 是 0，靠 .active 才亮，所以排版完成前整页是空的，
-           右上那三个 .ppt-button 也没绑事件。这里补一段「逐条铺开」的自动演示——
-           每行错开 .32s 加 .active，走 CSS 自带的那条 0.8s 过渡，不加新的动画定义。 */
-        function reveal() {
-            var i = 0;
-            document.querySelectorAll('.ppt-animation-target').forEach(function (el) {
-                el.style.transitionDelay = (i++ * 0.32) + 's';
-                el.classList.add('active');
+        /* 三个按钮原来没有任何事件绑定（整页由一段 reveal() 一次性全铺开）。
+           现在每个 .ppt-trigger-area 各自维护一个进度指针，按钮逐个控制，互不干扰：
+             ∨ .ppt-show    立即全部展开
+             > .ppt-add     前进一条；已经全显时从头重播
+             < .ppt-remove  退回一条
+           打开页面仍保持原来的观感：MathJax 排版完成后自动逐条淡入，.32s 一条，
+           过渡本身还是 ppt.css 里那条 0.8s，不新增任何动画定义。 */
+        (function () {
+            var STEP = 320;              // 与原来 transitionDelay = i * 0.32s 的节奏一致
+            var players = [];
+
+            function setup(box) {
+                var items = [].slice.call(box.querySelectorAll('.ppt-animation-target'));
+                if (!items.length) return null;
+                var shown = 0, timer = null;
+
+                function paint() {
+                    for (var i = 0; i < items.length; i++) {
+                        items[i].classList.toggle('active', i < shown);
+                    }
+                }
+                function stop() {
+                    if (timer) { clearTimeout(timer); timer = null; }
+                }
+                function tick() {
+                    timer = null;
+                    if (shown >= items.length) return;
+                    shown++;
+                    paint();
+                    timer = setTimeout(tick, STEP);
+                }
+                function play() { stop(); tick(); }
+                function next() {
+                    stop();
+                    if (shown < items.length) { shown++; paint(); }
+                    else { shown = 0; paint(); timer = setTimeout(tick, STEP); }  // 全显 → 从头重播
+                }
+                function prev() { stop(); if (shown > 0) { shown--; paint(); } }
+                function all() { stop(); shown = items.length; paint(); }
+
+                function fire(btn) {
+                    if (!btn) return;
+                    if (btn.classList.contains('ppt-show')) all();
+                    else if (btn.classList.contains('ppt-add')) next();
+                    else if (btn.classList.contains('ppt-remove')) prev();
+                }
+
+                [].forEach.call(box.querySelectorAll('.ppt-button'), function (btn) {
+                    var label = btn.classList.contains('ppt-show') ? '全部展开'
+                        : btn.classList.contains('ppt-remove') ? '上一步' : '下一步';
+                    // <label> 不是原生控件：补角色、焦点顺序和无障碍名，悬停也给一句提示
+                    btn.setAttribute('role', 'button');
+                    btn.setAttribute('tabindex', '0');
+                    btn.setAttribute('aria-label', label);
+                    btn.title = label;
+                });
+
+                box.addEventListener('click', function (e) {
+                    var btn = e.target.closest ? e.target.closest('.ppt-button') : null;
+                    if (!btn || !box.contains(btn)) return;
+                    e.preventDefault();
+                    fire(btn);
+                });
+                // 键盘可达：Enter / Space 等价于点击（默认 Space 会滚动，这里拦掉）
+                box.addEventListener('keydown', function (e) {
+                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    var btn = e.target.closest ? e.target.closest('.ppt-button') : null;
+                    if (!btn) return;
+                    e.preventDefault();
+                    fire(btn);
+                });
+
+                return play;
+            }
+
+            document.querySelectorAll('.ppt-trigger-area').forEach(function (box) {
+                var p = setup(box);
+                if (p) players.push(p);
             });
-        }
-        // 有 MathJax 就排到它排版之后（公式没排好就淡入，宽度会先窄后跳）；没网加载失败时直接铺开
-        if (window.MathJax && MathJax.Hub) {
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub], reveal);
-        } else {
-            reveal();
-        }
+
+            // 公式没排好就淡入，宽度会先窄后跳；所以排到 Typeset 之后再启动，加载失败时直接铺开
+            function playAll() { players.forEach(function (p) { p(); }); }
+            if (window.MathJax && MathJax.Hub) {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub], playAll);
+            } else {
+                playAll();
+            }
+        })();
 
     </script>
 </body>

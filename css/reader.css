@@ -95,8 +95,11 @@
   pointer-events: none;
 }
 
+/* 头部一行：收起按钮（仅手机档出现）+ 标题。按钮排在标题前面，
+   所以用 flex-start + gap，不用 space-between —— 那会把「只有标题」的桌面档
+   也把标题推向右边，和标题栏的排布对不上。 */
 .toc__head {
-  display: flex; align-items: center;
+  display: flex; align-items: center; gap: 10px;
   padding-bottom: 8px; margin-bottom: 4px;
   border-bottom: 1px solid var(--line);
 }
@@ -104,6 +107,22 @@
   font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
   color: var(--muted);
 }
+/* 侧栏头部的收起按钮：外观与标题栏那颗 .post__toc 逐条一致（30×30、9px 圆角、
+   同底色同描边），位置也在左上角 —— 手机档目录通高盖住标题栏之后，
+   它就是那颗按钮在同一位置的替身，读者不必重新找收起入口。
+   桌面两栏并列用不到，这里 display:none；手机档的媒体查询只把它翻成 flex。 */
+.toc__close {
+  display: none;
+  flex: none;
+  width: 30px; height: 30px; padding: 0;
+  align-items: center; justify-content: center;
+  border: 1px solid var(--line); border-radius: 9px;
+  background: var(--surface); color: var(--muted);
+  cursor: pointer;
+  transition: color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+}
+.toc__close:hover { color: var(--text); border-color: var(--accent); }
+.toc__close .icon { width: 15px; height: 15px; }
 
 /* 目录本体：条目多时自己滚，不把整栏撑出视口 */
 .toc__nav { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
@@ -150,6 +169,27 @@
 }
 
 .toc__empty { margin: 10px 0 0; font-size: .78rem; color: var(--muted); }
+
+/* 抽屉遮罩（仅手机档启用，见 mobile-lite.css）：
+   展开目录时盖住整屏（含标题栏），点一下即收起；与 BeaSense 主界面侧栏的 .mask 同款。
+   默认 display:none，桌面端两栏并列用不到。
+   层级：正文 auto < 标题栏 2 < 遮罩 4 < 抽屉 5 —— 展开时标题栏一并压暗，
+   视觉上就是「浮上来一层」，而不是半明半暗；收起入口是遮罩本身与目录条目，
+   和桌面端那颗开关按钮共用同一套 setTocOpen 状态。 */
+.toc__scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  background: rgba(0, 0, 0, .4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s var(--ease);
+}
+.post.is-full.has-reader:not(.is-toc-folded) .toc__scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 /* ---------- 正文排版 ----------
    只写「阅读态需要、卡片摘要用不上」的部分：行高、标题节奏、代码块、表格、引用。
@@ -349,3 +389,65 @@
 
 /* 说明：宽屏（≥980px）正文 760、等宽 13.4px 一行约 88 字符，多数代码不需要折行，
    所以 pre-wrap 只在窄屏那一段里加，宽屏仍保留 pre + 横向滚。 */
+
+/* ---------- 手机轻量档：正文独占一栏，目录改成覆盖层 ----------
+   这一块**必须**留在 reader.css，不能放 css/mobile-lite.css。
+   index.html 里 reader.css 是独立 <link>，加载在 assets/site.css（含 mobile-lite）之后，
+   同特异性的规则永远由 reader.css 赢 —— 单列规则一旦写进 mobile-lite，
+   就会被上面那条 979px 断点压在下面：390px 竖屏实测 .post__body 仍是
+   126.7px + 213.3px 两列，正文只剩 213px，一行六七个字。 */
+@media (pointer: coarse) and (max-width: 900px), (max-width: 600px) {
+  .post.is-full.has-reader .post__body {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+    max-width: none;
+  }
+
+  /* 目录：通高覆盖层。两件事不能靠继承桌面规则：
+     ① 高度必须显式写 100dvh。.post 自身带 transform（卡片入场用），
+        position:fixed 的包含块因而是卡片而不是视口，`inset: 0 auto 0 0` 里的
+        bottom 拉不到视口底 —— 实测目录只有 265px（= 内容自然高度），看起来
+        「没占满整个高度」；显式给 height 就不依赖那条拉伸。
+     ② 宽度按内容给。82vw 是 320px，条目文字撑不满，右侧留一大块空；
+        72vw / 280px 足够放下一行常见长度的标题（超长仍走 ellipsis）。 */
+  .post.is-full.has-reader .reader__toc {
+    position: fixed;
+    top: 0; left: 0; right: auto; bottom: auto;
+    width: min(72vw, 280px);
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: max(12px, env(safe-area-inset-top)) 14px max(20px, env(safe-area-inset-bottom));
+    border: 0;
+    border-right: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--surface-solid, var(--bg));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 5;
+    transform: translateX(-100%);
+    opacity: 1;
+    pointer-events: none;
+    transition: transform .3s var(--ease);
+  }
+  .post.is-full.has-reader:not(.is-toc-folded) .reader__toc {
+    transform: none;
+    pointer-events: auto;
+  }
+  /* 折叠态必须写满四个类：上面基类那条 .is-toc-folded（也是四个类）比手机档的
+     三类别规则多一层，只写三类别的话 translateX(-100%) 会被压成 -12px ——
+     实测目录只左移 12px 就停住，半截身子还留在屏幕上。 */
+  .post.is-full.has-reader.is-toc-folded .reader__toc {
+    transform: translateX(-100%);
+    opacity: 1;
+    pointer-events: none;
+  }
+
+  /* 遮罩只在手机档启用：桌面两栏并列，点空白没有可收的东西 */
+  .post.is-full.has-reader .toc__scrim { display: block; }
+
+  /* 收起按钮只翻显隐 —— 外观在 .toc__close 基规则里已经写好，
+     手机档不要再重复一遍尺寸/描边/圆角 */
+  .toc__close { display: flex; }
+}

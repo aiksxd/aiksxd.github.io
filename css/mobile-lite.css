@@ -183,60 +183,9 @@
     pointer-events: auto;
   }
 
-  /* ---------- ⑦ 阅读页：正文独占一栏，目录收成覆盖层 ----------
-     reader.css 在 979px 断点让「侧栏目录 + 正文」继续并列（36% + 1fr，间距 12）。
-     注释里的算法是按 419px 宽的卡片推的，但 390px 竖屏扣掉卡片内边距后内宽约 358px：
-     目录拿到 129px，正文只剩 217px —— 一行六七个字，正文里的表格（width:100%）
-     还会把 `tools/md2html.mjs` 这类长 token 顶出右边界，横向滚动条在触摸屏上又看不见。
-     手机上并列没有余地，正文独占整宽；目录改成点标题栏那颗按钮唤出的覆盖层
-     （js/reader.js 在轻量档进来时默认收起）。 */
-  .post.is-full.has-reader .post__body {
-    grid-template-columns: minmax(0, 1fr);
-    column-gap: 0;
-    max-width: none;
-  }
-
-  /* 目录从网格里取出来，改成贴着左上角的浮层：
-     fixed 相对视口（.post.is-full 的 transform 已被 js 置为 none，不会成为包含块），
-     宽度取 min(74vw, 300px)，长目录自己在盒内滚。 */
-  .post.is-full.has-reader .reader__toc {
-    position: fixed;
-    left: 10px;
-    top: 54px;
-    bottom: 14px;
-    /* 几乎满宽的目录面板：74vw（≈289px）时右侧会露出 90px 参差的正文，
-       半句半句地断在边上比全遮住更乱。手机上目录本来就是个「跳一下就走」的面板，
-       做成整幅反而干净 —— 点条目即跳转并自动收起。 */
-    width: calc(100vw - 20px);
-    max-height: none;
-    z-index: 3;
-    grid-column: auto;
-    grid-row: auto;
-    margin: 0;
-    padding: 12px 14px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--bg);
-    box-shadow: 0 18px 44px rgba(0, 0, 0, .45);
-    overflow: auto;
-    overscroll-behavior: contain;
-    transform: translateX(calc(-100% - 16px));
-    opacity: 0;
-    pointer-events: none;
-    transition: transform .3s var(--ease), opacity .24s var(--ease);
-  }
-
-  /* 展开态（不在 is-toc-folded 里）：滑回原位。
-     特异性 4 个类，与 reader.css 里 is-toc-folded 那条平手，靠本文件后 import 取胜。 */
-  .post.is-full.has-reader:not(.is-toc-folded) .reader__toc {
-    transform: none;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  /* 标题栏折走时目录跟着上移 44px 那条规则（reader.css 里是 top: 8px），
-     浮层这里改成贴合视口 8px —— 标题栏已经滑走了，不再需要给它让位。 */
-  .post.is-full.is-head-collapsed .reader__toc {
-    top: 8px;
-  }
+  /* ---------- ⑦ 阅读页 ----------
+     正文单列 + 目录覆盖层的规则在 css/reader.css 自己的手机档媒体查询里，不在这里。
+     原因：index.html 把 reader.css 当独立 <link> 引在 assets/site.css（含本文件）之后，
+     同特异性的规则永远由 reader.css 胜 —— 写在这里会被它的 979px 断点压掉，
+     390px 竖屏实测 .post__body 还是 126.7 + 213.3 两列。2026-11-18 已整块搬走，只留这条指针。 */
 }

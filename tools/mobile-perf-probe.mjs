@@ -45,6 +45,13 @@ const OPEN = process.argv.includes('--open');
 /* --toc：配合 --open 用，进阅读页后再点标题栏那颗目录按钮，
    确认目录是「覆盖层滑出」而不是把正文挤窄。 */
 const TOC = process.argv.includes('--toc');
+/* --rects=a,b：输出这些选择器的实际盒子与关键计算样式。
+   截图看不出「position:fixed 的包含块到底是不是视口」「目录还占不占 grid 列」
+   这类事 —— 量 rect 才说得准。配合 --open（进阅读页）/ --toc（展开目录）使用。 */
+const RECTS = (process.argv.find(a => a.startsWith('--rects=')) || '').slice('--rects='.length);
+/* --resize-to=1440x900：进阅读页之后再改视口，模拟「手机档打开、再拉宽到桌面」。
+   跨断点 resize 是这类坏掉的唯一复现路径 —— 启动时就给桌面参数测不出来。 */
+const RESIZE_TO = (process.argv.find(a => a.startsWith('--resize-to=')) || '').slice('--resize-to='.length);
 /* --day：切到日间主题再截图。日间那套令牌与夜间的开销结构不同
    （多一层 conic 光芒、云海另一套几何），要单独看一眼构图。 */
 const DAY = process.argv.includes('--day');
@@ -545,10 +552,28 @@ async function main() {
       await evaluate(cdp, 'window.scrollTo(0, 0)');
     }
 
+    /* ---------- 可选：跨断点 resize（--resize-to=1440x900） ----------
+       列表态（不 --open）在导航后立刻改；阅读页（--open）在点开之后改 ——
+       要测的是「手机档已经打开/已经落位之后被拉宽」，不是「桌面上重新打开」。 */
+    const applyResizeTo = async () => {
+      const m = RESIZE_TO.match(/^(\d+)x(\d+)$/);
+      if (!m) { console.log('   --resize-to 格式应为 1440x900'); return; }
+      const w = +m[1], h = +m[2];
+      await cdp.send('Emulation.setDeviceMetricsOverride', {
+        width: w, height: h, deviceScaleFactor: 1, mobile: false,
+        screenWidth: w, screenHeight: h,
+      });
+      await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+      /* 700ms：够 resize 回调（reader.js 的目录形态有 120ms 防抖）跑完 */
+      await sleep(700);
+      console.log('   改视口: ' + w + '×' + h);
+    };
+
     /* ---------- 可选：降级后的构图截图（确认「关掉的只是动画与模糊，不是内容」） ---------- */
     if (SHOT) {
       await mkdir(SHOT, { recursive: true });
       if (DAY) await evaluate(cdp, `document.documentElement.dataset.theme = 'day'`);
+      if (RESIZE_TO && !OPEN) await applyResizeTo();
       if (OPEN) {
         /* 点开第一张卡。阅读页由 blog.js 派发 post:open 后 reader.js 注入正文，
            FLIGHT 飞行 + 正文淡入大约 2.4s，等够再截。 */
@@ -570,6 +595,7 @@ async function main() {
           console.log('   点开目录: ' + (tocClicked ? 'ok' : '没找到 .post__toc'));
           await sleep(600);
         }
+        if (OPEN && RESIZE_TO) await applyResizeTo();
         const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' });
         const file = path.join(SHOT, (DAY ? 'day-' : '') + (TOC ? 'open-toc.png' : 'open.png'));
         await writeFile(file, Buffer.from(data, 'base64'));
@@ -585,6 +611,23 @@ async function main() {
           await writeFile(file, Buffer.from(data, 'base64'));
           console.log('   截图 -> ' + file);
         }
+      }
+      /* 量测放在两个截图分支都跑完之后：列表态与阅读页共用同一段，
+         免得同一套代码在两个分支里各写一遍 */
+      if (RECTS) {
+        const list = RECTS.split(',').map(s => JSON.stringify(s.trim())).join(',');
+        const code = '(() => { const sels = [' + list + '];' +
+          'return sels.map(function (s) {' +
+          '  const el = document.querySelector(s);' +
+          '  if (!el) return s + " -> 未找到";' +
+          '  const r = el.getBoundingClientRect(); const cs = getComputedStyle(el);' +
+          '  return s + " -> x=" + Math.round(r.x) + " y=" + Math.round(r.y) +' +
+          '    " w=" + Math.round(r.width) + " h=" + Math.round(r.height) +' +
+          '    " pos=" + cs.position + " cols=" + cs.gridTemplateColumns +' +
+          '    " op=" + cs.opacity + " cls=" + (el.className || "") +' +
+          '    " overflow=" + cs.overflow + " tf=" + (cs.transform === "none" ? "none" : "有");' +
+          '}).join("\\n"); })()';
+        console.log('   量测:\n' + (await evaluate(cdp, code)));
       }
       await evaluate(cdp, 'window.scrollTo(0, 0)');
     }

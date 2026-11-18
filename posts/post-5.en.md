@@ -45,7 +45,7 @@ PS: All messages will be replied to once every 2 to 3 weeks.
 #### For **P2P-Live-web**
  it employs a **node-based delivery** that allows data to be passed directly from one node to another, enabling the same text interaction message to be received by anyone connected without relying on a central server, thus significantly reducing network latency.
  
- ![DeliverGIF](img/md/DeliverGIF.gif)
+ ![DeliverGIF](img/md/DeliverGIF.webp)
 
 #### Regarding **exchange**
 it is **only used for bilateral** exchange of media streams rather than transmission. Both the connecting and receiving parties need to submit media streams. If a third party is added, one person's media stream will be **overwritten**.
@@ -91,7 +91,7 @@ Modify path of remote peerjs.min.js to local path of js in headP (example)
 > P2P is a distributed network architecture where each participant (also known as a node) acts as both a client and a server.
 > Unlike the traditional client-server model, P2P allows direct communication between nodes without the need for relay through a central server.
 
-![P2PGIF](img/md/P2PGIF.gif)
+![P2PGIF](img/md/P2PGIF.webp)
 
 + **About PeerJS**:
 > PeerJS: PeerJS is a JavaScript library based on WebRTC for simplifying P2P communication implementation.

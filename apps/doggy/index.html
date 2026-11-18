@@ -130,6 +130,35 @@
         button i {
             font-size: 1.1rem;
         }
+
+        /* 原生 <input type="file"> 的「选择文件」按钮由浏览器自己画，不消费 border/background，
+           直接给 input 加样式只能改它的外框。::file-selector-button 是唯一能改到那颗按钮的口子，
+           把它换成 accent 圆角按钮，深色底上就不突兀了。
+           "No file chosen" 那段文字走 --text-muted，否则浅色默认值压在近黑底上会发灰。 */
+        input[type="file"] {
+            color: var(--text-muted);
+        }
+        input[type="file"]::file-selector-button {
+            font: inherit;
+            font-size: 0.95rem;
+            padding: 7px 16px;
+            margin-right: 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--r-full);
+            background: var(--accent);
+            color: var(--text-on-accent);
+            cursor: pointer;
+            transition: background var(--t-fast) var(--ease),
+                        border-color var(--t-fast) var(--ease);
+        }
+        input[type="file"]::file-selector-button:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+        }
+        input[type="file"]::file-selector-button:focus-visible {
+            outline: 2px solid var(--accent-light);
+            outline-offset: 2px;
+        }
         
         .hidden {
             display: none;
