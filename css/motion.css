@@ -89,3 +89,7 @@ html.no-intro .badge__stage {
   transition: none !important;
 }
 html.no-intro .ax-ink { opacity: 1 !important; }
+/* 终态还得包括笔画本身：scene.css 里给 html.js 的 .ax-stroke 设了「空」的
+   基础态（防首访闪一版完整字标，见那边的注释），这里把它抵消掉。
+   本层排在 scene.css 之后，同等特异性靠顺序胜出。 */
+html.no-intro .ax-stroke { stroke-dashoffset: 0; }

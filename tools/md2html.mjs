@@ -36,13 +36,15 @@
    数学公式、脚注、目录指令 —— 需要时再单独加，不在这里塞半成品。
 */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, unlinkSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const POSTS_DIR = join(ROOT, 'posts');
-const OUT_FILE = join(ROOT, 'js', 'posts.data.js');
+const OUT_FILE = join(ROOT, 'js', 'posts.data.js');   // 索引（只有元数据）
+const POST_DIR = join(ROOT, 'js', 'posts');           // 一篇一个 <id>.js，只装 html
 
 /* ---------- 转义 ---------- */
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
@@ -434,7 +436,10 @@ function unescapeHtml(s) {
 function checkCards(data) {
   const html = readFileSync(join(ROOT, 'index.html'), 'utf8');
   const cards = new Map();
-  const RE_CARD = /<article class="post" id="(post-[0-9]+)"([^>]*)>([\s\S]*?)<\/article>/g;
+  /* 卡片的 id 不再限定成 post-N：编译链本来就只认「文件名 = id」，
+     post-N 只是早期那批文件恰好这么起名。新文章可以用语义 slug（never-need-npm），
+     老文件不改名 —— 两侧靠同一份 id 对齐，谁都没必要迁就谁。 */
+  const RE_CARD = /<article class="post" id="([^"]+)"([^>]*)>([\s\S]*?)<\/article>/g;
   let m;
   while ((m = RE_CARD.exec(html))) {
     const id = m[1], attrs = m[2], body = m[3];
@@ -541,24 +546,80 @@ function main() {
     return;
   }
 
-  // 序列化成「浏览器可直接吃的 js」：JSON 保证转义正确，但 </script> 必须打断，
-  // 否则任何一段 md 里写了它都能提前关掉标签。
-  const json = JSON.stringify(data, null, 2).replace(/<\/script/gi, '<\\/script');
+  /* ---------- 产物：一份索引 + 一篇一个文件 ----------
+     为什么要拆：整站一份 posts.data.js 是 112KB，点开第 1 篇就把 7 篇全下完。
+     索引只留元数据（几十字节/篇），正文各自成文件，读侧按目标 id 现拉（见 js/reader.js）。
+     每篇的 ?v= 写在索引条目里：单篇文件名固定、内容会变，没法在 HTML 里挂静态版本号。 */
+  if (!existsSync(POST_DIR)) mkdirSync(POST_DIR, { recursive: true });
+
   const banner = '/* 由 tools/md2html.mjs 自动生成 —— 改内容请改 posts/*.md 后重跑，别手改这个文件。 */\n';
-  const text = `${banner}window.AX_POSTS = ${json};\n`;
+  const sha8 = s => createHash('sha1').update(s).digest('hex').slice(0, 8);
+  // 两件事：JSON 合法 + 不能提前关掉 <script>
+  const jsStr = s => JSON.stringify(s).replace(/<\/script/gi, '<\\/script');
+  const postPath = id => join(POST_DIR, id + '.js');
+
+  /* 单篇：给索引里那一条补上 html。
+     包一层 IIFE —— 用顶层 const 会在加载第二篇时撞 "already declared"。
+     取不到条目就新建，不假设索引已先加载。 */
+  function postScript(id, entry) {
+    const key = jsStr(id);
+    const lines = [
+      banner,
+      `(function (d) {\n`,
+      `  d.html = ${jsStr(entry.html)};\n`,
+    ];
+    if (entry.htmlEn) lines.push(`  d.htmlEn = ${jsStr(entry.htmlEn)};\n`);
+    lines.push(`})((window.AX_POSTS = window.AX_POSTS || {})[${key}] = window.AX_POSTS[${key}] || {});\n`);
+    return lines.join('');
+  }
+
+  const index = {};
+  const writes = [];
+  for (const [id, v] of Object.entries(data)) {
+    const script = postScript(id, v);
+    writes.push([postPath(id), script]);
+    index[id] = {
+      title: v.title, date: v.date, tags: v.tags,
+      summary: v.summary, minutes: v.minutes,
+      v: sha8(script),
+    };
+  }
+  const indexText = `${banner}window.AX_POSTS = ${JSON.stringify(index, null, 2).replace(/<\/script/gi, '<\\/script')};\n`;
 
   if (check) {
-    const cur = existsSync(OUT_FILE) ? readFileSync(OUT_FILE, 'utf8') : '';
-    const same = cur === text;
+    let same = (existsSync(OUT_FILE) ? readFileSync(OUT_FILE, 'utf8') : '') === indexText;
+    if (same) {
+      for (const [file, text] of writes) {
+        if (!existsSync(file) || readFileSync(file, 'utf8') !== text) { same = false; break; }
+      }
+    }
+    if (same) {
+      const keep = new Set(writes.map(([f]) => f));
+      for (const f of readdirSync(POST_DIR)) {
+        if (f.endsWith('.js') && !keep.has(join(POST_DIR, f))) { same = false; break; }
+      }
+    }
     console.log(same ? '✓ 产物与 md 源同步' : '✗ 产物落后于 md 源，重跑 node tools/md2html.mjs');
     process.exit(same ? 0 : 1);
   }
 
-  writeFileSync(OUT_FILE, text, 'utf8');
+  writeFileSync(OUT_FILE, indexText, 'utf8');
+  for (const [file, text] of writes) writeFileSync(file, text, 'utf8');
+
+  // md 删了但产物还留着的单篇要清掉，否则越积越多（只动这个目录、只动 .js）
+  const keep = new Set(writes.map(([f]) => f));
+  for (const f of readdirSync(POST_DIR)) {
+    if (f.endsWith('.js') && !keep.has(join(POST_DIR, f))) {
+      unlinkSync(join(POST_DIR, f));
+      console.log(`  - 清理孤儿产物 js/posts/${f}`);
+    }
+  }
+
   const keys = Object.keys(data);
   const total = keys.reduce((n, k) => n + data[k].html.length + (data[k].htmlEn ? data[k].htmlEn.length : 0), 0);
   const paired = keys.filter(k => data[k].htmlEn).length;
-  console.log(`✓ 编译 ${keys.length} 篇 → js/posts.data.js（html 合计 ${(total / 1024).toFixed(1)} KB${paired ? `，其中 ${paired} 篇带英文版` : ''}）`);
+  console.log(`✓ 编译 ${keys.length} 篇 → 索引 js/posts.data.js（${(indexText.length / 1024).toFixed(1)} KB）`
+    + ` + 单篇 js/posts/*.js（html 合计 ${(total / 1024).toFixed(1)} KB${paired ? `，其中 ${paired} 篇带英文版` : ''}）`);
   for (const [k, v] of Object.entries(data)) {
     console.log(`  ${k}: ${v.title}（${v.html.length} 字符，${v.minutes} min）`);
   }

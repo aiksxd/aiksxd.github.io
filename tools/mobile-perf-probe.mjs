@@ -59,6 +59,10 @@ const DAY = process.argv.includes('--day');
    「哪些文案还没英文化」用眼睛扫会漏（隐藏的、动态生成的、CSS attr() 通道都看不见），
    直接遍历文本节点最可靠。 */
 const AUDIT = process.argv.includes('--audit');
+/* --net：把本次会话真正下载过的 js / css 列出来。
+   用来验「正文按篇拆分」有没有生效 —— 首屏不该出现 posts.data.js，
+   打开一篇只该出现那一篇的 post-<id>.js，而不是整个目录。 */
+const NET = process.argv.includes('--net');
 /* --nego：语言协商验证。注入 navigator.language(s)=en-US 模拟英文浏览器，
    再分别跑「无存档（首次访问）」与「存档 cb:lang=zh（手动选过）」两条分支。 */
 const NEGO = process.argv.includes('--nego');
@@ -68,7 +72,9 @@ const NEGO = process.argv.includes('--nego');
 const LANG_HINT = (process.argv.find(a => a.startsWith('--lang-hint=')) || '').split('=')[1] || '';
 /* --page=相对路径：改成测 apps/ 下的子页面（默认首页）。
    子页面没有首页那套开场序列与卡片堆，性能三段和悬停检查对它没有意义，配 --shot-only 用。 */
-const PAGE_PATH = (process.argv.find(a => a.startsWith('--page=')) || '').split('=')[1] || 'index.html';
+/* 用 slice 取整段：split('=')[1] 会把带查询串的地址腰斩
+   （--page=index.html?post=post-7 会变成 index.html?post）。 */
+const PAGE_PATH = (process.argv.find(a => a.startsWith('--page=')) || '--page=index.html').slice(7) || 'index.html';
 
 /* 遍历文本节点而非元素：一个元素里可能中英混排，按节点报出更准。
    跳过 .post__text / .reader__doc —— 那是文章正文，没有英文版的篇目回退中文是设计如此。 */
@@ -643,6 +649,14 @@ async function main() {
       geom,
     };
 
+    if (NET) {
+      report.net = JSON.parse(await evaluate(cdp, `JSON.stringify(
+        performance.getEntriesByType('resource')
+          .map(e => e.name.replace(location.origin + '/', ''))
+          .filter(u => /\\.(js|css|mjs)(\\?|$)/.test(u))
+      )`));
+    }
+
     print(report);
     console.log('JSON ' + JSON.stringify(report));
   } finally {
@@ -664,6 +678,7 @@ function print(r) {
   console.log('   #cardStack 监听: ' + (r.hoverListeners == null
     ? '未取到'
     : (r.hoverListeners.length ? r.hoverListeners.join(', ') : '（无）')));
+  if (r.net) console.log('   已下载 js/css: ' + r.net.join(' | '));
   if (!r.idle) { console.log('   （只截图模式，未测量）'); console.log(''); return; }
   console.log('   ── ① 静置 3s（常驻动画底噪）');
   console.log('      帧: ' + f(r.idle));

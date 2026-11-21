@@ -14,7 +14,4 @@ cb-perf/
 cb-gpu-probe/
 *.tmp
 
-# 已跟踪但值得考虑移版本库的（不入 .gitignore，因为对已跟踪文件无效；
-# 真要移出执行：git rm -r --cached others/ .workbuddy/
-# others/          备份 / legacy-assets / old-blog / root-trials，1.1MB，会被 Pages 发布
-# .workbuddy/memory 工作笔记，公开可读
+bak

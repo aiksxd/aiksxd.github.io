@@ -28,11 +28,17 @@
   const $ = (sel, root = document) => root.querySelector(sel);
 
   /* ---------- 按需加载正文数据 / 代码高亮 ----------
-     这两份加起来 237KB，首屏一点都用不上，却会在 defer 队列里挡住 blog.js 的执行。
-     现在只在第一次打开文章（或检测到 ?post= 深链）时才拉，Promise 缓存保证只插一次脚本。
-     地址取自 HTML 里的 CB_ASSETS —— 那里的 ?v= 由 tools/build.mjs 按内容写，这里不复制哈希。 */
+     三级加载：索引（每篇的元数据，几 KB）→ 目标篇的 html（一篇一个文件）→ hljs。
+     为什么按篇拆：整站一份 posts.data.js 是 112KB，点开第 1 篇就把 7 篇全下完；
+     拆开后首开只下 ~10KB，剩下的等真被点开才拉。
+     索引地址取自 CB_ASSETS.posts（?v= 由 tools/build.mjs 按内容写）；
+     单篇文件名是固定的、内容会变，没法在 HTML 里挂静态版本号，
+     所以它的戳写在索引条目里（entry.v，md2html.mjs 按 html 内容算），这里只负责拼。 */
   const ASSETS = window.CB_ASSETS || {};
-  let assetsPromise = null;
+  const POSTS_BASE = ASSETS.postsBase || 'js/posts/';
+  let indexPromise = null;
+  const postPromises = new Map();
+
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       if (!src) { reject(new Error('reader asset url missing')); return; }
@@ -44,15 +50,33 @@
       document.head.appendChild(s);
     });
   }
-  function loadReaderAssets() {
-    if (!assetsPromise) {
-      assetsPromise = Promise.allSettled([
-        window.AX_POSTS && Object.keys(window.AX_POSTS).length
-          ? Promise.resolve() : loadScript(ASSETS.posts),
-        window.hljs ? Promise.resolve() : loadScript(ASSETS.hljs)
-      ]);
-    }
-    return assetsPromise;
+
+  function loadIndex() {
+    if (window.AX_POSTS && Object.keys(window.AX_POSTS).length) return Promise.resolve();
+    if (!indexPromise) indexPromise = loadScript(ASSETS.posts);
+    return indexPromise;
+  }
+
+  function loadPost(id) {
+    const entry = dataOf()[id];
+    if (!entry || entry.html !== undefined) return Promise.resolve();
+    if (postPromises.has(id)) return postPromises.get(id);
+    const url = POSTS_BASE + encodeURIComponent(id) + '.js'
+      + (entry.v ? '?v=' + entry.v : '');
+    const p = loadScript(url).then(() => {
+      // 加载完还是没有 html：产物坏了。抛出去让调用方按「无正文」处理，别静默留白
+      if (!dataOf()[id] || dataOf()[id].html === undefined) throw new Error('post html missing: ' + id);
+    });
+    postPromises.set(id, p);
+    return p;
+  }
+
+  /* id 可省：只要索引的场合（预取）不传。blog.js 打开卡片时一定会传。 */
+  function loadReaderAssets(id) {
+    return Promise.allSettled([
+      loadIndex().then(() => (id ? loadPost(id) : undefined)),
+      window.hljs ? Promise.resolve() : loadScript(ASSETS.hljs)
+    ]);
   }
   /* blog.js 在 openFullscreen 开头就会调它（提前 500ms 起飞），深链也会预取。 */
   window.CBloadReaderAssets = loadReaderAssets;
@@ -145,7 +169,15 @@
 
     const data = dataOf()[post.id];
     const body = $('.post__body', post);
-    if (!data || !data.html || !body) return;
+    if (!data || !body) return;
+    /* 拆包之后正文是「一篇一个文件」，索引里只有元数据，html 要单独拉。
+       正常路径（openFullscreen → CBloadReaderAssets(id) → post:open）已经等过了，
+       这里兜的是另外两条：切语言重建、以及任何提前触发的边角情况。
+       拉失败就静默返回 —— 卡片本身还有摘要，不至于整块空白。 */
+    if (!data.html) {
+      loadPost(post.id).then(() => ensureReader(post), () => {});
+      return;
+    }
 
     /* 英文模式下优先用英文版（编译期由 post-N.en.md 合并进来的 htmlEn），
        没配英文版的篇目退回中文 —— 这就是「双语只是可选字段」的退化路径。 */

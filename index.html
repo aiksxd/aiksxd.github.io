@@ -12,7 +12,7 @@
        合成 1 个，gzip 后 53.7KB → 12KB；源码仍留在 css/ 下可直接维护。 -->
   <!-- 头像在开场 1.56s 才浮入，提前拉它，避免文字起来了图才落 -->
   <link rel="preload" as="image" href="img/avatar.webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/site.css?v=0e5a09bd">
+  <link rel="stylesheet" href="assets/site.css?v=142107cf">
   <!-- 阅读页（md 正文 + 左侧目录）的样式单独一份：改首页动画时不会牵动正文排版 -->
   <link rel="stylesheet" href="css/reader.css?v=c286b428">
   <!-- 同步标记：① js 表示脚本活着（文章区入场初始态靠它兜底）；② data-intro=1 是开场序列的
@@ -97,15 +97,17 @@
   </script>
   <!-- 作品集数据 + 阅读页 + 交互 + 滚动条四个脚本按原 defer 顺序合并压缩成一个文件，
        gzip 87KB → 19KB；源码仍分文件维护，tools/build.mjs 负责重新打包。 -->
-  <script src="assets/site.js?v=94267fa2" defer></script>
-  <!-- md 编译产物（112KB）与代码高亮（125KB）都改成按需加载：
+  <script src="assets/site.js?v=536af05f" defer></script>
+  <!-- md 编译产物（索引几 KB + 每篇一个 js）与代码高亮（125KB）都改成按需加载：
        首屏用不到它们，原先挂在 defer 链里却会把交互脚本一起挡在 237KB 后面。
-       site.js 在第一次打开文章时按下面的地址动态插入 <script>；
-       深链 ?post= 检测到目标时会提前预取，飞行 500ms 期间正好下完。
-       地址留在 HTML 而不是写死在脚本里，tools/build.mjs 才能继续给它们打内容哈希。 -->
+       site.js 在第一次打开文章时按下面的地址动态插入 <script>，只拉被点开的那一篇；
+       深链 ?post= 检测到目标时同样只预取这一篇，飞行 500ms 期间正好下完。
+       索引地址留在 HTML 而不是写死在脚本里，tools/build.mjs 才能继续给它打内容哈希；
+       单篇的 ?v= 由索引条目自带（md2html.mjs 按正文内容算），因为单篇文件名是固定的。 -->
   <script>
     window.CB_ASSETS = {
-      posts: 'js/posts.data.js?v=d39fcbf6',
+      posts: 'js/posts.data.js?v=ca16909d',
+      postsBase: 'js/posts/',
       hljs: 'js/vendor/highlight.min.js?v=471ef9ae'
     };
   </script>

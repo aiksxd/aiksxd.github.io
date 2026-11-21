@@ -550,8 +550,9 @@
     fullPost = post;
     clearTimeout(flightTimer);
     /* 正文数据 + 高亮库按需加载：从点击这一刻就起飞，500ms 飞行结束时大多已经就绪；
-       没就绪则由下面的落位回调等着它，不会让空正文先淡入再跳字。 */
-    if (window.CBloadReaderAssets) window.CBloadReaderAssets();
+       没就绪则由下面的落位回调等着它，不会让空正文先淡入再跳字。
+       只拉这一篇 —— 正文按篇拆分（js/posts/<id>.js），别把其余几篇一起下下来。 */
+    if (window.CBloadReaderAssets) window.CBloadReaderAssets(post.id);
     clearTimeout(fadeTimer);
     clearTimeout(settleTimer);
     settleTimer = 0;
@@ -629,7 +630,7 @@
       };
       /* 按需资源若还没下完，宁可让卡片在多等一会儿（仍是空的飞行终态），
          也不要先揭开空正文再补一张进来。Promise 是缓存的，正常点击几乎立刻兑现。 */
-      if (window.CBloadReaderAssets) window.CBloadReaderAssets().then(reveal);
+      if (window.CBloadReaderAssets) window.CBloadReaderAssets(post.id).then(reveal);
       else reveal();
     }, FLIGHT);
   }
@@ -3069,8 +3070,8 @@
       console.warn('[deeplink] 找不到文章：' + raw);
       return;
     }
-    // 提前拉正文数据：不等用户点，500ms 的展开飞行结束前多半已下完
-    if (window.CBloadReaderAssets) window.CBloadReaderAssets();
+    // 提前拉这一篇的正文：不等用户点，500ms 的展开飞行结束前多半已下完
+    if (window.CBloadReaderAssets) window.CBloadReaderAssets(id);
     const target = revealPost ? revealPost(id) : post;
 
     const play = () => {

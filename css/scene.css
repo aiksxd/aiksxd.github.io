@@ -360,10 +360,24 @@ html[data-theme="day"] .badge__disc span { opacity: 0; }
 
 /* AX 逐笔书写：参考 splashscreen.html 的 stroke-dasharray / stroke-dashoffset 描边。
    每笔长度由 js/blog.js 的 getTotalLength() 写入 --len，不硬编码。
-   基础计算值的 dashoffset 保持 0（完整显示）：无 JS、或动画被测量工具冻结时
-   字标仍然完整，不会在视觉基准截图里凭空消失。
    .is-writing 在页面 load 后注入，用 longhand 写动画时长/延迟，避免简写里的
-   var() 被判为 IACVT 而使整条 animation 失效。 */
+   var() 被判为 IACVT 而使整条 animation 失效。
+
+   下面的「基础态」必须先于 .is-writing 存在，否则首访会闪一版完整字标：
+   松手（摘掉 html.is-ax-hold，走 head 内联脚本的 1140ms 时钟）和起笔（挂
+   .is-writing 并写入 --len，要等外部 site.js 下载 + 执行完）已经是两个时钟。
+   首访冷缓存时后者会晚几十到几百毫秒，这段时间 SVG 上没有任何 dash 参数，
+   笔画就按默认画出 axDraw 的**结束帧**（完整 AX），
+   等 site.js 落地才被擦空、从头描一遍 —— 就是「先完整渲染出来再一笔一笔画」。
+   所以脚本活着（html.js，内联脚本第一时间挂上）时，基础态直接给成「空」，
+   与 .is-blank 同一套值：松手那一刻什么也看不见，真正的显现只由 axDraw 的
+   from 帧负责，site.js 迟到多少都不会再闪出完整字。
+   无脚本时 html 上没有 .js，不设 dash 参数，字标就是完整两笔 ——
+   静态终态 / 视觉基准截图仍然有字（这也是当初把基础 dashoffset 写成 0 的唯一理由）。 */
+html.js .ax-stroke {
+  stroke-dasharray: var(--len, 800px);
+  stroke-dashoffset: var(--len, 800px);
+}
 .badge.is-writing .ax-stroke {
   stroke-dasharray: var(--len, 800px);
   animation-name: axDraw;
