@@ -946,6 +946,39 @@
       if (search.value.trim()) revealFirstHit();
     });
 
+    /* ---------- 书籍卡兜底：数据没发布就把卡摘掉 ----------
+       书稿是第三方教程，只留本地测试渲染用（见 .gitignore），不入库也不推远程；
+       但 index.html 里那 4 张书卡是静态写死的，缺 js/books.data.js 时点开就是死链。
+       这里先探一下文件在不在：明确 404 才藏卡 + 控制台警告，探不出来就当「未知」不动卡。
+       · http(s)：HEAD 一下，便宜（不会把 48KB 的正文索引拉下来）；
+       · file://：fetch 会被 CORS 挡掉，改用 <script> 的 onerror 判 404
+         （本地有书稿时这一探会顺手把 AX_BOOKS 装上，阅读页直接命中缓存）。 */
+    const BOOK_CARDS = $$('.post[id^="book-"]');
+    function hideBookCards(reason) {
+      if (!BOOK_CARDS.length) return;
+      BOOK_CARDS.forEach(p => p.classList.add('is-hidden'));
+      console.warn('[blog] 缺少书籍数据（' + reason + '），已隐藏 ' + BOOK_CARDS.length +
+        ' 张书籍卡。示例书稿不随仓库发布；本地要看书，先跑 node tools/book.mjs。');
+      /* 和搜索过滤走同一条重排：卡片按可见集合重新分页、卡片堆重新叠、时间线重新量线 */
+      if (refreshSplitLine) refreshSplitLine(true);
+      else refreshSplitCards();
+      settle();
+    }
+    const BOOKS_URL = (window.CB_ASSETS || {}).books;
+    if (BOOK_CARDS.length && BOOKS_URL && !window.AX_BOOKS) {
+      if (location.protocol === 'file:') {
+        const probe = document.createElement('script');
+        probe.src = BOOKS_URL;
+        probe.async = true;
+        probe.onerror = () => hideBookCards('script 加载失败 ' + BOOKS_URL);
+        document.head.appendChild(probe);
+      } else {
+        fetch(BOOKS_URL, { method: 'HEAD', cache: 'no-store' })
+          .then(r => { if (!r.ok) hideBookCards('HTTP ' + r.status + ' ' + BOOKS_URL); })
+          .catch(() => { /* 断网 / 权限问题：不知道就别动卡片 */ });
+      }
+    }
+
     document.addEventListener('keydown', e => {
       const active = document.activeElement;
       const typing = active && (/^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName) || active.isContentEditable);
