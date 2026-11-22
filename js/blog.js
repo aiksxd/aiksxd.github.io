@@ -562,7 +562,7 @@
     // fixed 钉上去就与真实位置错开一截（这才是切换 position 时最常见的位置突变）。
     // 键盘 Tab 到未入场的卡片也能展开：先补上入场态，否则飞行与全屏都会停在 opacity 0
     post.classList.add('is-inview');
-    post.classList.remove('is-head-collapsed');   // 每次进阅读态，标题行都从展开开始
+    post.classList.remove('is-head-collapsed', 'is-head-hover');   // 每次进阅读态，标题行都从展开开始
     post.style.transition = 'none';
     post.style.transform = 'none';
 
@@ -671,7 +671,7 @@
         slotEl.classList.add('is-landing');
         slotEl.classList.remove('is-flat');
       }
-      post.classList.remove('is-full', 'is-flying', 'is-head-collapsed');
+      post.classList.remove('is-full', 'is-flying', 'is-head-collapsed', 'is-head-hover');
       post.style.position = '';
       post.style.left = '';
       post.style.top = '';
@@ -699,7 +699,7 @@
     // 布局当场切回列表态。若还挂着 is-full，卡片缩回途中仍是「760 单列 + 吸顶标题」的阅读排版，
     // 缩到列表卡尺寸时和首页那张卡对不上形状；落位后摘 is-full 再重排，就是用户看到的那一下突兀。
     // 内容此刻 opacity 0（is-collapsing 那条规则），这次重排看不见。
-    post.classList.remove('is-full', 'is-head-collapsed');
+    post.classList.remove('is-full', 'is-head-collapsed', 'is-head-hover');
     post.style.transition = '';
     // open 时为消除入场变换写过内联 transform:none —— 它会盖住 CSS 里 body.is-collapsing 的斜卡姿态，
     // 清掉才能让卡片一边缩回尺寸、一边转回首页的角度（圆角与阴影同理由那条规则补上）。
@@ -734,9 +734,50 @@
        scrollTop 回到顶部时强制展开——回来第一眼要能看到标题和「回到首页」。 */
     let headAcc = 0;
     let headLast = 0;
+
+    /* 桌面档：导航带改由「指针进入卡片顶部 44px」驱动（.is-head-hover），
+       不再跟着滚动折叠 —— 折叠那条留给触摸档，两档共用同一个 is-head-collapsed。
+       html.is-hover-ui 是给 CSS 的开关：没有细指针的设备（纯触屏）不会进这条路径，
+       它们的导航带仍然靠上滑露出。
+
+       判据不能只看指针：在桌面浏览器里把窗口拖窄、或用 DevTools 的设备模式模拟手机时，
+       (hover: hover) + (pointer: fine) 依旧成立，但用户眼里那就是「手机端」——
+       导航带会一直按 hover 逻辑走，上滑/下滚彻底失效（用户 2026-11-22 报的正是这个）。
+       所以宽度也算进去：细指针 **且** 视口 >900px（与 mobile-lite 的断点对齐）才是桌面档；
+       窄窗一律按触摸档走「上滑露出、下滚收起」。 */
+    const FINE = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const WIDE = window.matchMedia('(min-width: 901px)');
+    const hoverUI = () => FINE.matches && WIDE.matches;
+    function syncHoverUI() {
+      const on = hoverUI();
+      document.documentElement.classList.toggle('is-hover-ui', on);
+      // 从桌面档缩到窄窗时，残留的 is-head-hover 会把导航带钉在「已 hover」状态
+      if (!on) posts.forEach(p => p.classList.remove('is-head-hover'));
+    }
+    syncHoverUI();
+    for (const mq of [FINE, WIDE]) {
+      if (mq.addEventListener) mq.addEventListener('change', syncHoverUI);
+      else mq.addListener(syncHoverUI);   // 老 Safari
+    }
+
+    posts.forEach(p => {
+      p.addEventListener('pointermove', e => {
+        if (!hoverUI() || !p.classList.contains('is-full')) return;
+        const rect = p.getBoundingClientRect();
+        const on = e.clientY >= rect.top && e.clientY <= rect.top + 44;
+        if (on !== p.classList.contains('is-head-hover')) p.classList.toggle('is-head-hover', on);
+      }, { passive: true });
+      p.addEventListener('pointerleave', () => p.classList.remove('is-head-hover'));
+    });
+
     posts.forEach(p => {
       p.addEventListener('scroll', () => {
         if (!p.classList.contains('is-full')) { headAcc = 0; headLast = 0; return; }
+        if (hoverUI()) {
+          if (p.classList.contains('is-head-collapsed')) p.classList.remove('is-head-collapsed');
+          headAcc = 0; headLast = p.scrollTop;
+          return;
+        }
         const y = p.scrollTop;
         if (y <= 8) {
           p.classList.remove('is-head-collapsed');

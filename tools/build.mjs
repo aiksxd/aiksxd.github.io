@@ -81,7 +81,14 @@ function main() {
     if (now !== old) problems.push(`${asset} 与 manifest 不符 → node tools/minify.mjs`);
     V.set(asset, now);
   }
-  for (const key of ['css/reader.css', 'js/posts.data.js', 'js/vendor/highlight.min.js']) {
+  for (const key of ['css/reader.css', 'js/posts.data.js', 'js/books.data.js', 'js/vendor/highlight.min.js']) {
+    /* books.data.js 由 book.mjs 生成；仓库里还没有书时它不存在，跳过即可
+       （V 里没有这个 key，第 ③ 步就不会去 stamp 它）。 */
+    if (!existsSync(join(ROOT, key))) {
+      if (key !== 'js/books.data.js') problems.push(`${key} 不存在`);
+      else console.log(`  - ${key} 尚未生成，跳过（先跑 node tools/book.mjs）`);
+      continue;
+    }
     V.set(key, hash(read(join(ROOT, key))));
   }
   if (problems.length) {

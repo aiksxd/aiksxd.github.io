@@ -37,7 +37,7 @@
 */
 
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, unlinkSync } from 'node:fs';
-import { join, dirname, basename } from 'node:path';
+import { join, dirname, basename, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
@@ -463,6 +463,14 @@ function checkCards(data) {
 
   const bad = [];
   for (const [id, c] of cards) {
+    /* 书籍卡（book-<slug>）的正文不来自 md，而是 book.mjs 写进 js/books.data.js，
+       所以这里只校验通用契约（时间线要的 data-date、标题非空），不跟 md 条目比。
+       否则每跑一次 --check-cards 都会报「有卡片，但没有 posts/book-java.md」。 */
+    if (/^book-/.test(id)) {
+      if (!c.dateAttr) bad.push(`${id}: 书籍卡缺 data-date（时间线按它排位置）`);
+      if (!c.title) bad.push(`${id}: 书籍卡标题为空`);
+      continue;
+    }
     const d = data[id];
     if (!d) { bad.push(`${id}: 有卡片，但没有 posts/${id}.md`); continue; }
     if (c.dateAttr !== d.date) bad.push(`${id}: 日期　卡片 ${c.dateAttr || '（缺）'} / md ${d.date}`);
@@ -606,12 +614,20 @@ function main() {
   writeFileSync(OUT_FILE, indexText, 'utf8');
   for (const [file, text] of writes) writeFileSync(file, text, 'utf8');
 
-  // md 删了但产物还留着的单篇要清掉，否则越积越多（只动这个目录、只动 .js）
+  /* md 删了但产物还留着的单篇 —— 默认只报出来，不主动删。
+     理由：这个目录是产物目录，但用户可能往里放过手写的东西；
+     编译器顺手 unlink 一次错就等于丢文件，代价不对等。
+     确认要清理时跑 --prune，它只在这个目录、只删 .js、且只删不属于任何 md 的那些。 */
   const keep = new Set(writes.map(([f]) => f));
-  for (const f of readdirSync(POST_DIR)) {
-    if (f.endsWith('.js') && !keep.has(join(POST_DIR, f))) {
-      unlinkSync(join(POST_DIR, f));
-      console.log(`  - 清理孤儿产物 js/posts/${f}`);
+  const orphans = readdirSync(POST_DIR).filter(f => f.endsWith('.js') && !keep.has(join(POST_DIR, f)));
+  if (orphans.length) {
+    if (argv.includes('--prune')) {
+      for (const f of orphans) {
+        unlinkSync(join(POST_DIR, f));
+        console.log(`  - 已清理孤儿产物 js/posts/${f}`);
+      }
+    } else {
+      for (const f of orphans) console.log(`  ! 孤儿产物 js/posts/${f}（对应 md 已不存在，跑 --prune 清理）`);
     }
   }
 
@@ -625,4 +641,8 @@ function main() {
   }
 }
 
-main();
+/* 作为模块被 import 时（tools/book.mjs 要复用 compile）不要跑 CLI：
+   否则一 import 就会把 posts/ 重新编译一遍。 */
+const SELF = fileURLToPath(import.meta.url);
+const INVOKED = process.argv[1] ? resolve(process.argv[1]) : '';
+if (!INVOKED || INVOKED === resolve(SELF)) main();

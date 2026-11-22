@@ -100,6 +100,7 @@
      把时长拉到 .9s 也只是拖长尾巴，中段看不出在动。改用近似匀速的对称曲线，
      让翻转和淡入淡出铺满整段。 */
   transition: transform .9s cubic-bezier(.4, 0, .25, 1), opacity .7s ease-in-out, box-shadow .45s var(--ease),
+              background-color .38s var(--ease),
               left .5s var(--ease), top .5s var(--ease), width .5s var(--ease),
               height .5s var(--ease), border-radius .5s var(--ease);
 }
@@ -270,6 +271,12 @@ body.is-collapsing.is-settling .post.is-flying .post__body {
 .post.is-full {
   z-index: 100;
   overflow-y: auto; overflow-x: hidden;
+  /* 卡片态用 .74 半透明 + 背景模糊，那是「一页纸压在首页上」的观感；
+     铺满视口之后原来换成了实底（云和流星线直接横穿正文，用户口径「首页内容没有隐藏」）。
+     现在改成「半透明 + 更厚的模糊」：底层被糊成一片底色，正文对比度够，
+     又不至于把整页压成一块死板不透明的板。触摸档在文件末尾的媒体查询里改回实底——
+     手机上大面积 backdrop-filter 太贵，滚动也容易掉帧。 */
+  background-color: color-mix(in srgb, var(--bg) 74%, transparent);
   /* 原生条已隐藏（见 base.css「自绘覆盖式」段）：这里不再预留 gutter，
      正文溢出时不会横向抽动；滚动滑块由 js/scroll-rail.js 统一画在视口右缘。 */
   scrollbar-gutter: auto;
@@ -289,13 +296,26 @@ body.is-collapsing.is-settling .post.is-flying .post__body {
   padding: 0 10px 0 6px;
   background: var(--surface-2);
   /* 折叠照导航栏：下滚折出卡片上沿、上滚滑回。卡片自身 overflow:hidden，
-     折叠后这一条被裁在边界外，正文可以直接顶到卡片顶部，不再被它压住 */
-  transition: transform .35s var(--ease), opacity .2s var(--ease);
+     折叠后这一条被裁在边界外，正文可以直接顶到卡片顶部，不再被它压住。
+     桌面档不再折叠（改成 hover 顶部带显示），这条 transform 只对触摸档生效 */
+  transition: transform .35s var(--ease), opacity .2s var(--ease),
+              background-color .25s var(--ease), box-shadow .25s var(--ease);
   will-change: transform;
 }
 .post.is-full.is-head-collapsed .post__head { transform: translateY(-100%); }
 /* 全屏不再渲染封面缩略图：高度减半的主要来源就是它（列表卡上的那条仍保留） */
 .post.is-full .post__thumb { display: none; }
+/* 阅读态（有 md 的篇目）：导航带只剩两格 —— 左边「目录头」，右边「退出」。
+   左格宽度与正文网格的第一列（侧栏）完全一致（208 + 46 gap），所以目录头的
+   左沿永远和侧栏条目对齐；标题/日期从这条带里撤走，交给目录头（见下）。 */
+.post.is-full.has-reader .post__head {
+  display: grid;
+  grid-template-columns: minmax(0, 208px) minmax(0, 1fr);
+  column-gap: 46px;
+  padding: 0 var(--pad);
+  align-items: center;
+}
+.post.is-full.has-reader .post__heading { display: none; }
 /* 标题与日期同一行：半高的栏只够一行，日期跟在标题后、放不下就自己截断 */
 .post.is-full .post__heading {
   display: flex; align-items: baseline; gap: 10px; min-width: 0;
@@ -312,35 +332,49 @@ body.is-collapsing.is-settling .post.is-flying .post__body {
   font-size: .72rem; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis;
 }
-/* 目录开关：钉在标题栏最左端，全站唯一的目录入口（侧栏里那颗「收起」已删，
-   窄屏唤出目录的 .toc-fab 也删了）。按钮由 reader.js 注入，只出现在有 md 的文章上。 */
-.post__toc {
-  flex: none; display: none;
-  width: 30px; height: 30px; padding: 0;
-  align-items: center; justify-content: center;
-  border: 1px solid var(--line); border-radius: 9px;
-  background: var(--surface); color: var(--muted);
-  cursor: pointer;
-  transition: color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+/* 目录头（参考图的红块）：图标 + 标题 + 元信息装在同一个按钮里。
+   范围包含标题 —— 读者点「这一栏的标题」就开合目录，而不是去猜一颗小方块的箭头。
+   没有描边、没有底色：它读起来像这一栏的栏头，不像工具栏按钮（见 reader.css 的显隐）。 */
+.post__tochead {
+  display: none;
+  grid-column: 1;
+  align-items: center; gap: 10px;
+  min-width: 0; padding: 0; border: 0;
+  background: none; color: inherit; font: inherit;
+  text-align: left; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.post.is-full .post__toc { display: flex; }
+.post.is-full .post__tochead { display: flex; }
+.post__tochead .icon { width: 18px; height: 18px; flex: none; color: var(--muted); transition: color .2s var(--ease); }
+.post__tochead:hover .icon,
+.post__tochead:focus-visible .icon { color: var(--accent); }
+.post__tochead-txt { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.post__tochead-title {
+  min-width: 0;
+  font-size: .95rem; font-weight: 600; letter-spacing: .01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.post__tochead-meta {
+  flex: 0 1 auto; min-width: 0; margin: 0;
+  color: var(--muted); font-size: .72rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.post__tochead-meta > span { white-space: nowrap; }
 /* 退出按钮：全屏标题栏最右端，30×30 圆角 9 —— 与左边那颗目录开关同一套尺寸，
    一个在头、一个在尾，视觉上成对。它是阅读态唯一的退出口（标题行本身不再可点）。 */
 .post.is-full .post__toggle {
   display: flex; align-items: center; justify-content: center;
   flex: none; margin-left: auto;
   width: 30px; height: 30px; padding: 0;
-  border: 1px solid var(--line); border-radius: 9px;
-  background: var(--surface); color: var(--muted);
+  /* 去描边、去底色：这颗按钮只剩一个 X，不再有「按钮壳」，
+     读者不会把它当成折叠/展开，X 只读作「关掉这一页」 */
+  border: 0; border-radius: 9px;
+  background: none; color: var(--muted);
   cursor: pointer;
-  transition: color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+  transition: color .2s var(--ease), background-color .2s var(--ease);
 }
-.post.is-full .post__toggle:hover { color: var(--accent); border-color: var(--accent); }
-/* 只 hover 时着色。原来写的是 [aria-expanded="true"] 也高亮，
-   而它默认就是展开的，等于这颗按钮常亮成 accent 色（太吵） */
-.post__toc:hover { color: var(--accent); border-color: var(--accent); }
-.post__toc[aria-expanded="false"] { color: var(--muted); opacity: .7; }
-.post__toc .icon { width: 15px; height: 15px; }
+.post.is-full.has-reader .post__toggle { grid-column: 2; justify-self: end; }
+.post.is-full .post__toggle:hover { color: var(--accent); }
 .post.is-full .post__body {
   grid-template-columns: 1fr;
   max-width: 760px; margin: 0 auto; padding-bottom: 48px;
@@ -360,4 +394,21 @@ body.is-collapsing.is-settling .post.is-flying .post__body {
 .footer__inner {
   display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
   max-width: 980px; margin: 0 auto; padding: 26px 24px 110px;
+}
+
+/* ---------- 阅读态背景：桌面玻璃 / 手机实底 ----------
+   .post.is-full 的底色是半透明（见文件前部的阅读布局段），能不能读全看下面这层模糊：
+   桌面上把模糊加厚到 18px，首页那摞卡片/云层只剩色块，正文对比度不受影响；
+   触摸档反过来 —— 大面积 backdrop-filter 在手机上很贵，直接换成实底，
+   滚动不掉帧比「透一点」重要。 */
+@media (hover: hover) and (pointer: fine) {
+  .post.is-full.has-reader {
+    -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  }
+}
+@media (pointer: coarse) and (max-width: 900px), (max-width: 600px) {
+  .post.is-full { background-color: color-mix(in srgb, var(--bg) 88%, var(--bg-2)); }
+  .post.is-full.has-reader {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
 }

@@ -1,0 +1,287 @@
+/* books/book.css —— 书籍阅读页样式
+   ==========================================================
+   手写文件，不会被 tools/book.mjs 覆盖（它只写 <slug>/*.html）。
+   和站点的关系：只借 css/base.css 的设计令牌与 reset（字体、颜色、--line、
+   夜间/日间两套值），正文排版自成一套 —— 书籍页没有卡片、云海、流星线，
+   那些选择器在这里匹配不到任何元素，所以不会被一并带进来。
+
+   一个原则：**目录页极简，正文页以读为主**。没有侧栏、没有吸顶栏、没有
+   悬浮控件 —— 一本书的页面不该和博客首页抢注意力。 */
+
+body.bk {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bk {
+  --bk-w: 720px;
+  --bk-gap: clamp(18px, 4vw, 24px);
+}
+
+.bk-cover,
+.bk-sec,
+.bk-toc,
+.bk-article,
+.bk-pager {
+  max-width: var(--bk-w);
+  margin: 0 auto;
+  padding-left: var(--bk-gap);
+  padding-right: var(--bk-gap);
+}
+
+/* ---------- 封面 ---------- */
+.bk-cover {
+  padding-top: clamp(44px, 11vh, 104px);
+  padding-bottom: 28px;
+}
+.bk-cover h1 {
+  margin: 0 0 14px;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -.015em;
+}
+.bk-desc {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.bk-author {
+  margin: 0;
+  color: var(--muted);
+  font-size: .85rem;
+  letter-spacing: .02em;
+}
+
+/* ---------- 目录 ---------- */
+.bk-toc {
+  padding-bottom: 64px;
+}
+.bk-toc h2 {
+  margin: 36px 0 12px;
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.bk-toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bk-toc li > a,
+.bk-grp > span {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: .95rem;
+  text-decoration: none;
+  transition: background-color .16s var(--ease), color .16s var(--ease);
+}
+.bk-toc li > a:hover {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+.bk-grp > span,
+.bk-grp > a {
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding-top: 16px;
+  padding-bottom: 2px;
+  text-decoration: none;
+}
+.bk-grp > a:hover {
+  color: var(--accent);
+}
+/* 子级靠一条竖线收边，比缩进 + 编号更省视觉噪音 */
+.bk-toc ul ul {
+  margin: 2px 0 6px 8px;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+/* ---------- 正文 ---------- */
+.bk-article {
+  padding-top: 36px;
+  padding-bottom: 8px;
+}
+.bk-article h1 {
+  margin: 0 0 26px;
+  font-size: clamp(1.45rem, 4vw, 1.95rem);
+  line-height: 1.25;
+  letter-spacing: -.01em;
+}
+
+.md h2,
+.md h3,
+.md h4 {
+  line-height: 1.35;
+}
+.md h2 {
+  margin: 44px 0 14px;
+  font-size: 1.22rem;
+}
+.md h3 {
+  margin: 32px 0 10px;
+  font-size: 1.04rem;
+}
+.md h4 {
+  margin: 26px 0 8px;
+  font-size: .98rem;
+  color: var(--muted);
+}
+.md p {
+  margin: 0 0 16px;
+}
+.md a {
+  color: var(--accent);
+  text-underline-offset: 2px;
+}
+
+.md code {
+  padding: .12em .34em;
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .88em;
+  word-break: break-word;
+}
+.md pre.md-code {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  overflow-x: auto;
+  font-size: .84rem;
+  line-height: 1.6;
+}
+.md pre.md-code code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.md-list {
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+.md-list li {
+  margin: 4px 0;
+}
+.md-task {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.md-task input {
+  margin: 0;
+}
+
+.md-quote {
+  margin: 18px 0;
+  padding: 10px 16px;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.md-quote > p {
+  margin: 0 0 8px;
+}
+.md-quote > p:last-child {
+  margin-bottom: 0;
+}
+
+.md-table {
+  margin: 20px 0;
+  overflow-x: auto;
+}
+.md-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+.md-table th,
+.md-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.md-table thead th {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.md-hr {
+  margin: 34px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.post__figure,
+.md-figure {
+  margin: 22px 0;
+  text-align: center;
+}
+.md-figure img {
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.md-figure figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+/* ---------- 上一节 / 下一节 ---------- */
+.bk-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 40px;
+  padding-top: 18px;
+  padding-bottom: 60px;
+  border-top: 1px solid var(--line);
+  font-size: .86rem;
+}
+.bk-pager a {
+  color: var(--muted);
+  text-decoration: none;
+  max-width: 44%;
+  transition: color .16s var(--ease);
+}
+.bk-pager a:hover {
+  color: var(--accent);
+}
+.bk-pager__home {
+  flex: none;
+  text-align: center;
+}
+.bk-pager [rel="next"] {
+  margin-left: auto;
+  text-align: right;
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 640px) {
+  .bk-cover { padding-top: 40px; }
+  .bk-toc li > a { padding: 9px 8px; }
+  .md pre.md-code { font-size: .8rem; padding: 12px; }
+  .bk-pager { flex-wrap: wrap; }
+  .bk-pager a { max-width: 100%; }
+  .bk-pager [rel="next"] { text-align: left; margin-left: 0; }
+}

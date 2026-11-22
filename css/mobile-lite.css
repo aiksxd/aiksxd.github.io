@@ -310,6 +310,19 @@
     visibility: visible !important;
     transition: none !important;
   }
+  /* 但这条 !important 会漏到阅读态：visibility 是允许子元素覆盖父元素的，
+     上面把 .post__meta / 缩略图 / 摘要全写成 visible !important 之后，
+     `body.is-full … .post:not(.is-full) { visibility: hidden }` 只藏住了父卡本身，
+     子块照样绘制 —— 手机上打开文章时，邻居卡片的标题、缩略图、日期就会浮在正文上
+     （用户 2026-11-22 报的「首页内容没正确隐藏」，截图里正文和别人的卡片文字叠在一起）。
+     阅读态（不含收起动画，收起时本来就要让卡片淡回来）把非全屏卡的所有内部块一起按住：
+     直接对后代替换 visibility，父卡藏不住的东西一个都别留。 */
+  body.is-full:not(.is-collapsing) .card-slot .post:not(.is-full):not(.is-flying) {
+    opacity: 0 !important;
+  }
+  body.is-full:not(.is-collapsing) .card-slot .post:not(.is-full):not(.is-flying) * {
+    visibility: hidden !important;
+  }
   /* 提示卡（上一组 / 下一组）在平铺之后没有角色：标题必须显示回真文本，
      header 上那条 ::after 提示语（content 来自 data-hz-*）也要撤掉。 */
   .card-slot[data-role] .post__heading h3 { color: var(--text) !important; }

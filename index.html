@@ -12,9 +12,9 @@
        合成 1 个，gzip 后 53.7KB → 12KB；源码仍留在 css/ 下可直接维护。 -->
   <!-- 头像在开场 1.56s 才浮入，提前拉它，避免文字起来了图才落 -->
   <link rel="preload" as="image" href="img/avatar.webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/site.css?v=142107cf">
+  <link rel="stylesheet" href="assets/site.css?v=2f15acc5">
   <!-- 阅读页（md 正文 + 左侧目录）的样式单独一份：改首页动画时不会牵动正文排版 -->
-  <link rel="stylesheet" href="css/reader.css?v=c286b428">
+  <link rel="stylesheet" href="css/reader.css?v=51033fb6">
   <!-- 同步标记：① js 表示脚本活着（文章区入场初始态靠它兜底）；② data-intro=1 是开场序列的
        「纯黑夜」起点 —— 云、日月、标题都先藏起来，由 js 逐级推进到终态。没有脚本时这三个标记
        都不存在，页面直接以静态终态渲染，不会把任何东西永久藏住。
@@ -97,7 +97,7 @@
   </script>
   <!-- 作品集数据 + 阅读页 + 交互 + 滚动条四个脚本按原 defer 顺序合并压缩成一个文件，
        gzip 87KB → 19KB；源码仍分文件维护，tools/build.mjs 负责重新打包。 -->
-  <script src="assets/site.js?v=536af05f" defer></script>
+  <script src="assets/site.js?v=aefb6eeb" defer></script>
   <!-- md 编译产物（索引几 KB + 每篇一个 js）与代码高亮（125KB）都改成按需加载：
        首屏用不到它们，原先挂在 defer 链里却会把交互脚本一起挡在 237KB 后面。
        site.js 在第一次打开文章时按下面的地址动态插入 <script>，只拉被点开的那一篇；
@@ -108,6 +108,8 @@
     window.CB_ASSETS = {
       posts: 'js/posts.data.js?v=ca16909d',
       postsBase: 'js/posts/',
+      books: 'js/books.data.js?v=bb1cdcb5',
+      bookPages: 'js/bookpages/',
       hljs: 'js/vendor/highlight.min.js?v=471ef9ae'
     };
   </script>
@@ -128,6 +130,8 @@
     <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M4 9h10a5 5 0 0 1 0 10h-3M4 9l4-4M4 9l4 4"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
     <!-- 联系方式图标：GitHub / bilibili 用官方实心 logo（配 .icon--brand 关掉描边），
          邮件是通用信封，走项目统一的线框风格 -->
     <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.44.5-2.61 1.31-3.53-.13-.33-.57-1.68.13-3.5 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.29-1.55 3.3-1.23 3.3-1.23.7 1.82.26 3.17.13 3.5.82.92 1.31 2.09 1.31 3.53 0 4.61-2.805 5.625-5.475 5.92.43.37.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12c0-6.627-5.373-12-12-12"/></symbol>
@@ -438,7 +442,7 @@
                 <h3><a href="#post-11">这个博客的骨架</a></h3>
                 <p class="post__meta"><time datetime="2026-11-14">2026-11-14</time><span>·</span><span data-zh="工程笔记" data-en="Notes">工程笔记</span><span>·</span>5 min</p>
               </div>
-              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-11" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-11" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
             </header>
             <div class="post__body" id="body-11">
               <div class="post__figure"><img src="img/cover-11.svg" alt="首页那颗圆月与云海的 120px 缩小版" loading="lazy"></div>
@@ -458,7 +462,7 @@
                 <h3><a href="#post-10">给 LaTeX 公式配一张自己的补全表</a></h3>
                 <p class="post__meta"><time datetime="2025-07-21">2025-07-21</time><span>·</span><span data-zh="插件" data-en="Plugin">插件</span><span>·</span>5 min</p>
               </div>
-              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-10" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-10" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
             </header>
             <div class="post__body" id="body-10">
               <div class="post__figure"><img src="img/obsidian_plugin-LaTeX_Autocomplete.png" alt="在 Obsidian 里输入 e^{i\pi}，补全列表弹出 pi 与 Pi 两个候选" loading="lazy"></div>
@@ -478,7 +482,7 @@
                 <h3><a href="#post-5" data-zh="P2P 简单直播：只靠浏览器的可互动直播" data-en="P2P Live Web">P2P 简单直播：只靠浏览器的可互动直播</a></h3>
                 <p class="post__meta"><time datetime="2024-08-25">2024-08-25</time><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span><span data-zh="7 min" data-en="18 min">7 min</span></p>
               </div>
-              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-5" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-5" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
             </header>
             <div class="post__body" id="body-5">
               <div class="post__figure"><img src="img/P2PLive.webp" alt="PeerJS P2P 直播网站封面：三分钟实现自己的直播网站" loading="lazy"></div>
@@ -498,7 +502,7 @@
                 <h3><a href="#post-9">在 Termux 里装 Rust 与 Bevy</a></h3>
                 <p class="post__meta"><time datetime="2024-02-24">2024-02-24</time><span>·</span><span data-zh="工程笔记" data-en="Notes">工程笔记</span><span>·</span>4 min</p>
               </div>
-              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-9" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-9" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
             </header>
             <div class="post__body" id="body-9">
               <div class="post__figure"><img src="img/cover-9.svg" alt="终端窗口封面" loading="lazy"></div>
@@ -518,7 +522,7 @@
                 <h3><a href="#post-8">用内网穿透搭一个能对外的直播网站</a></h3>
                 <p class="post__meta"><time datetime="2023-02-04">2023-02-04</time><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span>10 min</p>
               </div>
-              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-8" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-8" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
             </header>
             <div class="post__body" id="body-8">
               <div class="post__figure"><img src="img/Nat2Live.webp" alt="十分钟免费内网穿透搭建直播网站封面（LiveGo）" loading="lazy"></div>
@@ -538,7 +542,7 @@
                 <h3><a href="#post-7">PCPE 双端开服建站联机教程</a></h3>
                 <p class="post__meta"><time datetime="2023-01-24">2023-01-24</time><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span>50 min</p>
               </div>
-              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-7" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-7" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
             </header>
             <div class="post__body" id="body-7">
               <div class="post__figure"><img src="img/Multiplay.webp" alt="多人游戏联机通用教程封面：内网穿透、异地组网、远程协助与手机开服" loading="lazy"></div>
@@ -547,6 +551,90 @@
                 <p class="post__detail">Android 5 以上通用方法与 Termux + proot 两条路线都给了命令；MC 的 Java 服与基岩版互通单独成节。</p>
                 <div class="post__more"><p>整篇的取舍是「先能用再优化」：端口、协议、穿透工具都给了判断方法，而不是让你照抄一套固定配置。</p></div>
                 <div class="post__tags"><span>联机</span><span>内网穿透</span><span>教程</span></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 书籍卡：和文章卡同一套 .post 结构、同一个卡片堆 / 时间线 / 阅读页注入路径。
+               差别只在 data-date 缺失时按 2000-01-01 排到时间线最末（书不是"新内容"），
+               以及正文由 book.mjs 写进 js/books.data.js（AX_BOOKS），点开看的是书的目录页，
+               目录里的链接直接跳 books/<slug>/<id>.html。四张卡的 id 必须是 book-<slug>。 -->
+          <article class="post" id="book-java" data-tags="书籍 Java 教程" data-date="2000-01-01" data-accent="#ffb35c">
+            <header class="post__head">
+              <img class="post__thumb" src="img/books/java.svg" alt="" width="64" height="64">
+              <div class="post__heading">
+                <h3><a href="#book-java">Java 教程</a></h3>
+                <p class="post__meta"><span>书籍</span><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span>315 节</p>
+              </div>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-book-java" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
+            </header>
+            <div class="post__body" id="body-book-java">
+              <div class="post__figure"><img src="img/books/java.svg" alt="Java 教程封面" loading="lazy"></div>
+              <div class="post__text">
+                <p class="post__excerpt">从变量、循环一路讲到多线程与 JDBC，315 节按序号推进，适合当手册慢慢翻。</p>
+                <p class="post__detail">每节一个概念配一段可运行的代码，练手按目录顺序来就行，不必从头背到尾。</p>
+                <div class="post__more"><p>卡住的地方先跳过看下一节，回头再读通常就通了——这套书是给人反复查的，不是一遍读完的。</p></div>
+                <div class="post__tags"><span>书籍</span><span>Java</span><span>教程</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="post" id="book-ml-tutorial" data-tags="书籍 机器学习 教程" data-date="2000-01-01" data-accent="#9ad0ff">
+            <header class="post__head">
+              <img class="post__thumb" src="img/books/ml-tutorial.svg" alt="" width="64" height="64">
+              <div class="post__heading">
+                <h3><a href="#book-ml-tutorial">机器学习入门</a></h3>
+                <p class="post__meta"><span>书籍</span><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span>46 节</p>
+              </div>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-book-ml-tutorial" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
+            </header>
+            <div class="post__body" id="body-book-ml-tutorial">
+              <div class="post__figure"><img src="img/books/ml-tutorial.svg" alt="机器学习入门封面" loading="lazy"></div>
+              <div class="post__text">
+                <p class="post__excerpt">从装环境、NumPy 一路走到模型评估，46 节把机器学习的第一圈路走完。</p>
+                <p class="post__detail">偏实战：每章都配数据集、指标和一套能真跑通的流程，不做纯公式推导。</p>
+                <div class="post__more"><p>第 3 章「从概率到指标」是把前面零散概念串起来的那一步，读不下去时从那里反推前面。</p></div>
+                <div class="post__tags"><span>书籍</span><span>机器学习</span><span>教程</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="post" id="book-sql" data-tags="书籍 SQL 数据库" data-date="2000-01-01" data-accent="#a4d67e">
+            <header class="post__head">
+              <img class="post__thumb" src="img/books/sql.svg" alt="" width="64" height="64">
+              <div class="post__heading">
+                <h3><a href="#book-sql">SQL 教程</a></h3>
+                <p class="post__meta"><span>书籍</span><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span>30 节</p>
+              </div>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-book-sql" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
+            </header>
+            <div class="post__body" id="body-book-sql">
+              <div class="post__figure"><img src="img/books/sql.svg" alt="SQL 教程封面" loading="lazy"></div>
+              <div class="post__text">
+                <p class="post__excerpt">建库、查询、聚合、事务，30 节讲清楚，全程用同一套示例数据。</p>
+                <p class="post__detail">每节末尾有练习题，卡住就看下一节开头——思路基本都在那里接着写。</p>
+                <div class="post__more"><p>先把 SELECT 和 JOIN 吃透，后面的索引、事务才有参照系，否则只能死记。</p></div>
+                <div class="post__tags"><span>书籍</span><span>SQL</span><span>数据库</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="post" id="book-summerframework" data-tags="书籍 Spring Java" data-date="2000-01-01" data-accent="#c9a6f2">
+            <header class="post__head">
+              <img class="post__thumb" src="img/books/summerframework.svg" alt="" width="64" height="64">
+              <div class="post__heading">
+                <h3><a href="#book-summerframework">手写 Spring</a></h3>
+                <p class="post__meta"><span>书籍</span><span>·</span><span data-zh="教程" data-en="Tutorial">教程</span><span>·</span>23 节</p>
+              </div>
+              <button class="post__toggle" type="button" aria-expanded="false" aria-controls="body-book-summerframework" aria-label="退出阅读" data-zh-aria="退出阅读" data-en-aria="Exit reading"><svg class="icon"><use href="#i-close"/></svg></button>
+            </header>
+            <div class="post__body" id="body-book-summerframework">
+              <div class="post__figure"><img src="img/books/summerframework.svg" alt="手写 Spring 封面" loading="lazy"></div>
+              <div class="post__text">
+                <p class="post__excerpt">23 节从零搭一个 IoC 容器，最后拿到一个能跑起来的 mini Spring。</p>
+                <p class="post__detail">边写边验证：每节结束都能跑，不把问题攒到最后一起爆。</p>
+                <div class="post__more"><p>反射与注解那两节是后面所有装配逻辑的地基，跳过去后面会全线飘红。</p></div>
+                <div class="post__tags"><span>书籍</span><span>Spring</span><span>Java</span></div>
               </div>
             </div>
           </article>

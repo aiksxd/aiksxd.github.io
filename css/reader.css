@@ -41,6 +41,21 @@
    放进阅读页会把第一屏整个占掉（md 正文里的配图不受影响） */
 .post.is-full.has-reader .post__body > .post__figure { display: none; }
 .post.is-full.has-reader .post__text { display: none; }
+/* 书页（卡片带 data-flat="1"）：注入的正文本身就是整本书的目录，
+   再抽一层侧栏只会得到一条「目录 → 目录」，还把正文推到右边离题。
+   所以书页走单列：没有侧栏、正文居中、宽度收到 760。
+   特异性比下面手机档那几条（4-5 个类）高一级，窄屏同样生效。 */
+/* ---------- 书：流式追加的节 ----------
+   每节是 <section class="md-sec"><h2 id=…></h2>正文</section>。
+   上一节末尾常是图片或代码块，紧贴着下一节的标题会被读成同一段 —— 给一条分隔线。 */
+.post.is-full .md-sec + .md-sec {
+  margin-top: 44px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+/* 目录里「这一章没有导言页」的组名不是链接，按标签的样子显示 */
+.toc__link.is-label { color: var(--muted); cursor: default; }
+.toc__link.is-label:hover { color: var(--muted); }
 
 /* 收起目录：不删列、只把第一列收到 0，配合侧栏自身淡出（见下）。
    轨道仍是两个，才能做上面那条插值过渡 */
@@ -70,22 +85,12 @@
   /* 折叠时列宽收到 0，目录内容要么被裁掉、要么溢到正文上。overflow: clip 让它被裁掉；
      不用 hidden 是不想给这一栏再造一个滚动容器（内容由 .toc__nav 自己滚） */
   overflow: clip;
-  /* top / max-height 是给「标题栏折叠时目录一起上移」用的（见下面那条规则）。
-     时长与缓动跟 .post__head 的 translateY(-100%) 完全对齐，两条边才是一起收的；
-     其余的 opacity / transform 仍是折叠目录、淡出竖线那套。 */
-  transition: top .35s var(--ease), max-height .35s var(--ease),
-              opacity .3s var(--ease), transform .42s var(--ease),
+  /* 目录的顶边距是常数：导航带（44px）在阅读页常驻，只是桌面档平时透明、
+     鼠标 hover 顶部那条才显形（见下面三块关系那段）。所以这里不再跟着
+     .is-head-collapsed 上下平移 —— 侧栏顶部永远空出 44+8，正好给目录头和
+     「目录」这一行标签，位置固定、不随导航带的显隐跳动。 */
+  transition: opacity .3s var(--ease), transform .42s var(--ease),
               padding-right .42s var(--ease), border-right-color .42s var(--ease);
-}
-/* 正文向下滚、顶部标题栏折走（.post.is-full.is-head-collapsed 的 translateY(-100%)）时，
-   目录同步上移 44px —— 正好是标题栏让出来的那条横带。
-   不移的话顶栏收起了、侧栏还待在原地，第一屏左边会白空一截，两套动画像各走各的。
-   52 → 8：上沿留白保持和标题栏在时相同的 8px；max-height 同步 +44，
-   底部离视口 12px 的余量不变，长目录也不会因为上移而在底部少一截。
-   44 = .post.is-full .post__head 的 height，改栏高记得一起改这里。 */
-.post.is-full.is-head-collapsed .reader__toc {
-  top: 8px;
-  max-height: calc(100vh - 20px);
 }
 /* 折叠态的侧栏：左移一点淡出，竖线同时褪掉 —— 只靠列宽收缩，
    目录会在最后一刻「啪」地消失，像被切掉 */
@@ -107,21 +112,55 @@
   font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
   color: var(--muted);
 }
-/* 侧栏头部的收起按钮：外观与标题栏那颗 .post__toc 逐条一致（30×30、9px 圆角、
-   同底色同描边），位置也在左上角 —— 手机档目录通高盖住标题栏之后，
-   它就是那颗按钮在同一位置的替身，读者不必重新找收起入口。
-   桌面两栏并列用不到，这里 display:none；手机档的媒体查询只把它翻成 flex。 */
+
+/* ---------- 三块的关系（参考图） ----------
+   蓝块① 导航带：卡片顶部 44px 横条。桌面档 hover 才显形（js 按指针位置挂 .is-head-hover），
+          触摸档沿用「上滑露出、下滚收起」，仍是 .is-head-collapsed。
+   蓝块② 目录面板：由目录头开合；折叠时第一列收成 0。
+   红块   目录头 .post__tochead（图标 + 标题 + 元信息），左沿与侧栏同一条线。
+   规则：任意蓝块在场，红块都显示 —— 红块本身就是蓝块②的开关，
+   只在展开时露脸的话，目录一折就再也打不开了。 */
+.post.is-full .post__tochead,
+.post.is-full .post__toggle { opacity: 0; pointer-events: none; }
+.post.is-full:not(.is-head-collapsed) .post__tochead,
+.post.is-full:not(.is-head-collapsed) .post__toggle { opacity: 1; pointer-events: auto; }
+
+/* 桌面档（html.is-hover-ui 由 js 按 (hover: hover) + (pointer: fine) + 视口 >900px 打上；
+   窄窗即使有鼠标也按触摸档走，否则「拖窄窗口当手机测」时导航带只会 hover 触发）：
+   带默认收起，整条透明、正文可以一直读到卡片顶沿；hover 顶部那条才浮出一层玻璃。
+   目录展开时红块常显（它就是侧栏的栏头）；目录折叠后只在 hover 时浮出来。 */
+html.is-hover-ui .post.is-full .post__toggle { opacity: 0; pointer-events: none; }
+html.is-hover-ui .post.is-full .post__tochead { opacity: 1; pointer-events: auto; }
+html.is-hover-ui .post.is-full.is-toc-folded .post__tochead { opacity: 0; pointer-events: none; }
+html.is-hover-ui .post.is-full.is-head-hover .post__tochead,
+html.is-hover-ui .post.is-full.is-head-hover .post__toggle { opacity: 1; pointer-events: auto; }
+html.is-hover-ui .post.is-full:not(.is-head-hover) .post__head {
+  background-image: none; background-color: transparent;
+}
+html.is-hover-ui .post.is-full.is-head-hover .post__head {
+  background-image: none; background-color: var(--surface-2);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--line);
+}
+/* 触摸档没有 hover 这回事，导航带常显；--surface-2 是半透明的，正文从下面滚过去会
+   直接透出来和目录头叠字，补一层模糊让它读成一块「磨砂条」 */
+html:not(.is-hover-ui) .post.is-full .post__head {
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+/* 侧栏头部的收起按钮：手机档抽屉通高盖住导航带时，用它收起（桌面档 display:none，
+   收藏在导航带的目录头里）。外观上只留图标 —— 和导航带那颗退出 X 一样去掉描边与底色，
+   两颗都读成「一个动作」，而不是两枚工具栏按钮。 */
 .toc__close {
   display: none;
   flex: none;
   width: 30px; height: 30px; padding: 0;
   align-items: center; justify-content: center;
-  border: 1px solid var(--line); border-radius: 9px;
-  background: var(--surface); color: var(--muted);
+  border: 0; border-radius: 9px;
+  background: none; color: var(--muted);
   cursor: pointer;
-  transition: color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+  transition: color .2s var(--ease), background-color .2s var(--ease);
 }
-.toc__close:hover { color: var(--text); border-color: var(--accent); }
+.toc__close:hover { color: var(--accent); }
 .toc__close .icon { width: 15px; height: 15px; }
 
 /* 目录本体：条目多时自己滚，不把整栏撑出视口 */
@@ -241,28 +280,70 @@
   font-size: .86em;
 }
 
-/* 代码块：语法高亮由 js/reader.js 用本地 vendor/highlight.min.js 现场上色，
-   容器本身和引用块长同一个样子 —— 左边一条 accent 竖线，右角圆、左角切平。 */
+/* 代码块：语法高亮由 js/reader.js 用本地 vendor/highlight.min.js 现场上色。
+   容器走「中性卡」：1px 中性描边 + 12 圆角，**不再画左侧 accent 竖线** ——
+   那条 accent 轨是「引用层级」的记号（blockquote.md-quote），代码块早年跟它同款，
+   于是正文里没有 > 的代码块也顶着一根绿杠，有 > 的时候又和引用的轨并排成两根。
+   现在层级只由引用块的嵌套缩进表达，代码块是独立的中性容器。
+   语言名 / 复制按钮由 reader.js 注入 .md-code__bar（包在 .md-code-wrap 里），
+   不用 ::after：绝对定位在 pre 外层，横向滚动时不会跟着代码一起跑掉。 */
+.reader__doc .md-code-wrap { position: relative; margin: 1.45em 0; }
+.reader__doc .md-code-wrap > pre.md-code { margin: 0; }
 .reader__doc pre.md-code {
   position: relative;
-  margin: 1.35em 0;
-  padding: 16px 18px 17px;
-  border: 1px solid var(--line); border-left: 3px solid var(--accent);
-  border-radius: 0 var(--r-md) var(--r-md) 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   background: var(--surface-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
   overflow-x: auto; overscroll-behavior-x: contain;
   line-height: 1.72;
+  transition: border-color .25s var(--ease);
 }
+/* hover 只把描边提半档：容器本身不该抢注意力，能看出「可以点/可以扫读」就够了 */
+.reader__doc .md-code-wrap:hover pre.md-code { border-color: rgba(178, 199, 255, .24); }
 .reader__doc pre.md-code code {
   padding: 0; border: 0; background: none;
   font-size: .84rem; white-space: pre;
 }
-.reader__doc pre.md-code[data-lang]::after {
-  content: attr(data-lang);
-  position: absolute; top: 9px; right: 12px;
-  font-size: .66rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); opacity: .8;
+/* 右上角工具条：语言徽标 + 复制按钮共用一颗胶囊，中间不画分割线 ——
+   整颗胶囊就是复制热区（点击事件挂在父容器上，点语言名也复制），
+   所以 hover 反馈也给整颗，而不是只亮右半边的图标。
+   常态就有底色和描边（否则暗底上只剩几个浅字，像没渲染完），
+   底色用 --surface（和卡片同一层玻璃），hover 才轻微提亮——不做 accent 描边，
+   免得一页里每块代码都在发绿光。 */
+.reader__doc .md-code__bar {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  display: flex; align-items: center; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background-color .2s var(--ease), border-color .2s var(--ease);
 }
+.reader__doc .md-code__lang {
+  display: flex; align-items: center; height: 24px; padding: 0 7px 0 11px;
+  font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); user-select: none;
+  transition: color .2s var(--ease);
+}
+.reader__doc .md-code__copy {
+  display: grid; place-items: center;
+  width: 27px; height: 26px; padding: 0; margin-right: 3px;
+  border: 0; border-radius: 999px;
+  background: none; color: var(--muted); cursor: pointer;
+  transition: color .2s var(--ease), background-color .2s var(--ease);
+}
+.reader__doc .md-code__copy .icon { width: 14px; height: 14px; }
+/* hover 认父容器：鼠标落在胶囊任意一处，整颗一起提亮 */
+.reader__doc .md-code__bar:hover { border-color: rgba(178, 199, 255, .26); }
+.reader__doc .md-code__bar:hover .md-code__lang { color: var(--text); }
+.reader__doc .md-code__bar:hover .md-code__copy { color: var(--text); background: rgba(255, 255, 255, .08); }
+/* 复制成功的一瞬：图标切成勾、颜色走 accent，1.4s 后由 JS 复原。
+   这条必须排在 hover 之后：点击时光标还停在胶囊上，hover 那条会把颜色抢回 --text，
+   勾号就看不到 accent 了。 */
+.reader__doc .md-code__bar .md-code__copy.is-copied { color: var(--accent); }
+.reader__doc .md-code__copy:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
 /* 代码行超宽时自身横向滚；细一点，别在暗底上糊一条白杠 */
 .reader__doc pre.md-code::-webkit-scrollbar { height: 6px; }
 .reader__doc pre.md-code::-webkit-scrollbar-thumb {
@@ -295,12 +376,27 @@
 .reader__doc .hljs-operator,
 .reader__doc .hljs-punctuation { color: var(--muted); }
 
+/* 引用块：**无背景**，只靠左侧一条竖线区分「这一段是引用」。
+   线的颜色是「正文色混出来的中性灰」——压在黑底上就是黑底里的一条灰，
+   不用 accent 绿（绿色留给链接/高亮，引言不抢这两个的语义）。注意别用
+   --border-strong：它只在 [data-theme=dark|light] 里定义，场景主题下取不到，
+   整条 border 声明会失效（线直接消失），--text 才是任何主题都有的。
+   原来那层 --surface-2（蓝灰）也不铺了，底色彻底透明，嵌在玻璃面/代码卡里
+   都不会多糊一层灰。字体比 --muted 亮一档：引用是「语气不同」，不是
+   「次要信息」，暗底上压得太灰反而像禁用态。 */
 .reader__doc blockquote.md-quote {
-  margin: 1.4em 0; padding: 13px 18px;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--r-md) var(--r-md) 0;
-  background: var(--surface-2);
-  color: var(--muted);
+  margin: 1.4em 0; padding: 2px 0 2px 16px;
+  border: 0; border-left: 3px solid color-mix(in srgb, var(--text) 32%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--text) 78%, var(--muted));
+}
+/* 嵌套层各画各的竖线（缩进后自然错开，像阶梯），但灰度和粗细逐层收一档，
+   否则三层就是三根一样重的灰杠并列，看不出哪根属于哪一层。 */
+.reader__doc blockquote.md-quote blockquote.md-quote {
+  margin: .9em 0;
+  border-left-width: 2px;
+  border-left-color: color-mix(in srgb, var(--text) 19%, transparent);
 }
 .reader__doc blockquote.md-quote > :last-child { margin-bottom: 0; }
 
@@ -375,8 +471,13 @@
     column-gap: 0;
   }
 
-  /* 侧栏在窄屏同样吸顶：top 让出半高的标题栏 */
-  .reader__toc { top: 50px; max-height: calc(100vh - 60px); }
+  /* 侧栏在窄屏同样吸顶：top 固定 52（导航带 44 + 8），不跟带的显隐上下跳 */
+  .reader__toc { top: 52px; max-height: calc(100vh - 64px); }
+  /* 导航带的左格跟正文第一列同一条（36% + 12 gap），目录头才和侧栏条目对齐 */
+  .post.is-full.has-reader .post__head {
+    grid-template-columns: minmax(0, 36%) minmax(0, 1fr);
+    column-gap: 12px;
+  }
   .toc__nav { overscroll-behavior: contain; }
 
   /* 窄屏正文只有 500 出头，80 列的代码一行塞不下。
@@ -401,6 +502,11 @@
     grid-template-columns: minmax(0, 1fr);
     column-gap: 0;
     max-width: none;
+  }
+  /* 单列：导航带也只剩「目录头 + 退出」两颗，左格吃掉剩余宽度 */
+  .post.is-full.has-reader .post__head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 6px;
   }
 
   /* 目录：通高覆盖层。两件事不能靠继承桌面规则：

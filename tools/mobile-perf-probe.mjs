@@ -45,6 +45,15 @@ const OPEN = process.argv.includes('--open');
 /* --toc：配合 --open 用，进阅读页后再点标题栏那颗目录按钮，
    确认目录是「覆盖层滑出」而不是把正文挤窄。 */
 const TOC = process.argv.includes('--toc');
+/* --next=N：在截图前点 N 次「下堆」（#cardStack 底部那条露出来的边），卡片整页往下翻。
+   用来给第二页、最后一页拍构图 —— 书卡的 2000 分组在最后一页，首屏永远看不到。 */
+const NEXT = Number((process.argv.find(a => a.startsWith('--next=')) || '').slice('--next='.length)) || 0;
+/* --page-at=N：深链打开阅读页后把**卡片自己的滚动容器**滚到 N px 再截图。
+   书页是流式加载的（滚到底部追加下一节），外层 window.scrollTo 对它无效。 */
+const PAGE_AT = Number((process.argv.find(a => a.startsWith('--page-at=')) || '').slice('--page-at='.length)) || 0;
+/* --toc-jump=N：点侧栏第 N 条目录链接。书页目录里有大量「还没加载」的节，
+   这条用来验「点未加载的节 → 顺序补齐 → 滚过去」。 */
+const TOC_JUMP = Number((process.argv.find(a => a.startsWith('--toc-jump=')) || '').slice('--toc-jump='.length)) || 0;
 /* --rects=a,b：输出这些选择器的实际盒子与关键计算样式。
    截图看不出「position:fixed 的包含块到底是不是视口」「目录还占不占 grid 列」
    这类事 —— 量 rect 才说得准。配合 --open（进阅读页）/ --toc（展开目录）使用。 */
@@ -580,6 +589,58 @@ async function main() {
       await mkdir(SHOT, { recursive: true });
       if (DAY) await evaluate(cdp, `document.documentElement.dataset.theme = 'day'`);
       if (RESIZE_TO && !OPEN) await applyResizeTo();
+      if (TOC && !OPEN) {
+        /* 深链已经打开阅读页时直接点目录开关（手机档展开成通高抽屉） */
+        const ok = await evaluate(cdp, `(() => {
+          const b = document.querySelector('.post.is-full .post__toc');
+          if (!b) return false;
+          b.click();
+          return true;
+        })()`);
+        await sleep(800);
+        console.log('   展开目录: ' + (ok ? 'ok' : '没找到'));
+      }
+      if (TOC_JUMP) {
+        const ok = await evaluate(cdp, `(() => {
+          const links = [...document.querySelectorAll('.post.is-full .toc__link[data-id]')];
+          const a = links[${TOC_JUMP - 1}];
+          if (!a) return false;
+          a.click();
+          return true;
+        })()`);
+        await sleep(2000);
+        console.log('   点目录第 ' + TOC_JUMP + ' 条: ' + (ok ? 'ok' : '没找到'));
+      }
+      if (PAGE_AT && !OPEN) {
+        await evaluate(cdp, `(() => {
+          const p = document.querySelector('.post.is-full');
+          if (p) p.scrollTop = ${PAGE_AT};
+        })()`);
+        await sleep(1400);
+        console.log('   阅读页滚到 ' + PAGE_AT + 'px');
+      }
+      if (NEXT && !OPEN) {
+        /* 点卡片区的下堆（底部露出的那条边）。命中 role=next 的卡会被 blog.js
+           接成翻页（见 initSplit 的 cardsCol click）。真实鼠标事件，不走 el.click()。 */
+        /* 先把卡片区滚进视口：getBoundingClientRect 是视口坐标，
+           页面还在顶部时 cardStack.bottom 会是 1700+，派发到视口外等于没点。 */
+        await evaluate(cdp, `(() => {
+          const st = document.getElementById('cardStack');
+          st.scrollIntoView({ block: 'center', behavior: 'instant' });
+        })()`);
+        await sleep(400);
+        const spot = await evaluate(cdp, `(() => {
+          const r = document.getElementById('cardStack').getBoundingClientRect();
+          return { x: Math.round(r.left + r.width * 0.55), y: Math.round(r.bottom - 6) };
+        })()`);
+        for (let i = 0; i < NEXT; i++) {
+          await cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: spot.x, y: spot.y, button: 'left', clickCount: 1 });
+          await sleep(80);
+          await cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: spot.x, y: spot.y, button: 'left', clickCount: 1 });
+          await sleep(1200);
+        }
+        console.log('   翻页 ' + NEXT + ' 次（点 (' + spot.x + ',' + spot.y + ')）');
+      }
       if (OPEN) {
         /* 点开第一张卡。阅读页由 blog.js 派发 post:open 后 reader.js 注入正文，
            FLIGHT 飞行 + 正文淡入大约 2.4s，等够再截。 */

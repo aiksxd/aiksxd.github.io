@@ -12,10 +12,12 @@
 (() => {
   'use strict';
 
-  /* 正文数据不再在首屏同步就绪：posts.data.js / highlight.min.js 已移出 defer 链，
-     由下面的 loadReaderAssets() 在第一次打开文章时按需插入。所以这里只留一个取值函数，
-     不能像以前那样在 IIFE 入口把 window.AX_POSTS 缓存成常量（那时它一定是空的）。 */
-  const dataOf = () => window.AX_POSTS || {};
+  /* 正文数据不再在首屏同步就绪：posts.data.js / books.data.js / highlight.min.js 已移出
+     defer 链，由下面的 loadReaderAssets() 在第一次打开文章时按需插入。所以这里只留一个
+     取值函数，不能像以前那样在 IIFE 入口把 window.AX_POSTS 缓存成常量（那时它一定是空的）。
+     两套命名空间并列：AX_POSTS 是文章（md2html 产出、按篇拆分），
+     AX_BOOKS 是书（book.mjs 产出、正文内联，因为一共就几本）。 */
+  const dataOf = id => (window.AX_POSTS || {})[id] || (window.AX_BOOKS || {})[id] || null;
   /* 与 blog.js、css/mobile-lite.css 里逐字相同的「手机轻量档」判定。
      手机上阅读页是正文独占一栏，左侧目录改成左侧滑入的抽屉 + 遮罩，
      所以进来时目录应当是收起的 —— 否则第一屏就被抽屉盖住。
@@ -57,15 +59,36 @@
     return indexPromise;
   }
 
+  /* 书籍索引 48 KB（正文都内联在里面），而打开一篇文章根本用不到它，
+     所以不并进 loadIndex()：只在 loadPost 找不到 id 时补拉一次。
+     代价是点开书会多一趟，换来的是每篇文章阅读都省掉 48 KB。 */
+  let booksPromise = null;
+  function loadBooks() {
+    if (window.AX_BOOKS || !ASSETS.books) return Promise.resolve();
+    if (!booksPromise) booksPromise = loadScript(ASSETS.books);
+    return booksPromise;
+  }
+
   function loadPost(id) {
-    const entry = dataOf()[id];
-    if (!entry || entry.html !== undefined) return Promise.resolve();
+    const entry = dataOf(id);
+    if (entry && entry.html !== undefined) return Promise.resolve();
+    if (!entry) {
+      /* 文章单篇的产物一定在索引里，查不到基本只意味着「这是书，书索引还没到」。
+         补拉一次再查；还是没有就当真没有，把错抛给调用方。 */
+      if (!postPromises.has(id)) {
+        postPromises.set(id, loadBooks().then(() => {
+          if (!dataOf(id)) throw new Error('unknown post id: ' + id);
+        }));
+      }
+      return postPromises.get(id);
+    }
     if (postPromises.has(id)) return postPromises.get(id);
     const url = POSTS_BASE + encodeURIComponent(id) + '.js'
       + (entry.v ? '?v=' + entry.v : '');
     const p = loadScript(url).then(() => {
       // 加载完还是没有 html：产物坏了。抛出去让调用方按「无正文」处理，别静默留白
-      if (!dataOf()[id] || dataOf()[id].html === undefined) throw new Error('post html missing: ' + id);
+      const e = dataOf(id);
+      if (!e || e.html === undefined) throw new Error('post html missing: ' + id);
     });
     postPromises.set(id, p);
     return p;
@@ -84,6 +107,99 @@
   /* 语言开关由 blog.js 的 applyLang 写在 html[data-lang] 上。
      这里每次注入都现读、不缓存：切语言要整块换正文，缓存只会拿到旧值。 */
   const isEn = () => (document.documentElement.dataset.lang || 'zh') === 'en';
+
+  /* ---------- 代码块装饰：语言徽标 + 复制按钮 ----------
+     为什么不用 pre[data-lang] 的 ::after 画标签：伪元素是 pre 的一部分，
+     pre 横向溢出时标签会跟着代码一起滚出可视区（长命令行尤其明显）。
+     这里把工具条放到 .md-code-wrap（pre 的外层，position:relative）里，
+     绝对定位在右上角，滚动的是 pre，工具条不动。
+     复制按钮读的是 <code> 的 textContent：highlight 只是把文本拆成 span，
+     textContent 拼回去和原文一致，不会混进行号或工具条自己的文字。 */
+  function copyText(text) {
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) { /* 老浏览器直接算失败 */ }
+      ta.remove();
+      return ok;
+    };
+    /* file:// 打开时不是安全上下文，navigator.clipboard 不存在：退回 execCommand */
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(() => true, fallback);
+    }
+    return Promise.resolve(fallback());
+  }
+
+  function syncCopyLabel(btn, en) {
+    const label = en ? 'Copy code' : '复制代码';
+    btn.title = label;
+    btn.setAttribute('aria-label', label);
+  }
+
+  function decorateCodeBlocks(root) {
+    root.querySelectorAll('pre.md-code').forEach(pre => {
+      if (pre.parentElement && pre.parentElement.classList.contains('md-code-wrap')) return;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'md-code-wrap';
+      pre.replaceWith(wrap);
+      wrap.appendChild(pre);
+
+      const bar = document.createElement('div');
+      bar.className = 'md-code__bar';
+      const lang = (pre.getAttribute('data-lang') || '').trim();
+      if (lang) {
+        const tag = document.createElement('span');
+        tag.className = 'md-code__lang';
+        tag.textContent = lang;      // 用 textContent，data-lang 里即便有古怪字符也只会被显示出来
+        bar.appendChild(tag);
+      }
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'md-code__copy';
+      btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-copy"/></svg>';
+      bar.appendChild(btn);
+      wrap.appendChild(bar);
+      syncCopyLabel(btn, isEn());
+
+      let timer = 0;
+      /* 热区是整颗胶囊（父容器），不只是右边那颗图标：点语言名也复制。
+         按钮仍然保留（键盘 Tab / Enter / Space 走的是它，事件照样冒泡到 bar），
+         所以这里只挂一个监听，不会重复触发。 */
+      bar.addEventListener('click', () => {
+        const code = pre.querySelector('code');
+        copyText(code ? code.textContent : pre.textContent).then(ok => {
+          const en = isEn();
+          const use = btn.querySelector('use');
+          clearTimeout(timer);
+          btn.classList.toggle('is-copied', ok);
+          if (use) use.setAttribute('href', ok ? '#i-check' : '#i-copy');
+          // 成功/失败都给一条 1.4s 的即时反馈，不弹 toast（阅读页里 toast 太重）
+          const tip = ok ? (en ? 'Copied' : '已复制') : (en ? 'Copy failed' : '复制失败');
+          btn.title = tip;
+          btn.setAttribute('aria-label', tip);
+          timer = setTimeout(() => {
+            btn.classList.remove('is-copied');
+            if (use) use.setAttribute('href', '#i-copy');
+            syncCopyLabel(btn, isEn());
+          }, 1400);
+        });
+      });
+    });
+  }
+
+  /* 高亮 + 装饰总是成对出现：注入正文的地方只调这一个，避免某处忘了装饰
+     导致代码块没有复制按钮（书页首节、切语言后的重注入都是这种入口）。 */
+  function paintCode(root) {
+    highlightCodeBlocks(root);
+    decorateCodeBlocks(root);
+  }
 
   /* ---------- 代码高亮 ----------
      vendor/highlight.min.js 是本地文件、defer 加载，file:// 下也能用，不依赖 CDN。
@@ -149,11 +265,14 @@
       num.setAttribute('aria-hidden', 'true');   // 屏幕阅读器念标题就够，编号只是视觉锚点
       row.appendChild(num);
 
-      const link = document.createElement('a');
-      link.className = 'toc__link';
-      link.href = `#${n.id}`;
+      /* 有 id 才是链接；书籍目录里「这一章没有导言页」的组名只有标签，没有可跳的目标 */
+      const link = document.createElement(n.id ? 'a' : 'span');
+      link.className = 'toc__link' + (n.id ? '' : ' is-label');
+      if (n.id) {
+        link.href = `#${n.id}`;
+        link.dataset.id = n.id;
+      }
       link.textContent = n.text;
-      link.dataset.id = n.id;
       row.appendChild(link);
 
       li.appendChild(row);
@@ -163,11 +282,58 @@
     return list;
   }
 
+  /* ---------- 阅读页顶部的「目录头」（参考图里的红块） ----------
+     图标 + 标题 + 元信息装进同一个按钮：按钮范围包含标题，读者才明白
+     「点这一栏的标题 = 开合目录」。原先左端只有一颗 30×30 的图标方块、
+     还带描边，看起来像「折叠箭头」，既不告诉人点哪里，也没说明点的是目录。
+     它同时顶替了标题栏里的标题/日期 —— 阅读态的导航带只剩最右端那颗退出按钮。 */
+  function buildTocHead(post, tocId, en) {
+    const heading = $('.post__heading', post);
+    const titleEl = heading && $('h3', heading);
+    const metaEl = heading && $('.post__meta', heading);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'post__tochead';
+    btn.setAttribute('aria-controls', tocId);
+    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-label', en ? 'Toggle contents' : '展开或折叠目录');
+
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('class', 'icon');
+    icon.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-list');
+    icon.appendChild(use);
+    btn.appendChild(icon);
+
+    const txt = document.createElement('span');
+    txt.className = 'post__tochead-txt';
+    const title = document.createElement('span');
+    title.className = 'post__tochead-title';
+    title.textContent = titleEl && titleEl.textContent.trim()
+      ? titleEl.textContent.trim()
+      : (en ? 'Contents' : '目录');
+    txt.appendChild(title);
+    /* 元信息整块搬过来（保留 data-zh/data-en，切换语言时语言脚本会一起改）。
+       外层用 span 而不是 p：button 里只能放 phrasing content，p 会让 HTML 结构失效；
+       类名也换掉，原来的 .post__meta 是「可以折行的一行 flex」，塞进 208px 的
+       目录头里会撑成两行，把 44px 的带顶开 */
+    if (metaEl) {
+      const meta = document.createElement('span');
+      meta.className = 'post__tochead-meta';
+      meta.innerHTML = metaEl.innerHTML;
+      txt.appendChild(meta);
+    }
+    btn.appendChild(txt);
+    return btn;
+  }
+
   /* ---------- 注入 ---------- */
   function ensureReader(post) {
     if (post.dataset.readerReady === '1') return;
 
-    const data = dataOf()[post.id];
+    const data = dataOf(post.id);
     const body = $('.post__body', post);
     if (!data || !body) return;
     /* 拆包之后正文是「一篇一个文件」，索引里只有元数据，html 要单独拉。
@@ -179,6 +345,11 @@
       return;
     }
 
+    /* 书：书籍扫描器已经把目录结构与顺序算好（AX_BOOKS[id].toc），
+       走流式那一套 —— 侧栏用它，正文按节追加。判定靠 toc 而不是 id 前缀，
+       以后再加一本别的书不用动这里。 */
+    if (data.toc && data.slug) { ensureBookReader(post, data, body); return; }
+
     /* 英文模式下优先用英文版（编译期由 post-N.en.md 合并进来的 htmlEn），
        没配英文版的篇目退回中文 —— 这就是「双语只是可选字段」的退化路径。 */
     const en = isEn() && !!data.htmlEn;
@@ -188,7 +359,7 @@
     const doc = document.createElement('div');
     doc.className = 'reader__doc md';
     doc.innerHTML = en ? data.htmlEn : data.html;
-    highlightCodeBlocks(doc);
+    paintCode(doc);
 
     /* 外链图片挂了就把那张图收成一条提示（样式见 reader.css 的 is-missing / md-img-missing）。
        注入时元素是新建的，src 此刻才开始请求，所以 error 事件一定还接得住；
@@ -235,15 +406,8 @@
 
     const head = document.createElement('div');
     head.className = 'toc__head';
-    /* 桌面端：标题栏左端那颗 .post__toc 是唯一开关，侧栏很长、不必再塞一颗。
-       手机端：抽屉通高盖住标题栏，那颗按钮随标题栏一起被遮住，所以侧栏头部
-       自己带一颗同款收起按钮（.toc__close，只在手机档 CSS 里显示）。
-       两颗按钮走同一个 setTocOpen，状态始终只有 is-toc-folded 一份。 */
-    /* 桌面端：标题栏左端那颗 .post__toc 是唯一开关，侧栏很长、不必再塞一颗。
-       手机端：目录通高盖住标题栏，那颗按钮被盖住了，所以侧栏头部自己带一颗
-       **同样式、同左上角**的收起按钮（.toc__close，只在手机档 CSS 里显示）。
-       按钮排在标题之前，与标题栏那颗的位置对应；两颗走同一个 setTocOpen，
-       状态始终只有 is-toc-folded 一份。 */
+    /* 侧栏里这一行只有手机档看得见（桌面档被导航带里的 .post__tochead 顶替，
+       见下面）；按钮排在「目录」标题之前，和导航带那颗图标上下对齐 */
     head.innerHTML = '<button type="button" class="toc__close" data-zh-aria="收起目录" data-en-aria="Close contents" aria-label="收起目录">' +
       '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>' +
       `<span class="toc__title">${en ? 'Contents' : '目录'}</span>`;
@@ -256,16 +420,11 @@
     else nav.innerHTML = `<p class="toc__empty">${en ? 'No section headings in this post' : '这篇没有分节标题'}</p>`;
     toc.appendChild(nav);
 
-    // 目录开关：钉在全屏标题栏最左端，是整个阅读页唯一的展开/折叠入口
-    const tocBtn = document.createElement('button');
-    tocBtn.type = 'button';
-    tocBtn.className = 'post__toc';
-    tocBtn.setAttribute('aria-controls', toc.id);
-    tocBtn.setAttribute('aria-expanded', 'true');
-    tocBtn.setAttribute('aria-label', en ? 'Toggle contents' : '展开或折叠目录');
-    tocBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>';
+    /* 目录头（参考图的红块）：插进导航带最左一格，整块可点就是开合目录的入口。
+       手机档抽屉通高盖住这条带时，侧栏头部仍留一颗 .toc__close 当收起按钮
+       （见 .toc__head / 手机档媒体查询）。两处都走同一个 setTocOpen。 */
     const headEl = $('.post__head', post);
-    if (headEl) headEl.insertBefore(tocBtn, headEl.firstChild);
+    if (headEl) headEl.insertBefore(buildTocHead(post, toc.id, en), headEl.firstChild);
 
     body.appendChild(toc);
     body.appendChild(doc);
@@ -282,13 +441,186 @@
     wireToc(post, doc, toc);
   }
 
+  /* ---------- 书：一篇可流式加载的长文 ----------
+     书籍扫描器（tools/book.mjs）已经把顺序和层级算好了（AX_BOOKS[id].toc），
+     阅读页不再去正文里猜标题 —— 直接拿这份清单建侧栏，正文按节往后追加。
+     首节内联在 books.data.js 里（点开即有内容），其余按需 <script> 注入：
+     file:// 下 fetch 被 CORS 挡死，所以和文章一样走脚本而不是 fetch 片段。
+     一本 315 节的书，打开时只多下这一节；滚到接近底部才加载下一节。 */
+  const BP_BASE = ASSETS.bookPages || 'js/bookpages/';
+
+  function loadBookPage(slug, entry) {
+    const key = slug + '/' + entry.id;
+    const got = (window.AX_BP || {})[key];
+    if (got) return Promise.resolve(got);
+    const url = BP_BASE + encodeURIComponent(slug) + '/' + encodeURIComponent(entry.id) + '.js'
+      + (entry.v ? '?v=' + entry.v : '');
+    return loadScript(url).then(() => (window.AX_BP || {})[key]);
+  }
+
+  function ensureBookReader(post, data, body) {
+    const en = isEn();
+    const tid = `toc-${post.id}`;
+
+    const doc = document.createElement('div');
+    doc.className = 'reader__doc md';
+
+    /* 首节：books.data.js 里的 html 已经是「<h2 id=…> + 正文」 */
+    const first = document.createElement('section');
+    first.className = 'md-sec';
+    first.innerHTML = data.html;
+    doc.appendChild(first);
+
+    /* 侧栏：marks 直接来自扫描器的 toc（level 就是嵌套深度，不用再算） */
+    const toc = document.createElement('aside');
+    toc.className = 'reader__toc';
+    toc.id = tid;
+    const head = document.createElement('div');
+    head.className = 'toc__head';
+    head.innerHTML = '<button type="button" class="toc__close" data-zh-aria="收起目录" data-en-aria="Close contents" aria-label="收起目录">'
+      + '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>'
+      + `<span class="toc__title">${en ? 'Contents' : '目录'}</span>`;
+    toc.appendChild(head);
+
+    const nav = document.createElement('nav');
+    nav.className = 'toc__nav';
+    nav.setAttribute('aria-label', en ? 'Table of contents' : '全书目录');
+    nav.appendChild(renderTree(
+      toTree(data.toc.map(t => ({ level: t.level, id: t.id, text: t.title }))),
+      1, document.createElement('ul')));
+    toc.appendChild(nav);
+
+    // 目录头（红块）：与文章页同款，整块可点
+    const headEl = $('.post__head', post);
+    if (headEl) headEl.insertBefore(buildTocHead(post, tid, en), headEl.firstChild);
+
+    body.appendChild(toc);
+    body.appendChild(doc);
+    const scrim = document.createElement('div');
+    scrim.className = 'toc__scrim';
+    scrim.setAttribute('aria-hidden', 'true');
+    body.appendChild(scrim);
+
+    /* 首节 + 后面流式追加的节都要过高亮/装饰这一道；
+       首节在这里补一次（追加的节在 insertAt 里各自处理） */
+    paintCode(doc);
+
+    post.classList.add('has-reader');
+    post.dataset.readerReady = '1';
+
+    /* 已加载的节：toc 下标 → section。不用「单指针往前推」——
+       目录可以直接跳到第 250 节，指针一跳跃，中间那些节就永远补不上，
+       滚动时会撞见一段空白。改成集合：缺哪节、滚到哪儿就补哪节。 */
+    const loaded = new Map();
+    const inflight = new Map();
+    const firstIdx = Math.max(0, data.toc.findIndex(t => t.id === data.first));
+    loaded.set(firstIdx, first);
+
+    const insertAt = (idx, entry, page) => {
+      const sec = document.createElement('section');
+      sec.className = 'md-sec';
+      const h2 = document.createElement('h2');
+      h2.id = entry.id;
+      h2.textContent = page.title || entry.title;
+      sec.appendChild(h2);
+      const holder = document.createElement('div');
+      holder.innerHTML = page.html;
+      sec.appendChild(holder);
+      /* 插到「下一个已加载的节」之前，没有就接到末尾 ——
+         跳读过的书，DOM 顺序也必须还是书的顺序。 */
+      let anchor = null;
+      for (let i = idx + 1; i < data.toc.length; i++) {
+        const s = loaded.get(i);
+        if (s) { anchor = s; break; }
+      }
+      const beforeH = doc.offsetHeight;
+      if (anchor) doc.insertBefore(sec, anchor); else doc.appendChild(sec);
+      loaded.set(idx, sec);
+      paintCode(sec);
+      /* 往上补内容会把正在读的那行推下去，补偿 scrollTop；向下补不需要。 */
+      if (anchor) post.scrollTop += doc.offsetHeight - beforeH;
+      if (post._tocCtl) post._tocCtl.refresh();
+    };
+
+    const loadAt = idx => {
+      const entry = data.toc[idx];
+      if (!entry || !entry.id || loaded.has(idx)) return Promise.resolve(false);
+      if (inflight.has(idx)) return inflight.get(idx);
+      const p = loadBookPage(data.slug, entry).then(page => {
+        inflight.delete(idx);
+        if (!page) return false;
+        if (!loaded.has(idx)) insertAt(idx, entry, page);
+        return true;
+      }, () => { inflight.delete(idx); return false; });
+      inflight.set(idx, p);
+      return p;
+    };
+
+    /* 从 from 起按 dir 找第一个「有正文但还没加载」的节 */
+    const firstGap = (from, dir) => {
+      for (let i = from; i >= 0 && i < data.toc.length; i += dir) {
+        if (data.toc[i].id && !loaded.has(i)) return i;
+      }
+      return -1;
+    };
+
+    wireToc(post, doc, toc, {
+      headSelector: '.md-sec > h2',
+      /* 目录点了还没加载的节：把到目标为止缺的那些一起取下来，再按顺序插入。
+         并发取（浏览器同时开 6 条连接），插入必须串行 —— insertAt 靠
+         「后面那个已加载的节」定位，乱序插会把书的顺序打散。 */
+      onMiss(id, done) {
+        const target = data.toc.findIndex(t => t.id === id);
+        if (target < 0) { done(); return; }
+        const gaps = [];
+        for (let i = 0; i <= target; i++) if (data.toc[i].id && !loaded.has(i)) gaps.push(i);
+        if (!gaps.length) { done(); return; }
+        const pages = new Map();
+        let k = 0;
+        const worker = () => {
+          if (k >= gaps.length) return Promise.resolve();
+          const i = gaps[k++];
+          return loadBookPage(data.slug, data.toc[i]).then(pg => {
+            if (pg) pages.set(i, pg);
+            return worker();
+          }, () => worker());
+        };
+        Promise.all(Array.from({ length: Math.min(6, gaps.length) }, worker)).then(() => {
+          for (const i of gaps) {
+            const pg = pages.get(i);
+            if (pg && !loaded.has(i)) insertAt(i, data.toc[i], pg);
+          }
+          done();
+        });
+      },
+    });
+
+    /* 滚到顶/底附近就补相邻的节；补完若还贴着边界就继续 ——
+       否则一次拖到底只会补一节就停住。双向都补：跳读之后往回滚也能接上。 */
+    const pump = () => {
+      if (post.dataset.readerReady !== '1') return;
+      if (post.scrollTop + post.clientHeight >= post.scrollHeight - 700) {
+        const i = firstGap(Math.max(...loaded.keys()) + 1, 1);
+        if (i >= 0) loadAt(i).then(ok => { if (ok) pump(); });
+      }
+      if (post.scrollTop < 700) {
+        const i = firstGap(Math.min(...loaded.keys()) - 1, -1);
+        if (i >= 0) loadAt(i).then(ok => { if (ok) pump(); });
+      }
+    };
+    if (post.dataset.bookBound !== '1') {
+      post.dataset.bookBound = '1';
+      post.addEventListener('scroll', pump, { passive: true });
+    }
+  }
+
   /* ---------- 目录行为 ---------- */
   /* 只有「展开 / 折叠」两态，宽窄屏统一：侧栏与正文并列（见 reader.css），
      折叠就是把第一列让给正文。以前窄屏是抽屉（is-toc-open），
      抽屉一开就盖住正文、点条目又要自己收起来，和「侧边栏」是两套心智模型。 */
   function setTocOpen(post, open) {
     post.classList.toggle('is-toc-folded', !open);
-    const btn = $('.post__toc', post);
+    const btn = $('.post__tochead', post);
     if (btn) btn.setAttribute('aria-expanded', String(open));
   }
 
@@ -329,9 +661,18 @@
     detachCancel = () => evs.forEach(ev => container.removeEventListener(ev, cancel));
   }
 
-  function wireToc(post, doc, toc) {
-    // 整栏展开 / 折叠：按钮在标题栏最左端；展开态同时由 scrim 显隐表达
-    const btn = $('.post__toc', post);
+  /* ---------- 目录行为 ----------
+     opts.headSelector：书页的「标题」是每节的节标题，不是正文里的小标题
+     （正文小标题没有对应目录项，混进来会把高亮打回空）。
+     opts.onMiss(id, done)：目录里点了还没加载的节 —— 书的正文是流式的，
+     这一节可能还没注入，交给调用方补齐，补完再 done() 完成跳转。
+     返回 refresh()：正文追加后重扫标题与链接（快照过期就点不动新的节）。 */
+  function wireToc(post, doc, toc, opts = {}) {
+    const HEAD_SEL = opts.headSelector || 'h1, h2, h3, h4';
+    const navEl = $('.toc__nav', toc);
+
+    // 整栏展开 / 折叠：入口是导航带最左端那颗「图标 + 标题」的目录头
+    const btn = $('.post__tochead', post);
     if (btn) btn.addEventListener('click', () => setTocOpen(post, post.classList.contains('is-toc-folded')));
 
     /* 遮罩：只负责收起，不吞掉冒泡之外的东西。桌面档 CSS 里它 display:none，
@@ -344,36 +685,44 @@
     const closeBtn = $('.toc__close', toc);
     if (closeBtn) closeBtn.addEventListener('click', () => setTocOpen(post, false));
 
-    toc.addEventListener('click', e => {
-      // 跳转：用卡片自己的滚动容器，不用 scrollIntoView —— 后者会把外层
-      // 滚动祖先也一起滚（body 已经被锁住了，但保险起见不给它机会）
-      const link = e.target.closest('.toc__link');
-      if (!link) return;
-      e.preventDefault();
-      const id = link.dataset.id;
-      const target = doc.querySelector(`#${CSS.escape(id)}`);
-      if (!target) return;
+    const jumpTo = target => {
+      // 用卡片自己的滚动容器，不用 scrollIntoView —— 后者会把外层滚动祖先也一起滚
       const top = post.scrollTop + target.getBoundingClientRect().top - post.getBoundingClientRect().top - HEAD_OFFSET;
       scrollToY(post, Math.max(0, top));
-      /* 桌面并列：侧栏常驻，跳完不收起，刚点的那一条还看得见。
-         手机抽屉：不收起就盖着刚跳到的正文，等于白跳 —— 必须收。
-         两档共用上面同一段跳转逻辑，差别只在最后这一步可见性处理。 */
+      /* 桌面并列：侧栏常驻，跳完不收起；手机抽屉盖着正文，必须收。 */
       if (isLite()) setTocOpen(post, false);
+    };
+
+    toc.addEventListener('click', e => {
+      const link = e.target.closest('.toc__link');
+      if (!link) return;
+      const id = link.dataset.id;
+      if (!id) return;                      // 组标题（span.is-label）不跳
+      e.preventDefault();
+      const find = () => doc.querySelector(`#${CSS.escape(id)}`);
+      const target = find();
+      if (target) { jumpTo(target); return; }
+      if (opts.onMiss) opts.onMiss(id, () => { const t = find(); if (t) jumpTo(t); });
     });
 
     /* 跟随高亮：取「已经在标题行下方滚过去」的最后一个标题。
-       每帧只读 rect 不写样式，读操作共享一次布局，标题数量也就十几个。 */
-    const heads = [...doc.querySelectorAll('h1, h2, h3, h4')];
-    const links = new Map([...toc.querySelectorAll('.toc__link')].map(a => [a.dataset.id, a]));
+       每帧只读 rect 不写样式，读操作共享一次布局。 */
+    let heads = [];
+    let links = new Map();
     let current = '';
-    let queued = false;
+
+    const collect = () => {
+      heads = [...doc.querySelectorAll(HEAD_SEL)].filter(h => h.id);
+      links = new Map([...toc.querySelectorAll('.toc__link[data-id]')].map(a => [a.dataset.id, a]));
+    };
+    collect();
 
     const spy = () => {
-      queued = false;
       if (!post.classList.contains('is-full')) return;
       const base = post.getBoundingClientRect().top + HEAD_OFFSET + 12;
       let cur = '';
       for (const h of heads) {
+        if (!links.has(h.id)) continue;     // 正文小标题 / 未被目录收录的节，不参与高亮
         if (h.getBoundingClientRect().top <= base) cur = h.id;
         else break;
       }
@@ -382,19 +731,38 @@
       for (const [id, a] of links) {
         const on = id === cur;
         a.classList.toggle('is-active', on);
-        if (on) a.setAttribute('aria-current', 'true');
-        else a.removeAttribute('aria-current');
+        if (on) {
+          a.setAttribute('aria-current', 'true');
+          /* 书的侧栏有 300+ 条，高亮那一行很可能在栏外 —— 把它带回可视区。
+             滚的是栏自己的 scrollTop，不调 scrollIntoView（那会把外层容器也滚起来）。 */
+          if (navEl) {
+            const r = a.getBoundingClientRect(), nr = navEl.getBoundingClientRect();
+            if (r.top < nr.top + 10 || r.bottom > nr.bottom - 10) {
+              navEl.scrollTop += r.top - nr.top - nr.height / 3;
+            }
+          }
+        } else a.removeAttribute('aria-current');
       }
     };
 
-    post.addEventListener('scroll', () => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(spy);
-    }, { passive: true });
+    /* scroll 监听只绑一次，永远调「当前那份」spy —— 切语言重建正文会换一套
+       doc/links，闭包不能是旧的，所以把控制器挂在 post 上而不是闭包变量。 */
+    post._tocCtl = { spy, refresh() { collect(); requestAnimationFrame(spy); } };
+    if (post.dataset.tocBound !== '1') {
+      post.dataset.tocBound = '1';
+      let queued = false;
+      post.addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          if (post._tocCtl) post._tocCtl.spy();
+        });
+      }, { passive: true });
+    }
 
-    // 展开后第一次高亮：正文顶部可能第一屏就有 h2
     requestAnimationFrame(spy);
+    return { refresh() { post._tocCtl.refresh(); } };
   }
 
   /* ---------- 与卡片全屏的接线 ----------
@@ -429,10 +797,13 @@
   document.addEventListener('langchange', () => {
     const full = $('.post.is-full');
     if (!full || full.dataset.readerReady !== '1') return;
+    /* 书只有中文正文（没有 .en 源），而且已经流式加载了好几节 ——
+       重建会把它们全丢掉、滚动位置也落空，所以切语言不动书页。 */
+    if (window.AX_BOOKS && window.AX_BOOKS[full.id]) return;
     const keep = full.scrollTop;
     stopScrollAnim();
     // 重建正文时把标题栏那颗目录开关也一起摘掉，否则每切一次语言就多一颗
-    full.querySelectorAll('.reader__doc, .reader__toc, .toc__scrim, .post__toc').forEach(el => el.remove());
+    full.querySelectorAll('.reader__doc, .reader__toc, .toc__scrim, .post__tochead').forEach(el => el.remove());
     full.classList.remove('has-reader');
     delete full.dataset.readerReady;
     ensureReader(full);
