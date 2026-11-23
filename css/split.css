@@ -932,7 +932,11 @@ html:not(.js) .flow { display: none !important; }
 .appsRow.is-hidden, .appsGroup.is-hidden { display: none; }
 .appsRow__dot { position: absolute; left: 9px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
   border-radius: 50%; background: var(--tc); box-shadow: 0 0 0 3px rgba(8, 10, 22, .18); }
-.appsRow__date { font-size: .7rem; color: var(--muted); opacity: .82; }
+/* 这一行原来还带一句 opacity: .82 —— 它在文件里的位置排在入场规则之后，
+   同特异度直接把 `.appsRow__date { opacity: 0 }` 盖掉（后面那条赢），于是日期永远可见：
+   流星线还没扫到，11-02 / 09-18 已经先浮出来了，而标题、圆点还老老实实跟着线头
+   （用户 2026-11-23 报的正是这个）。入场/退场只保留 .is-lit 那一套，这里不再写 opacity。 */
+.appsRow__date { font-size: .7rem; color: var(--muted); }
 .appsRow__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
   background: var(--surface); border: 1px solid var(--line); color: var(--tc); }
 .appsRow__svg { width: 20px; height: 20px; }

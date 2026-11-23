@@ -5,7 +5,7 @@
       "css/scene.css": "0febd244",
       "css/articles.css": "c8cbc4f8",
       "css/responsive.css": "b769ded8",
-      "css/split.css": "a2ed17d8",
+      "css/split.css": "900a03b1",
       "css/motion.css": "b3847549",
       "css/mobile-lite.css": "71c9c099"
     },
@@ -17,7 +17,7 @@
     }
   },
   "assets": {
-    "assets/site.css": "2f15acc5",
+    "assets/site.css": "fe7325f1",
     "assets/site.js": "3fe7fb49"
   }
 }
