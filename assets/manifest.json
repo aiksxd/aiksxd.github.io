@@ -12,12 +12,12 @@
     "assets/site.js": {
       "js/apps.data.js": "2015ffde",
       "js/reader.js": "9740c5f1",
-      "js/blog.js": "d9727800",
+      "js/blog.js": "11cd2f29",
       "js/scroll-rail.js": "208ec144"
     }
   },
   "assets": {
     "assets/site.css": "fe7325f1",
-    "assets/site.js": "3fe7fb49"
+    "assets/site.js": "83c9f83d"
   }
 }

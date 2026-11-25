@@ -18,15 +18,12 @@ bak
 
 # 书籍的原文与成品：第三方教程 / 示例书稿，只在本地验证书籍渲染链路用。
 # 仓库是开源的，这些文字不是本站作者写的 —— 不提交、不推送。
-# 四本示例书的 md 原件在 posts/<slug>/，由 tools/book.mjs 生成到 books/<slug>/。
-posts/java/
-posts/ml-tutorial/
-posts/sql/
-posts/summerframework/
-books/java/
-books/ml-tutorial/
-books/sql/
-books/summerframework/
+# 写成通配而不是逐个列书名：新加一本（digital-logic / discrete-math / ds-algo …）
+# 不需要再回来补一行，否则 `git add -A` 会悄悄把整本书的正文一起提交（2026-11-25 踩过一次）。
+# 真正的博客正文是 posts/*.md 这一层文件，不受影响；书籍源码在 posts/<slug>/，成品在 books/<slug>/。
+/posts/*/
+/books/*/
+# books/book.css 是渲染书籍页的样式（本站自己的代码），要发布 —— 上面只忽略子目录，它留在根上。
 # 上面一步的产物：正文片段（整本正文）与元信息（含首节正文）
 js/bookpages/
 js/books.data.js

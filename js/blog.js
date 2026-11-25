@@ -1254,7 +1254,7 @@
      原生滚动换成「换槽」：条目的纵向位置只由「第几行 − 窗口起点」决定（写 --slot），
      窗口顶端是浮点 lineDraw，小行星是另一个浮点 ballDraw（只有它走弹簧）。
      域内状态全部自有：linePos / lineDraw / lineTarget / lineWheel / lineRAF / lineLastT /
-     ballDraw / ballVel / ballRAF / ballSpring / moveTimer / lineDragging / pageScrollAt。
+     ballDraw / ballVel / ballRAF / ballSpring / moveTimer / lineDragging。
      外部不再直接写这些变量，只通过下面这组方法改位置。
 
      三个回调注入（都是「这条流之外」的动作）：
@@ -1262,7 +1262,7 @@
        onDragPaint()  拖动中重画流星线（原本 measureSweep + paintFlow）
        onRelease(t,v) 松手后落到整数页（原本 alignPage）
      这样 line 域只往下驱动 DOM，不再反向调 applyCards / layout，依赖是单向的。 */
-  function createLine({ line, rail, splitEl, PAGE, onPage, onDragPaint, onRelease }) {
+  function createLine({ line, rail, PAGE, onPage, onDragPaint, onRelease }) {
 
     /* ---------- 时间线 ↔ 卡片页，同一条 pageStart ----------
        时间线不再用原生滚动：年号与条目全部绝对定位，纵向位置只由「第几行 − 窗口起点」决定，
@@ -1299,12 +1299,10 @@
     let ballDraw = 0, ballVel = 0, ballRAF = 0, ballSpring = false;
     let moveTimer = 0;
 
-    /* 外部页面最近一次滚动的时间：鼠标在分栏里、且页面已经 1s 没动，才算「人停在文章区」，
-       滚轮归时间线。页面还在滚进 / 滚出（或刚停不到 1s）就继续滚页面，避免路过就抢走。
-       这条取代原来的高度门槛 —— 分栏停在哪、露出多少都不再参与判定。 */
-    const WHEEL_IDLE = 1000;
-    let pageScrollAt = performance.now();
-    window.addEventListener('scroll', () => { pageScrollAt = performance.now(); }, { passive: true });
+    /* 滚轮归谁：只看指针是不是停在右侧那颗小行星滚动条（.tl__bar，26px 宽、整列高）上。
+       原先那套「页面停 1s 才算人停在文章区」的判据已经删掉 —— 它导致必须先在分栏里
+       悬停一秒滚轮才生效，路过或刚滚进来时手感像卡住；反过来，指针在正文中间也会
+       把页面滚轮抢去换条。现在不再监听其它位置：分栏里除滚动条以外的地方一律还给页面。 */
 
     function applyLine() {
       const stream = kidsOf();
@@ -1490,22 +1488,22 @@
       ballRAF = requestAnimationFrame(step);
     }
 
-    /* 滚轮：时间线 + 卡片堆共用一个滚动区（.split，卡片与时间线的父容器）。
-       wheel 只把目标 lineTarget 往前推（deltaY / 110 条），真正的 lineDraw 交给
+    /* 滚轮：只在指针压住右侧小行星滚动条（.tl__bar）时接管，其它位置一概不拦。
+       监听挂在 line 根节点上、用事件目标判定 —— renderLine() 每次重建都会换掉
+       .tl__bar 这颗 DOM，直接挂在上面的监听会跟着节点一起丢掉。
+       命中后 wheel 只把目标 lineTarget 往前推（deltaY / 110 条），真正的 lineDraw 交给
        startLineSmooth() 逐帧插值 —— 和页面滚动同一条指数曲线，内容一帧一帧滑过去，
        不是每格跳一次；小行星的 ballDraw 也跟着同一个插值位。
-       接管条件：鼠标在分栏里 + 页面最近 1s 没滚动 —— 人停在文章区，滚轮归这条流；
-       页面还在滚进 / 滚出、或刚停不到 1s 时继续让页面滚，避免路过就抢走。
-       不再看分栏停在哪、露出多少。目标到队首/队尾再把滚轮还给页面。 */
+       目标到队首 / 队尾时不再 preventDefault，滚轮自然交还页面，不会把页面锁死在这条流上。 */
     const WHEEL_ITEM = 110;   // 滚轮 110px ≈ 一条；触控板的细碎 delta 会累积成连续滑动
-    splitEl.addEventListener('wheel', e => {
+    line.addEventListener('wheel', e => {
+      const t = e.target;
+      if (!t || !t.closest || !t.closest('.tl__bar')) return;   // 不在滚动条上：页面自己滚
       if (document.body.classList.contains('is-full')) return;
       const kids = kidsOf();
       if (!kids) return;
       const maxStart = Math.max(0, lineItems(kids).length - PAGE);
       if (maxStart <= 0) return;
-      /* 页面还在动（滚轮 / 平滑滚动尾帧 / 滚动条拖动）就继续滚页面，整整 1s 没动才归时间线。 */
-      if (performance.now() - pageScrollAt < WHEEL_IDLE) return;
       const unit = e.deltaMode === 1 ? 30 : (e.deltaMode === 2 ? window.innerHeight : 1);
       const d = e.deltaY * unit;
       /* 边界认「目标」不认「已画位置」：目标已经在队首/队尾时，滚轮还给页面。 */
@@ -1565,8 +1563,8 @@
       if (kids) kids.classList.remove('is-scroll');
     }
 
-    /* 焦点只留给左侧卡片：时间线整块和它的条目都不进 Tab 序列 —— 滚轮接管早就
-       改成按「分栏露出多少」判定（见上面的 wheel），这里不再需要把焦点扣在轨道上；
+    /* 焦点只留给左侧卡片：时间线整块和它的条目都不进 Tab 序列 —— 滚轮接管现在只认
+       右侧那颗小行星滚动条（见上面的 wheel），这里不再需要把焦点扣在轨道上；
        点击条目也不再聚焦，之前那圈 focus-visible 绿框随之消失。 */
 
     /* 拖那颗球：把它当成真正的滚动条把手。
@@ -2484,7 +2482,7 @@
     /* 时间线域实例。必须放在 PAGE 之后：工厂创建时就会读它（滚轮 / 拖拽 / 槽位都要用）。
        三个回调都是函数声明（已 hoisted），运行时才真正调用。 */
     const lineCtl = createLine({
-      line, rail, splitEl, PAGE,
+      line, rail, PAGE,
       onPage: pg => syncCardWindow(pg),
       onDragPaint: () => { flowCtl.sweep(); flowCtl.paint(); },
       onRelease: (t, v) => alignPage(t, v)

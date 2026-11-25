@@ -97,7 +97,7 @@
   </script>
   <!-- 作品集数据 + 阅读页 + 交互 + 滚动条四个脚本按原 defer 顺序合并压缩成一个文件，
        gzip 87KB → 19KB；源码仍分文件维护，tools/build.mjs 负责重新打包。 -->
-  <script src="assets/site.js?v=3fe7fb49" defer></script>
+  <script src="assets/site.js?v=83c9f83d" defer></script>
   <!-- md 编译产物（索引几 KB + 每篇一个 js）与代码高亮（125KB）都改成按需加载：
        首屏用不到它们，原先挂在 defer 链里却会把交互脚本一起挡在 237KB 后面。
        site.js 在第一次打开文章时按下面的地址动态插入 <script>，只拉被点开的那一篇；
@@ -108,7 +108,7 @@
     window.CB_ASSETS = {
       posts: 'js/posts.data.js?v=ca16909d',
       postsBase: 'js/posts/',
-      books: 'js/books.data.js?v=bb1cdcb5',
+      books: 'js/books.data.js?v=85ec464b',
       bookPages: 'js/bookpages/',
       hljs: 'js/vendor/highlight.min.js?v=471ef9ae'
     };
